@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NuvaFace - Aesthetic Simulation</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1><i class="fas fa-face-smile"></i> NuvaFace</h1>
+            <p class="subtitle">AI-Powered Aesthetic Simulation</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Upload Section -->
+            <section class="upload-section" id="uploadSection">
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <h3>Upload Your Photo</h3>
+                    <p>Drop an image here or click to browse</p>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                </div>
+                <div class="upload-info">
+                    <p><strong>Requirements:</strong></p>
+                    <ul>
+                        <li>Clear frontal face photo</li>
+                        <li>Good lighting</li>
+                        <li>PNG or JPEG format</li>
+                        <li>Max 2048x2048 pixels</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Area Selection -->
+            <section class="area-selection" id="areaSelection" style="display: none;">
+                <h3><i class="fas fa-crosshairs"></i> Select Treatment Area</h3>
+                <div class="area-buttons">
+                    <button class="area-btn" data-area="lips" data-procedure="filler">
+                        <i class="fas fa-kiss"></i>
+                        <span>Lips</span>
+                        <small>Filler</small>
+                    </button>
+                    <button class="area-btn" data-area="chin" data-procedure="filler">
+                        <i class="fas fa-user"></i>
+                        <span>Chin</span>
+                        <small>Filler</small>
+                    </button>
+                    <button class="area-btn" data-area="cheeks" data-procedure="filler">
+                        <i class="fas fa-smile"></i>
+                        <span>Cheeks</span>
+                        <small>Filler</small>
+                    </button>
+                    <button class="area-btn" data-area="forehead" data-procedure="botox">
+                        <i class="fas fa-head-side-brain"></i>
+                        <span>Forehead</span>
+                        <small>Botox</small>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Mask Editor -->
+            <section class="mask-editor" id="maskEditor" style="display: none;">
+                <h3><i class="fas fa-edit"></i> Refine Treatment Area</h3>
+                <div class="editor-container">
+                    <div class="canvas-container">
+                        <canvas id="maskCanvas"></canvas>
+                        <canvas id="overlayCanvas"></canvas>
+                    </div>
+                    <div class="editor-tools">
+                        <h4>Tools</h4>
+                        <div class="tool-group">
+                            <button class="tool-btn active" data-tool="brush">
+                                <i class="fas fa-paint-brush"></i> Add
+                            </button>
+                            <button class="tool-btn" data-tool="eraser">
+                                <i class="fas fa-eraser"></i> Remove
+                            </button>
+                        </div>
+                        <div class="tool-group">
+                            <label>Brush Size:</label>
+                            <input type="range" id="brushSize" min="5" max="50" value="20">
+                            <span id="brushSizeValue">20</span>
+                        </div>
+                        <div class="tool-group">
+                            <button class="action-btn" id="resetMask">
+                                <i class="fas fa-undo"></i> Reset
+                            </button>
+                            <button class="action-btn" id="generateMask">
+                                <i class="fas fa-magic"></i> Auto Generate
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="editor-actions">
+                    <button class="btn-secondary" id="backToArea">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button class="btn-primary" id="proceedToSimulation">
+                        <i class="fas fa-arrow-right"></i> Continue
+                    </button>
+                </div>
+            </section>
+
+            <!-- Simulation Section -->
+            <section class="simulation-section" id="simulationSection" style="display: none;">
+                <h3><i class="fas fa-sliders-h"></i> Adjust Effect Strength</h3>
+                
+                <div class="simulation-container">
+                    <!-- Image Viewer -->
+                    <div class="image-viewer">
+                        <div class="viewer-header">
+                            <div class="view-toggle">
+                                <button class="view-btn active" data-view="before">Before</button>
+                                <button class="view-btn" data-view="after">After</button>
+                                <button class="view-btn" data-view="split">Split View</button>
+                            </div>
+                        </div>
+                        <div class="image-container" id="imageContainer">
+                            <img id="beforeImage" class="result-image" alt="Before">
+                            <img id="afterImage" class="result-image" alt="After" style="display: none;">
+                            <div id="splitView" class="split-view" style="display: none;">
+                                <div class="split-before"></div>
+                                <div class="split-after"></div>
+                                <div class="split-divider"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="simulation-controls">
+                        <div class="strength-control">
+                            <label for="strengthSlider">Effect Strength: <span id="strengthValue">50</span>%</label>
+                            <input type="range" id="strengthSlider" min="0" max="100" value="50">
+                            <div class="strength-labels">
+                                <span>Subtle</span>
+                                <span>Moderate</span>
+                                <span>Strong</span>
+                            </div>
+                        </div>
+
+                        <div class="simulation-options">
+                            <h4>Options</h4>
+                            <div class="option-group">
+                                <label>Pipeline:</label>
+                                <select id="pipelineSelect">
+                                    <option value="sd_inpaint">SD Inpainting (Recommended)</option>
+                                    <option value="ip2p">InstructPix2Pix</option>
+                                </select>
+                            </div>
+                            <div class="option-group">
+                                <label>
+                                    <input type="checkbox" id="fixedSeed"> 
+                                    Use Fixed Seed
+                                </label>
+                                <input type="number" id="seedValue" min="0" max="4294967295" value="12345" style="display: none;">
+                            </div>
+                        </div>
+
+                        <div class="simulation-actions">
+                            <button class="btn-secondary" id="backToMask">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
+                            <button class="btn-primary" id="generateButton">
+                                <i class="fas fa-magic"></i> Generate
+                            </button>
+                            <button class="btn-success" id="downloadButton" style="display: none;">
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quality Metrics -->
+                <div class="quality-metrics" id="qualityMetrics" style="display: none;">
+                    <h4><i class="fas fa-chart-line"></i> Quality Assessment</h4>
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <label>Identity Preservation:</label>
+                            <div class="metric-bar">
+                                <div class="metric-fill" id="identityBar"></div>
+                                <span id="identityValue">-</span>
+                            </div>
+                        </div>
+                        <div class="metric">
+                            <label>Off-Target Protection:</label>
+                            <div class="metric-bar">
+                                <div class="metric-fill" id="ssimBar"></div>
+                                <span id="ssimValue">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="warnings" id="warningsContainer"></div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <h3><i class="fas fa-check-circle"></i> Results</h3>
+                <div class="results-container">
+                    <!-- Results will be populated here -->
+                </div>
+                <div class="results-actions">
+                    <button class="btn-secondary" id="startOver">
+                        <i class="fas fa-refresh"></i> Start Over
+                    </button>
+                    <button class="btn-primary" id="saveResults">
+                        <i class="fas fa-save"></i> Save Results
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+            <div class="loading-content">
+                <i class="fas fa-spinner fa-spin loading-icon"></i>
+                <h3 id="loadingMessage">Processing...</h3>
+                <p id="loadingDetails">This may take a few moments</p>
+                <div class="loading-bar">
+                    <div class="loading-progress" id="loadingProgress"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="disclaimer">
+                <p><strong>Disclaimer:</strong> This is a visualization tool for educational purposes only. 
+                Results are simulated and do not guarantee actual treatment outcomes. 
+                Consult with qualified medical professionals for real aesthetic procedures.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#privacy">Privacy Policy</a>
+                <a href="#terms">Terms of Service</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

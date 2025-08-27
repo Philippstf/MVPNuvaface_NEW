@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(uvicorn:*)",
+      "Bash(copy demo_lips_result.jpg demo2_lips_result.jpg)",
+      "Bash(cp:*)",
+      "Bash(copy demo_chin_result.jpg demo2_chin_result.jpg)",
+      "Bash(nuvaface_env/Scripts/pip install:*)",
+      "Bash(nuvaface_env/Scripts/python:*)",
+      "Bash(conda info:*)",
+      "Bash(where conda)"
+    ],
+    "deny": []
+  }
+}

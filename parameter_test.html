@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NuvaFace Parameter Testing</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { 
+            border: 1px solid #ccc; 
+            margin: 10px; 
+            padding: 10px; 
+            display: inline-block; 
+            width: 300px;
+            vertical-align: top;
+        }
+        .test-image { width: 250px; height: auto; }
+        .test-name { font-weight: bold; color: #333; }
+        .test-params { font-size: 12px; color: #666; }
+        .test-quality { font-size: 12px; color: #090; }
+        .error { color: red; }
+        #upload-area {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        button { padding: 10px 20px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <h1>NuvaFace Parameter Testing Tool</h1>
+    
+    <div id="upload-area">
+        <input type="file" id="imageInput" accept="image/*">
+        <button onclick="runTests()">Run Parameter Tests</button>
+    </div>
+    
+    <div id="loading" style="display:none;">
+        <h3>Running tests... This will take about 2-3 minutes.</h3>
+        <p>Testing 5 different parameter combinations...</p>
+    </div>
+    
+    <div id="results"></div>
+
+    <script>
+        async function runTests() {
+            const fileInput = document.getElementById('imageInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select an image first');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').innerHTML = '';
+            
+            try {
+                // Convert file to base64
+                const base64 = await fileToBase64(file);
+                
+                // Run tests
+                const response = await fetch('http://localhost:8000/debug/test_parameters', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        image: base64,
+                        area: 'lips'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                
+                // Display results
+                displayResults(data);
+                
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                alert('Error running tests: ' + error.message);
+            }
+        }
+        
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            
+            // Show original
+            resultsDiv.innerHTML = `
+                <h2>Test Results</h2>
+                <div class="test-result">
+                    <div class="test-name">Original Image</div>
+                    <img src="data:image/png;base64,${data.original_image}" class="test-image">
+                </div>
+                <div class="test-result">
+                    <div class="test-name">Mask</div>
+                    <img src="data:image/png;base64,${data.mask_image}" class="test-image">
+                </div>
+            `;
+            
+            // Show test results
+            data.test_results.forEach(test => {
+                const div = document.createElement('div');
+                div.className = 'test-result';
+                
+                if (test.error) {
+                    div.innerHTML = `
+                        <div class="test-name error">${test.name} - ERROR</div>
+                        <div class="error">${test.error}</div>
+                    `;
+                } else {
+                    div.innerHTML = `
+                        <div class="test-name">${test.name}</div>
+                        <img src="data:image/png;base64,${test.result_image}" class="test-image">
+                        <div class="test-params">
+                            Denoising: ${test.parameters.denoising_strength}<br>
+                            Guidance: ${test.parameters.guidance_scale}<br>
+                            ControlNet: ${test.parameters.controlnet_scale}
+                        </div>
+                        <div class="test-quality">
+                            ID Similarity: ${test.quality.id_similarity.toFixed(3)}<br>
+                            SSIM Off-Mask: ${test.quality.ssim_off_mask.toFixed(3)}
+                        </div>
+                    `;
+                }
+                
+                resultsDiv.appendChild(div);
+            });
+        }
+        
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+    </script>
+</body>
+</html>
