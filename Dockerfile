@@ -38,8 +38,8 @@ COPY gemini_worker.py .
 # Create directories for temporary files
 RUN mkdir -p temp_inputs temp_outputs
 
-# Copy environment file (will be overridden by Cloud Run env vars)
-COPY .env* ./
+# Note: .env files are not copied (they're in .gitignore)
+# Environment variables are set via Cloud Run configuration
 
 # Expose port (Cloud Run will set PORT env var)
 EXPOSE $PORT
