@@ -41,12 +41,15 @@ RUN mkdir -p temp_inputs temp_outputs
 # Note: .env files are not copied (they're in .gitignore)
 # Environment variables are set via Cloud Run configuration
 
-# Expose port (Cloud Run will set PORT env var)
-EXPOSE $PORT
+# Set default port for Cloud Run
+ENV PORT=8080
+
+# Expose port 
+EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:$PORT/health || exit 1
+    CMD curl -f http://localhost:8080/health || exit 1
 
-# Start command - Cloud Run will provide PORT
+# Start command - Use PORT environment variable
 CMD uvicorn api.main:app --host 0.0.0.0 --port $PORT

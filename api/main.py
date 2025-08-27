@@ -72,7 +72,7 @@ async def health_check():
         status="healthy",
         version="2.0.0",
         models_loaded={"segmentation": True, "generation": True}, # Changed "gemini-api" to True
-        gpu_available=get_device().type == "cuda"
+        gpu_available=get_device() == "cuda"
     )
 
 @app.post("/segment", response_model=SegmentResponse)

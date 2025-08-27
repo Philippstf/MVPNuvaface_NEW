@@ -1,94 +1,28 @@
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 35.6/35.6 MB 136.1 MB/s eta 0:00:00
-  Downloading mediapipe-0.10.18-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (36.1 MB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 36.1/36.1 MB 120.8 MB/s eta 0:00:00
-  Downloading mediapipe-0.10.15-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (35.9 MB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 35.9/35.9 MB 124.4 MB/s eta 0:00:00
-  Downloading mediapipe-0.10.14-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (35.7 MB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 35.7/35.7 MB 186.5 MB/s eta 0:00:00
-Collecting matplotlib
-  Downloading matplotlib-3.10.5-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (8.7 MB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.7/8.7 MB 194.7 MB/s eta 0:00:00
-Collecting sounddevice>=0.4.4
-  Downloading sounddevice-0.5.2-py3-none-any.whl (32 kB)
-Collecting absl-py
-  Downloading absl_py-2.3.1-py3-none-any.whl (135 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 135.8/135.8 kB 201.5 MB/s eta 0:00:00
-Collecting tenacity<9.2.0,>=8.2.3
-  Downloading tenacity-9.1.2-py3-none-any.whl (28 kB)
-Collecting requests<3.0.0,>=2.28.1
-  Downloading requests-2.32.5-py3-none-any.whl (64 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 64.7/64.7 kB 189.1 MB/s eta 0:00:00
-Collecting google-auth<3.0.0,>=2.14.1
-  Downloading google_auth-2.40.3-py2.py3-none-any.whl (216 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 216.1/216.1 kB 214.2 MB/s eta 0:00:00
-Collecting httpx<1.0.0,>=0.28.1
-  Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 73.5/73.5 kB 162.2 MB/s eta 0:00:00
-Collecting anyio<5.0.0,>=4.8.0
-  Downloading anyio-4.10.0-py3-none-any.whl (107 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 107.2/107.2 kB 171.1 MB/s eta 0:00:00
-Collecting exceptiongroup>=1.0.2
-  Downloading exceptiongroup-1.3.0-py3-none-any.whl (16 kB)
-Collecting idna>=2.8
-  Downloading idna-3.10-py3-none-any.whl (70 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 70.4/70.4 kB 137.9 MB/s eta 0:00:00
-Collecting sniffio>=1.1
-  Downloading sniffio-1.3.1-py3-none-any.whl (10 kB)
-Collecting pyasn1-modules>=0.2.1
-  Downloading pyasn1_modules-0.4.2-py3-none-any.whl (181 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 181.3/181.3 kB 202.6 MB/s eta 0:00:00
-Collecting rsa<5,>=3.1.4
-  Downloading rsa-4.9.1-py3-none-any.whl (34 kB)
-Collecting cachetools<6.0,>=2.0.0
-  Downloading cachetools-5.5.2-py3-none-any.whl (10 kB)
-Collecting certifi
-  Downloading certifi-2025.8.3-py3-none-any.whl (161 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 161.2/161.2 kB 221.4 MB/s eta 0:00:00
-Collecting httpcore==1.*
-  Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 78.8/78.8 kB 171.7 MB/s eta 0:00:00
-Collecting charset_normalizer<4,>=2
-  Downloading charset_normalizer-3.4.3-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (152 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 152.4/152.4 kB 228.7 MB/s eta 0:00:00
-Collecting urllib3<3,>=1.21.1
-  Downloading urllib3-2.5.0-py3-none-any.whl (129 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 129.8/129.8 kB 162.1 MB/s eta 0:00:00
-Collecting CFFI>=1.0
-  Downloading cffi-1.17.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (446 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 446.2/446.2 kB 205.5 MB/s eta 0:00:00
-Collecting opt_einsum
-  Downloading opt_einsum-3.4.0-py3-none-any.whl (71 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 71.9/71.9 kB 184.6 MB/s eta 0:00:00
-Collecting kiwisolver>=1.3.1
-  Downloading kiwisolver-1.4.9-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.whl (1.6 MB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.6/1.6 MB 245.0 MB/s eta 0:00:00
-Collecting pyparsing>=2.3.1
-  Downloading pyparsing-3.2.3-py3-none-any.whl (111 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 111.1/111.1 kB 190.5 MB/s eta 0:00:00
-Collecting contourpy>=1.0.1
-  Downloading contourpy-1.3.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (325 kB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 325.0/325.0 kB 218.1 MB/s eta 0:00:00
-Installing collected packages: flatbuffers, websockets, uvloop, urllib3, typing-extensions, tenacity, sniffio, six, pyyaml, python-multipart, python-dotenv, pyparsing, pycparser, pyasn1, protobuf, Pillow, packaging, opt_einsum, numpy, kiwisolver, idna, httptools, h11, fonttools, cycler, click, charset_normalizer, certifi, cachetools, attrs, annotated-types, absl-py, uvicorn, typing-inspection, scipy, rsa, requests, python-dateutil, pydantic-core, pyasn1-modules, opencv-python-headless, opencv-contrib-python, ml_dtypes, httpcore, exceptiongroup, contourpy, CFFI, sounddevice, pydantic, matplotlib, jaxlib, google-auth, anyio, watchfiles, starlette, jax, httpx, mediapipe, google-genai, fastapi
-Successfully installed CFFI-1.17.1 Pillow-11.3.0 absl-py-2.3.1 annotated-types-0.7.0 anyio-4.10.0 attrs-25.3.0 cachetools-5.5.2 certifi-2025.8.3 charset_normalizer-3.4.3 click-8.2.1 contourpy-1.3.2 cycler-0.12.1 exceptiongroup-1.3.0 fastapi-0.116.1 flatbuffers-25.2.10 fonttools-4.59.2 google-auth-2.40.3 google-genai-1.32.0 h11-0.16.0 httpcore-1.0.9 httptools-0.6.4 httpx-0.28.1 idna-3.10 jax-0.6.2 jaxlib-0.6.2 kiwisolver-1.4.9 matplotlib-3.10.5 mediapipe-0.10.14 ml_dtypes-0.5.3 numpy-2.2.6 opencv-contrib-python-4.12.0.88 opencv-python-headless-4.12.0.88 opt_einsum-3.4.0 packaging-25.0 protobuf-4.25.8 pyasn1-0.6.1 pyasn1-modules-0.4.2 pycparser-2.22 pydantic-2.11.7 pydantic-core-2.33.2 pyparsing-3.2.3 python-dateutil-2.9.0.post0 python-dotenv-1.1.1 python-multipart-0.0.20 pyyaml-6.0.2 requests-2.32.5 rsa-4.9.1 scipy-1.15.3 six-1.17.0 sniffio-1.3.1 sounddevice-0.5.2 starlette-0.47.3 tenacity-9.1.2 typing-extensions-4.15.0 typing-inspection-0.4.1 urllib3-2.5.0 uvicorn-0.35.0 uvloop-0.21.0 watchfiles-1.1.0 websockets-15.0.1
-WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
-[notice] A new release of pip is available: 23.0.1 -> 25.2
-[notice] To update, run: pip install --upgrade pip
-Removing intermediate container f36d23328f77
- ---> 250c187e07d0
-Step 8/16 : COPY api/ ./api/
- ---> 51a80ff35472
-Step 9/16 : COPY engine/ ./engine/
- ---> b447894f7f24
-Step 10/16 : COPY models/ ./models/
- ---> 5ce2cb0ec300
-Step 11/16 : COPY gemini_worker.py .
- ---> f9d7fc546da7
-Step 12/16 : RUN mkdir -p temp_inputs temp_outputs
- ---> Running in 720d22df993c
-Removing intermediate container 720d22df993c
- ---> cfea1973cd53
-Step 13/16 : COPY .env* ./
-COPY failed: no source files were specified
-Finished Step #0 - "Build"
+Starting Step #2 - "Deploy"
+Pulling image: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+slim: Pulling from google.com/cloudsdktool/cloud-sdk
+0873b8cf69e3: Already exists
+d9cecb6d1e2c: Pulling fs layer
+e1955ab9135d: Pulling fs layer
+dadd172e42ad: Pulling fs layer
+dadd172e42ad: Verifying Checksum
+dadd172e42ad: Download complete
+d9cecb6d1e2c: Verifying Checksum
+d9cecb6d1e2c: Download complete
+d9cecb6d1e2c: Pull complete
+e1955ab9135d: Verifying Checksum
+e1955ab9135d: Download complete
+e1955ab9135d: Pull complete
+dadd172e42ad: Pull complete
+Digest: sha256:fd296574aa531f3421e7eccaa59dc7abe32ed4c26350f04ee5fdacbd768eefd4
+Status: Downloaded newer image for gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+Deploying...
+Creating Revision.........................................................................................................................................................................................................................................................................................................................failed
+Deployment failed
+ERROR: (gcloud.run.services.update) Revision 'nuvaface-api-00003-kbd' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+Logs URL: https://console.cloud.google.com/logs/viewer?project=nuvafacemvp&resource=cloud_run_revision/service_name/nuvaface-api/revision_name/nuvaface-api-00003-kbd&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22nuvaface-api%22%0Aresource.labels.revision_name%3D%22nuvaface-api-00003-kbd%22 
+For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+Finished Step #2 - "Deploy"
 ERROR
-ERROR: build step 0 "gcr.io/cloud-builders/docker" failed: step exited with non-zero status: 1
+ERROR: build step 2 "gcr.io/google.com/cloudsdktool/cloud-sdk:slim" failed: step exited with non-zero status: 1
