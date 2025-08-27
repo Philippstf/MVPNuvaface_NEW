@@ -1,0 +1,15 @@
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1756317601.008669   16060 inference_feedback_manager.cc:114] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+W0000 00:00:1756317601.023764    2568 inference_feedback_manager.cc:114] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+W0000 00:00:1756317601.028608   32472 landmark_projection_calculator.cc:186] Using NORM_RECT without IMAGE_DIMENSIONS is only supported for the square ROI. Provide IMAGE_DIMENSIONS or use PROJECTION_MATRIX.
+INFO:     127.0.0.1:62123 - "POST /segment HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62123 - "OPTIONS /simulate/filler HTTP/1.1" 200 OK
+INFO:api.main:Received simulation request for AreaType.LIPS with 2.0ml
+INFO:engine.edit_gemini:Executing Gemini worker command: C:\Users\phlpp\Downloads\NuvaFace_MVPneu\gemini_env\Scripts\python.exe C:\Users\phlpp\Downloads\NuvaFace_MVPneu\gemini_worker.py --input C:\Users\phlpp\Downloads\NuvaFace_MVPneu\temp_inputs\004860b4-f8c5-4113-a275-931491020fb0_input.png --output C:\Users\phlpp\Downloads\NuvaFace_MVPneu\temp_outputs\004860b4-f8c5-4113-a275-931491020fb0_output.png --volume 2.0
+ERROR:engine.edit_gemini:Gemini worker script failed with code 1:
+Gemini Worker Error: Unknown field for Part: mime_type
+
+ERROR:api.main:Gemini simulation error: Gemini Worker Error: Gemini Worker Error: Unknown field for Part: mime_type
+
+INFO:     127.0.0.1:56554 - "POST /simulate/filler HTTP/1.1" 500 Internal Server Error

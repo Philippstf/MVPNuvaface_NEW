@@ -1,0 +1,70 @@
+# Ignore development files
+.git/
+.gitignore
+*.md
+README*
+CLAUDE.md
+Systemprompt.md
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Ignore virtual environments
+venv/
+env/
+ENV/
+nuvaface_env/
+gemini_env/
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Ignore temporary files
+temp_inputs/
+temp_outputs/
+logs.txt
+*.log
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore test files
+tests/
+*_test.py
+test_*.py
+
+# Ignore backup files
+*.bak
+*.backup
+
+# Node modules (if any)
+node_modules/
+
+# Ignore local environment files (keep template)
+.env.local
+.env.development
+.env.production

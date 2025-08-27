@@ -108,7 +108,14 @@
 
             <!-- Simulation Section -->
             <section class="simulation-section" id="simulationSection" style="display: none;">
-                <h3><i class="fas fa-sliders-h"></i> Adjust Effect Strength</h3>
+                <h3><i class="fas fa-sliders-h"></i> Filler Volume Selection</h3>
+                <div class="volume-info">
+                    <p><small>
+                        <strong>0-1ml:</strong> Subtle hydration & definition • 
+                        <strong>1-3ml:</strong> Natural enhancement • 
+                        <strong>3-5ml:</strong> Dramatic, luxurious results
+                    </small></p>
+                </div>
                 
                 <div class="simulation-container">
                     <!-- Image Viewer -->
@@ -134,16 +141,16 @@
                     <!-- Controls -->
                     <div class="simulation-controls">
                         <div class="strength-control">
-                            <label for="strengthSlider">Effect Strength: <span id="strengthValue">50</span>%</label>
-                            <input type="range" id="strengthSlider" min="0" max="100" value="50">
+                            <label for="strengthSlider">Volume: <span id="strengthValue">0.0</span> ml</label>
+                            <input type="range" id="strengthSlider" min="0" max="5" value="0" step="0.1">
                             <div class="strength-labels">
-                                <span>Subtle</span>
-                                <span>Moderate</span>
-                                <span>Strong</span>
+                                <span>0ml - Natural</span>
+                                <span>2.5ml - Moderate</span>
+                                <span>5ml - Maximum</span>
                             </div>
                         </div>
 
-                        <div class="simulation-options">
+                        <div class="simulation-options" style="display: none;"> // Hide old options
                             <h4>Options</h4>
                             <div class="option-group">
                                 <label>Pipeline:</label>

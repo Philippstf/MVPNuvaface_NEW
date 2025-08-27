@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git log:*)",
+      "Read(C:\\Users\\phlpp\\Downloads\\NuvaFace_MVPneu/**)",
+      "Read(C:\\Users\\phlpp\\Downloads\\NuvaFace_MVPneu\\api/**)",
+      "Read(C:\\Users\\phlpp\\Downloads\\NuvaFace_MVPneu\\api/**)",
+      "Read(C:\\Users\\phlpp\\Downloads\\NuvaFace_MVPneu/**)",
+      "WebSearch",
+      "Bash(pip install:*)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

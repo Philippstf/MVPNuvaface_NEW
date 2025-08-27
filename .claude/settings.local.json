@@ -11,7 +11,12 @@
       "Bash(nuvaface_env/Scripts/pip install:*)",
       "Bash(nuvaface_env/Scripts/python:*)",
       "Bash(conda info:*)",
-      "Bash(where conda)"
+      "Bash(where conda)",
+      "Bash(deploy-firebase.bat)",
+      "Bash(cmd.exe:*)",
+      "Bash(firebase --version)",
+      "Bash(firebase:*)",
+      "Bash(gcloud:*)"
     ],
     "deny": []
   }

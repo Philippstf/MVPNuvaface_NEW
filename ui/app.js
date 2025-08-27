@@ -2,7 +2,17 @@
 
 class NuvaFaceApp {
     constructor() {
-        this.apiBaseUrl = 'http://localhost:8000';
+        // API URL configuration
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        
+        if (isLocal) {
+            this.apiBaseUrl = 'http://localhost:8000';
+        } else {
+            // Production: Use Cloud Run URL
+            // This will be set after Cloud Run deployment
+            this.apiBaseUrl = 'https://nuvaface-api-[REPLACE-WITH-HASH]-ew.a.run.app';
+        }
+        
         this.currentImage = null;
         this.currentMask = null;
         this.selectedArea = null;
@@ -181,6 +191,9 @@ class NuvaFaceApp {
         this.selectedArea = area;
         this.selectedProcedure = procedure;
         
+        // Update volume range based on selected area
+        this.updateVolumeRangeForArea(area);
+        
         // Auto-proceed to mask editor after a short delay
         setTimeout(() => {
             this.showSection('maskEditor');
@@ -322,7 +335,7 @@ class NuvaFaceApp {
 
     // Simulation
     updateStrengthValue(e) {
-        const value = e.target.value;
+        const value = parseFloat(e.target.value).toFixed(1);
         document.getElementById('strengthValue').textContent = value;
     }
 
@@ -330,34 +343,83 @@ class NuvaFaceApp {
         const seedInput = document.getElementById('seedValue');
         seedInput.style.display = e.target.checked ? 'block' : 'none';
     }
+    
+    updateVolumeRangeForArea(area) {
+        const slider = document.getElementById('strengthSlider');
+        const volumeInfo = document.querySelector('.volume-info p');
+        const labels = document.querySelector('.strength-labels');
+        
+        switch(area) {
+            case 'lips':
+                slider.max = 5;
+                slider.step = 0.1;
+                volumeInfo.innerHTML = '<small><strong>0-1ml:</strong> Subtle hydration & definition • <strong>1-3ml:</strong> Natural enhancement • <strong>3-5ml:</strong> Dramatic, luxurious results</small>';
+                labels.innerHTML = '<span>0ml - Natural</span><span>2.5ml - Moderate</span><span>5ml - Maximum</span>';
+                break;
+                
+            case 'chin':
+                slider.max = 5;
+                slider.step = 0.1;
+                volumeInfo.innerHTML = '<small><strong>0-2ml:</strong> Subtle projection • <strong>2-4ml:</strong> Moderate augmentation • <strong>4-5ml:</strong> Strong, confident profile</small>';
+                labels.innerHTML = '<span>0ml - Natural</span><span>2.5ml - Enhanced</span><span>5ml - Strong</span>';
+                break;
+                
+            case 'cheeks':
+                slider.max = 4;
+                slider.step = 0.1;
+                volumeInfo.innerHTML = '<small><strong>0-1ml:</strong> Natural freshness • <strong>1-2.5ml:</strong> Attractive contour • <strong>2.5-4ml:</strong> Model-like cheekbones</small>';
+                labels.innerHTML = '<span>0ml - Natural</span><span>2ml - Contoured</span><span>4ml - Sculpted</span>';
+                break;
+                
+            case 'forehead':
+                slider.max = 1.5;
+                slider.step = 0.1;
+                volumeInfo.innerHTML = '<small><strong>0-0.5ml:</strong> Subtle smoothing • <strong>0.5-1ml:</strong> Clear reduction • <strong>1-1.5ml:</strong> Maximum smoothness (≈33 Units)</small>';
+                labels.innerHTML = '<span>0ml - Natural</span><span>0.7ml - Smooth</span><span>1.5ml - Maximum</span>';
+                break;
+                
+            default:
+                slider.max = 5;
+                slider.step = 0.1;
+        }
+        
+        // Reset slider value when changing areas
+        slider.value = 0;
+        this.updateStrengthValue({ target: slider });
+    }
+
+    // This function is no longer needed as seed is handled by the backend if necessary
+    // toggleFixedSeed(e) { ... }
 
     async generateSimulation() {
         if (!this.currentImage || !this.selectedArea) return;
 
         try {
-            const strength = parseInt(document.getElementById('strengthSlider').value);
-            const pipeline = document.getElementById('pipelineSelect').value;
-            const fixedSeed = document.getElementById('fixedSeed').checked;
-            const seed = fixedSeed ? parseInt(document.getElementById('seedValue').value) : null;
+            // The slider value is now directly used as milliliters (ml)
+            const volumeMl = parseFloat(document.getElementById('strengthSlider').value);
 
-            this.showLoading('Generating simulation...', 'This may take 30-60 seconds');
+            // If volume is 0, just show the original image without an API call
+            if (volumeMl === 0) {
+                this.displaySimulationResult({
+                    original_png: this.currentImage,
+                    result_png: this.currentImage,
+                    qc: { id_similarity: 1.0, ssim_off_mask: 1.0 },
+                    warnings: ["Set to 0.0 ml, showing original image."]
+                });
+                return;
+            }
+
+            this.showLoading('Generating simulation...', `Calling Gemini API for ${volumeMl}ml simulation.`);
 
             const endpoint = this.selectedProcedure === 'filler' ? '/simulate/filler' : '/simulate/botox';
             
+            // The request body now sends the 'strength' as the ml value
             const requestBody = {
                 image: this.currentImage,
                 area: this.selectedArea,
-                strength: strength,
-                pipeline: pipeline
+                strength: volumeMl, // 'strength' now means 'ml'
+                mask: this.currentMask // Mask is sent for UX display purposes
             };
-
-            if (seed !== null) {
-                requestBody.seed = seed;
-            }
-
-            if (this.currentMask) {
-                requestBody.mask = this.currentMask;
-            }
 
             const response = await fetch(`${this.apiBaseUrl}${endpoint}`, {
                 method: 'POST',
@@ -368,7 +430,7 @@ class NuvaFaceApp {
             const result = await response.json();
             
             if (!response.ok) {
-                throw new Error(result.message || 'Simulation failed');
+                throw new Error(result.detail || 'Simulation failed');
             }
 
             this.lastResult = result;

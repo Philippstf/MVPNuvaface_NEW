@@ -1,0 +1,39 @@
+# Cloud Function to stop services when budget exceeded
+# This can be deployed as a Cloud Function triggered by Pub/Sub from budget alerts
+
+import functions_framework
+from google.cloud import run_v2
+
+@functions_framework.cloud_event
+def stop_service_on_budget(cloud_event):
+    """Stop Cloud Run service when budget is exceeded"""
+    
+    # Parse the budget alert
+    data = cloud_event.data
+    
+    if data.get('costAmount', 0) >= 5.0:  # 5 EUR threshold
+        client = run_v2.ServicesClient()
+        
+        # Stop the service
+        service_name = "projects/nuvafacemvp/locations/europe-west1/services/nuvaface-api"
+        
+        # Scale to 0 instances
+        request = run_v2.UpdateServiceRequest(
+            service=run_v2.Service(
+                name=service_name,
+                spec=run_v2.ServiceSpec(
+                    template=run_v2.RevisionTemplate(
+                        spec=run_v2.RevisionSpec(
+                            scaling=run_v2.RevisionScaling(
+                                max_instance_count=0
+                            )
+                        )
+                    )
+                )
+            )
+        )
+        
+        operation = client.update_service(request=request)
+        print(f"Service stopped due to budget exceeded: {operation.name}")
+    
+    return "OK"

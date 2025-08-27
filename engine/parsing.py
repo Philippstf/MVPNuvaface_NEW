@@ -459,3 +459,53 @@ def get_supported_areas() -> List[str]:
 def validate_area(area: str) -> bool:
     """Validate if area is supported."""
     return area in get_supported_areas()
+
+
+# --- Prompt Engineering ---
+
+def get_prompt_for_area(area: str, language: str = "en") -> str:
+    """Get a static, high-quality prompt for a given facial area."""
+    prompts = {
+        "en": {
+            "lips": "professional photograph of beautiful, natural-looking lips, healthy tissue, smooth texture, well-defined vermilion border",
+            "chin": "professional photograph of a well-defined, smooth chin, natural contour, harmonious jawline",
+            "cheeks": "professional photograph of smooth, youthful cheeks with natural volume, healthy skin texture",
+            "forehead": "professional photograph of a smooth, relaxed forehead, no wrinkles, natural skin texture"
+        }
+    }
+    return prompts.get(language, prompts["en"]).get(area, "professional photograph of a human face, high resolution")
+
+def get_adaptive_prompt_for_area(area: str, strength: int, language: str = "en") -> str:
+    """
+    Generate an adaptive prompt based on the area and strength (0-100).
+    This creates more nuanced and realistic results.
+    """
+    base_prompt = get_prompt_for_area(area, language)
+    
+    # Strength mapping: 0-20 (subtle), 21-40 (mild), 41-60 (moderate), 61-80 (significant), 81-100 (strong)
+    if strength <= 20:
+        level_desc = "a subtle hint of additional"
+    elif strength <= 40:
+        level_desc = "a mild increase in"
+    elif strength <= 60:
+        level_desc = "a moderate enhancement of"
+    elif strength <= 80:
+        level_desc = "a significant but natural-looking increase in"
+    else:
+        level_desc = "a strong, noticeable yet realistic increase in"
+
+    enhancements = {
+        "en": {
+            "lips": f"{level_desc} volume and definition",
+            "chin": f"{level_desc} projection and a rounder, more defined contour",
+            "cheeks": f"{level_desc} volume in the mid-face",
+            "forehead": "a smoother, more relaxed appearance" # Botox is not about volume
+        }
+    }
+    
+    enhancement_prompt = enhancements.get(language, enhancements["en"]).get(area, "")
+    
+    if area == 'forehead':
+        return f"{base_prompt}, {enhancement_prompt}"
+    else:
+        return f"{base_prompt}, {enhancement_prompt}, maintaining natural anatomy"

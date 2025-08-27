@@ -316,3 +316,103 @@ def crop_to_bbox(image: Image.Image, bbox: Tuple[int, int, int, int], padding: i
     y2 = min(image.height, y + h + padding)
     
     return image.crop((x1, y1, x2, y2))
+
+def adjust_mask_volume(mask: Image.Image, strength: int, max_pixel_change: int = 15) -> Image.Image:
+    """
+    Adjust the volume of a mask by dilating or eroding it based on strength.
+    Strength is on a scale of 0-100. 50 is neutral (no change).
+    """
+    if strength == 50:
+        return mask
+
+    # Convert PIL mask to OpenCV format
+    mask_np = np.array(mask.convert('L'))
+    
+    # Calculate the amount of change. 
+    # The scale is non-linear to make changes more subtle around the center.
+    # strength_factor ranges from -1 (at strength 0) to +1 (at strength 100)
+    strength_factor = (strength - 50) / 50.0
+    
+    # Use a power to make the slider less sensitive in the middle
+    pixel_change = int(np.sign(strength_factor) * (abs(strength_factor) ** 1.5) * max_pixel_change)
+    
+    if pixel_change == 0:
+        return mask
+        
+    kernel_size = abs(pixel_change)
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
+    
+    if pixel_change > 0:
+        # Dilate the mask to increase volume
+        new_mask_np = cv2.dilate(mask_np, kernel, iterations=1)
+    else:
+        # Erode the mask to decrease volume
+        new_mask_np = cv2.erode(mask_np, kernel, iterations=1)
+        
+    return Image.fromarray(new_mask_np, 'L')
+
+def adjust_chin_mask_volume(mask: Image.Image, strength: int, max_pixel_projection: int = 20) -> Image.Image:
+    """
+    Adjusts the chin mask to simulate filler by adding projection and rounding.
+    The effect is strongest at the bottom-center of the chin.
+    """
+    if strength <= 50:
+        # For now, we only handle volume increase for chin. 
+        # Erosion could be added here if needed.
+        return mask
+
+    mask_np = np.array(mask.convert('L'))
+    if np.sum(mask_np) == 0:
+        return mask
+
+    # Find the bounding box of the chin mask to locate the center-bottom point
+    coords = cv2.findNonZero(mask_np)
+    x, y, w, h = cv2.boundingRect(coords)
+    
+    # The target for projection is the bottom-center of the bounding box
+    center_bottom_x = x + w // 2
+    center_bottom_y = y + h
+
+    # Calculate the amount of projection based on strength
+    strength_factor = (strength - 50) / 50.0 # Scale of 0 to 1
+    pixel_projection = int((strength_factor ** 1.5) * max_pixel_projection)
+
+    if pixel_projection == 0:
+        return mask
+
+    # Create a "strength gradient" mask: a grayscale image that is white at the
+    # target point and fades to black. This will control the dilation.
+    gradient = np.zeros_like(mask_np, dtype=np.float32)
+    
+    # Create a circular gradient centered at the projection point
+    # The radius is based on the chin height to keep it proportional
+    radius = h * 1.5 
+    for i in range(mask_np.shape[0]):
+        for j in range(mask_np.shape[1]):
+            distance = np.sqrt((j - center_bottom_x)**2 + (i - center_bottom_y)**2)
+            # Inverse linear falloff from the center
+            value = max(0, 1 - (distance / radius))
+            gradient[i, j] = value
+
+    # Modulate the dilation kernel size based on the gradient
+    # We create a dilated final mask and copy pixels based on the gradient strength
+    final_mask = mask_np.copy()
+    
+    # Use a variable-sized kernel based on the gradient
+    for i in range(y, y + h): # Iterate only within the bounding box for efficiency
+        for j in range(x, x + w):
+            if mask_np[i, j] > 0:
+                local_projection = int(pixel_projection * gradient[i, j])
+                if local_projection > 0:
+                    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (local_projection, local_projection))
+                    # Apply dilation only at this specific point with its specific strength
+                    # This is computationally intensive, a more optimized approach is to dilate with max kernel and blend
+                    cv2.circle(final_mask, (j, i), local_projection, 255, -1)
+
+    # A more optimized approach: Dilate with a medium kernel and then blend
+    # For simplicity and direct control, the per-pixel approach is clearer.
+    # Let's refine the final mask to ensure it's smooth
+    final_mask = cv2.GaussianBlur(final_mask, (5, 5), 0)
+    _, final_mask = cv2.threshold(final_mask, 127, 255, cv2.THRESH_BINARY)
+
+    return Image.fromarray(final_mask, 'L')

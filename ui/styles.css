@@ -399,8 +399,22 @@ section h3 {
 .strength-labels {
     display: flex;
     justify-content: space-between;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
+}
+
+.volume-info {
+    background: #e3f2fd;
+    border: 1px solid #2196f3;
+    border-radius: var(--border-radius);
+    padding: 0.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.volume-info p {
+    margin: 0;
+    line-height: 1.4;
+    text-align: center;
 }
 
 .simulation-options h4 {
