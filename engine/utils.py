@@ -8,7 +8,6 @@ import io
 import random
 import numpy as np
 import cv2
-import torch
 from PIL import Image, ExifTags
 from typing import Union, Tuple, Optional
 import mediapipe as mp
@@ -18,10 +17,7 @@ def set_seed(seed: int) -> None:
     """Set random seeds for reproducibility."""
     random.seed(seed)
     np.random.seed(seed)
-    torch.manual_seed(seed)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed(seed)
-        torch.cuda.manual_seed_all(seed)
+    # Removed torch seed setting for Cloud Run compatibility
 
 
 def fix_exif_orientation(image: Image.Image) -> Image.Image:
