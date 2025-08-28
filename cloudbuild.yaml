@@ -13,12 +13,11 @@ steps:
       - '--cpu=2'
       - '--timeout=300'
       - '--max-instances=10'
-    env:
-      - 'GOOGLE_API_KEY=${_GOOGLE_API_KEY}'
+      - '--set-env-vars=GOOGLE_API_KEY=${_GOOGLE_API_KEY}'
 
 # Substitution variables (set in trigger)
 substitutions:
-  _GOOGLE_API_KEY: 'your-api-key-here'
+  _GOOGLE_API_KEY: 'your-actual-api-key-here'
 
 options:
   logging: CLOUD_LOGGING_ONLY

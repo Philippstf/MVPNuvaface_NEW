@@ -306,7 +306,7 @@ GEMINI_MODELS = [
 ]
 
 def create_gemini_client():
-    """Create Gemini client with API key"""
+    """Create Gemini client with API key and timeout"""
     # Check for API keys
     api_key = os.getenv('GOOGLE_API_KEY') or os.getenv('GEMINI_API_KEY')
     
@@ -316,7 +316,15 @@ def create_gemini_client():
     if os.getenv('GOOGLE_API_KEY') and os.getenv('GEMINI_API_KEY'):
         print("Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.")
     
-    return genai.Client(api_key=api_key)
+    # Add HTTP timeout based on latest Aug 26 docs: SDK has 60s hard limit, 30s is optimal
+    # Use stable v1 API instead of beta for better reliability
+    return genai.Client(
+        api_key=api_key,
+        http_options=types.HttpOptions(
+            timeout=30_000,  # 30 seconds - optimal based on Aug 26 docs
+            api_version='v1'  # Use stable API instead of beta
+        )
+    )
 
 
 def generate_with_fallback(client, prompt, image_data, mask_data=None):
@@ -340,16 +348,30 @@ def generate_with_fallback(client, prompt, image_data, mask_data=None):
             if mask_data:
                 contents.append(mask_data)
             
-            response = client.models.generate_content(
-                model=model_name,
-                contents=contents,
-                config={
-                    "temperature": 0.1,
-                    "top_p": 0.8,
-                    "max_output_tokens": 8192,
-                    "response_modalities": ["TEXT", "IMAGE"]  # Explicitly request images!
-                }
+            # Use proper config object with thinking disabled for speed
+            config = types.GenerateContentConfig(
+                temperature=0.1,
+                top_p=0.8,
+                max_output_tokens=8192,
+                response_modalities=[types.Modality.TEXT, types.Modality.IMAGE],
+                thinking_config=types.ThinkingConfig(thinking_budget=0)  # Disable thinking for speed!
             )
+            
+            # Wrap API call with timeout handling (SDK has 60s hard limit)
+            try:
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=contents,
+                    config=config
+                )
+            except Exception as api_error:
+                error_msg = str(api_error).lower()
+                if "timeout" in error_msg or "disconnected" in error_msg or "remotprotocol" in error_msg:
+                    print(f"WARNING: {model_name} timed out (SDK 60s limit), trying next model...")
+                    last_error = f"Timeout with {model_name}: {api_error}"
+                    continue
+                else:
+                    raise api_error
             
             print(f"DEBUG: Got response from {model_name}")
             
@@ -435,11 +457,16 @@ def main():
             input_image = input_image.convert('RGB')
         
         # Prepare image data for Gemini using correct google-genai format
+        # Reduce image size to prevent payload issues
+        if input_image.size[0] > 512 or input_image.size[1] > 512:
+            print(f"Resizing image from {input_image.size} to 512x512 for faster processing")
+            input_image = input_image.resize((512, 512), Image.Resampling.LANCZOS)
+        
         img_byte_array = BytesIO()
-        input_image.save(img_byte_array, format='PNG')
+        input_image.save(img_byte_array, format='JPEG', quality=85)  # Use JPEG for smaller size
         image_data = types.Part.from_bytes(
             data=img_byte_array.getvalue(),
-            mime_type="image/png"
+            mime_type="image/jpeg"
         )
         
         # Load mask if provided
