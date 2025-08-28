@@ -31,7 +31,10 @@
       "Read(C:\\Users\\phlpp\\Downloads/**)",
       "Bash(.deploy-cloudrun.bat)",
       "Read(C:\\Users\\phlpp\\Downloads/**)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Read(C:\\Users\\phlpp\\Downloads/**)",
+      "Read(C:\\Users\\phlpp\\Downloads/**)",
+      "Read(C:\\Users\\phlpp\\Downloads/**)"
     ],
     "deny": []
   }
