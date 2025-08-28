@@ -308,12 +308,21 @@ GEMINI_MODELS = [
 def create_gemini_client():
     """Create Gemini client with API key and timeout"""
     # Check for API keys
-    api_key = os.getenv('GOOGLE_API_KEY') or os.getenv('GEMINI_API_KEY')
+    google_key = os.getenv('GOOGLE_API_KEY')
+    gemini_key = os.getenv('GEMINI_API_KEY')
+    
+    print(f"DEBUG: GOOGLE_API_KEY present: {google_key is not None}")
+    print(f"DEBUG: GEMINI_API_KEY present: {gemini_key is not None}")
+    if google_key:
+        print(f"DEBUG: GOOGLE_API_KEY length: {len(google_key)}")
+        print(f"DEBUG: GOOGLE_API_KEY starts with: {google_key[:20]}...")
+    
+    api_key = google_key or gemini_key
     
     if not api_key:
         raise ValueError("No API key found. Please set GOOGLE_API_KEY or GEMINI_API_KEY environment variable.")
     
-    if os.getenv('GOOGLE_API_KEY') and os.getenv('GEMINI_API_KEY'):
+    if google_key and gemini_key:
         print("Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.")
     
     # Add HTTP timeout based on latest Aug 26 docs: SDK has 60s hard limit, 30s is optimal

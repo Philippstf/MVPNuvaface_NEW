@@ -17,7 +17,7 @@ steps:
 
 # Substitution variables (set in trigger)
 substitutions:
-  _GOOGLE_API_KEY: 'your-actual-api-key-here'
+  _GOOGLE_API_KEY: 'AIzaSyBW518XAe55P8lmMDRwpYWPWUdQ0D_jMkQ'
 
 options:
   logging: CLOUD_LOGGING_ONLY
