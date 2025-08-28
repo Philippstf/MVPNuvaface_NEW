@@ -340,24 +340,31 @@ def generate_with_fallback(client, prompt, image_data, mask_data=None):
     """Try multiple Gemini models with fallback logic"""
     last_error = None
     
+    print(f"DEBUG: generate_with_fallback started", file=sys.stderr)
+    print(f"DEBUG: Client type: {type(client)}", file=sys.stderr)
+    print(f"DEBUG: Available models to try: {GEMINI_MODELS}", file=sys.stderr)
+    
     for model_name in GEMINI_MODELS:
         try:
-            print(f"Trying model: {model_name}")
-            print(f"DEBUG: Image data type: {type(image_data)}")
-            print(f"DEBUG: Mask provided: {mask_data is not None}")
+            print(f"========== TRYING MODEL: {model_name} ==========", file=sys.stderr)
+            print(f"DEBUG: Image data type: {type(image_data)}", file=sys.stderr)
+            print(f"DEBUG: Mask provided: {mask_data is not None}", file=sys.stderr)
             if mask_data:
-                print(f"DEBUG: Mask data type: {type(mask_data)}")
-            print(f"DEBUG: Prompt length: {len(prompt)} chars")
+                print(f"DEBUG: Mask data type: {type(mask_data)}", file=sys.stderr)
+            print(f"DEBUG: Prompt length: {len(prompt)} chars", file=sys.stderr)
+            print(f"DEBUG: First 100 chars of prompt: {prompt[:100]}...", file=sys.stderr)
             
             # Prepare the content for new google-genai SDK using correct format
-            print(f"DEBUG: Calling Gemini API...")
+            print(f"DEBUG: Preparing Gemini API call...", file=sys.stderr)
             
             # Create the content parts list
             contents = [prompt, image_data]
             if mask_data:
                 contents.append(mask_data)
+            print(f"DEBUG: Contents list has {len(contents)} parts", file=sys.stderr)
             
             # Use proper config object with thinking disabled for speed
+            print(f"DEBUG: Creating GenerateContentConfig...", file=sys.stderr)
             config = types.GenerateContentConfig(
                 temperature=0.1,
                 top_p=0.8,
@@ -365,27 +372,51 @@ def generate_with_fallback(client, prompt, image_data, mask_data=None):
                 response_modalities=[types.Modality.TEXT, types.Modality.IMAGE],
                 thinking_config=types.ThinkingConfig(thinking_budget=0)  # Disable thinking for speed!
             )
+            print(f"DEBUG: Config created: temp={config.temperature}, top_p={config.top_p}", file=sys.stderr)
             
             # Wrap API call with timeout handling (SDK has 60s hard limit)
+            print(f"DEBUG: About to call client.models.generate_content...", file=sys.stderr)
+            print(f"DEBUG: Model: {model_name}", file=sys.stderr)
+            print(f"DEBUG: API endpoint will be: v1alpha/models/{model_name}:generateContent", file=sys.stderr)
+            
             try:
+                import time
+                start_time = time.time()
+                print(f"DEBUG: API CALL START at {start_time}", file=sys.stderr)
+                
                 response = client.models.generate_content(
                     model=model_name,
                     contents=contents,
                     config=config
                 )
+                
+                elapsed = time.time() - start_time
+                print(f"DEBUG: API CALL COMPLETED in {elapsed:.2f} seconds", file=sys.stderr)
+                
             except Exception as api_error:
+                elapsed = time.time() - start_time
+                print(f"ERROR: API call failed after {elapsed:.2f} seconds", file=sys.stderr)
+                print(f"ERROR Type: {type(api_error).__name__}", file=sys.stderr)
+                print(f"ERROR Details: {api_error}", file=sys.stderr)
+                
                 error_msg = str(api_error).lower()
                 if "timeout" in error_msg or "disconnected" in error_msg or "remotprotocol" in error_msg:
-                    print(f"WARNING: {model_name} timed out (SDK 60s limit), trying next model...")
+                    print(f"WARNING: {model_name} timed out (SDK 60s limit), trying next model...", file=sys.stderr)
                     last_error = f"Timeout with {model_name}: {api_error}"
                     continue
-                else:
+                elif "api key" in error_msg or "invalid_argument" in error_msg:
+                    print(f"CRITICAL: API Key issue detected!", file=sys.stderr)
                     raise api_error
+                else:
+                    print(f"WARNING: Unknown error, trying next model...", file=sys.stderr)
+                    last_error = api_error
+                    continue
             
-            print(f"DEBUG: Got response from {model_name}")
+            print(f"DEBUG: Got response from {model_name}", file=sys.stderr)
+            print(f"DEBUG: Response type: {type(response)}", file=sys.stderr)
             
             if response and response.candidates and len(response.candidates) > 0:
-                print(f"DEBUG: Response has {len(response.candidates)} candidates")
+                print(f"DEBUG: Response has {len(response.candidates)} candidates", file=sys.stderr)
                 candidate = response.candidates[0]
                 print(f"DEBUG: Candidate has content: {candidate.content is not None}")
                 if candidate.content and candidate.content.parts:
@@ -448,6 +479,7 @@ def generate_with_fallback(client, prompt, image_data, mask_data=None):
 
 def main():
     """Main worker function"""
+    print("WORKER: Starting gemini_worker.py", file=sys.stderr)
     load_dotenv()
     
     parser = argparse.ArgumentParser(description='Gemini Worker for NuvaFace')
@@ -458,57 +490,97 @@ def main():
     parser.add_argument('--mask', help='Mask image path (optional)')
     
     args = parser.parse_args()
+    print(f"WORKER: Args parsed - area={args.area}, volume={args.volume}", file=sys.stderr)
     
     try:
         # Load input image
+        print(f"WORKER: Loading input image from {args.input}", file=sys.stderr)
+        if not os.path.exists(args.input):
+            print(f"ERROR: Input file does not exist: {args.input}", file=sys.stderr)
+            raise FileNotFoundError(f"Input file not found: {args.input}")
+            
         input_image = Image.open(args.input)
+        print(f"WORKER: Image loaded, mode={input_image.mode}, size={input_image.size}", file=sys.stderr)
+        
         if input_image.mode != 'RGB':
+            print(f"WORKER: Converting image from {input_image.mode} to RGB", file=sys.stderr)
             input_image = input_image.convert('RGB')
         
         # Prepare image data for Gemini using correct google-genai format
         # Reduce image size to prevent payload issues
         if input_image.size[0] > 512 or input_image.size[1] > 512:
-            print(f"Resizing image from {input_image.size} to 512x512 for faster processing")
+            print(f"WORKER: Resizing image from {input_image.size} to 512x512 for faster processing", file=sys.stderr)
             input_image = input_image.resize((512, 512), Image.Resampling.LANCZOS)
         
         img_byte_array = BytesIO()
         input_image.save(img_byte_array, format='JPEG', quality=85)  # Use JPEG for smaller size
+        img_bytes = img_byte_array.getvalue()
+        print(f"WORKER: Image encoded as JPEG, size={len(img_bytes)} bytes", file=sys.stderr)
+        
         image_data = types.Part.from_bytes(
-            data=img_byte_array.getvalue(),
+            data=img_bytes,
             mime_type="image/jpeg"
         )
+        print(f"WORKER: Created types.Part for image", file=sys.stderr)
         
         # Load mask if provided
         mask_data = None
-        if args.mask and os.path.exists(args.mask):
-            mask_image = Image.open(args.mask)
-            if mask_image.mode != 'L':
-                mask_image = mask_image.convert('L')
-            
-            mask_byte_array = BytesIO()
-            mask_image.save(mask_byte_array, format='PNG')
-            mask_data = types.Part.from_bytes(
-                data=mask_byte_array.getvalue(),
-                mime_type="image/png"
-            )
+        if args.mask:
+            print(f"WORKER: Checking mask at {args.mask}", file=sys.stderr)
+            if os.path.exists(args.mask):
+                print(f"WORKER: Loading mask image", file=sys.stderr)
+                mask_image = Image.open(args.mask)
+                print(f"WORKER: Mask loaded, mode={mask_image.mode}, size={mask_image.size}", file=sys.stderr)
+                
+                if mask_image.mode != 'L':
+                    print(f"WORKER: Converting mask from {mask_image.mode} to L", file=sys.stderr)
+                    mask_image = mask_image.convert('L')
+                
+                mask_byte_array = BytesIO()
+                mask_image.save(mask_byte_array, format='PNG')
+                mask_bytes = mask_byte_array.getvalue()
+                print(f"WORKER: Mask encoded as PNG, size={len(mask_bytes)} bytes", file=sys.stderr)
+                
+                mask_data = types.Part.from_bytes(
+                    data=mask_bytes,
+                    mime_type="image/png"
+                )
+                print(f"WORKER: Created types.Part for mask", file=sys.stderr)
+            else:
+                print(f"WARNING: Mask file not found: {args.mask}", file=sys.stderr)
+        else:
+            print(f"WORKER: No mask provided", file=sys.stderr)
         
         # Generate appropriate prompt based on area
+        print(f"WORKER: Generating prompt for area='{args.area}', volume={args.volume}ml", file=sys.stderr)
+        
         if args.area.lower() == 'lips':
             prompt = get_prompt_for_lips(args.volume)
+            print(f"WORKER: Generated lips prompt", file=sys.stderr)
         elif args.area.lower() == 'cheeks':
             prompt = get_prompt_for_cheeks(args.volume)
+            print(f"WORKER: Generated cheeks prompt", file=sys.stderr)
         elif args.area.lower() == 'chin':
             prompt = get_prompt_for_chin(args.volume)
+            print(f"WORKER: Generated chin prompt", file=sys.stderr)
         elif args.area.lower() == 'forehead':
             prompt = get_prompt_for_forehead(args.volume)
+            print(f"WORKER: Generated forehead prompt", file=sys.stderr)
         else:
+            print(f"ERROR: Unsupported area: {args.area}", file=sys.stderr)
             raise ValueError(f"Unsupported area: {args.area}")
         
+        print(f"WORKER: Prompt length: {len(prompt)} chars", file=sys.stderr)
+        
         # Create client and generate image
+        print("WORKER: Creating Gemini client...", file=sys.stderr)
         client = create_gemini_client()
+        print("WORKER: Gemini client created successfully", file=sys.stderr)
         
         try:
+            print("WORKER: Calling generate_with_fallback...", file=sys.stderr)
             result_data, used_model = generate_with_fallback(client, prompt, image_data, mask_data)
+            print(f"WORKER: Successfully generated with {used_model}", file=sys.stderr)
         except Exception as e:
             error_str = str(e).lower()
             print(f"ERROR: All Gemini models failed: {e}", file=sys.stderr)
@@ -531,16 +603,23 @@ def main():
                 raise Exception(f"All Gemini models failed or returned corrupt data: {e}")
         
         # Decode and save result
+        print(f"WORKER: Decoding result image...", file=sys.stderr)
         import base64
         image_bytes = base64.b64decode(result_data)
+        print(f"WORKER: Decoded {len(image_bytes)} bytes", file=sys.stderr)
+        
         result_image = Image.open(BytesIO(image_bytes))
+        print(f"WORKER: Result image: mode={result_image.mode}, size={result_image.size}", file=sys.stderr)
         
         # Convert to RGB if needed
         if result_image.mode != 'RGB':
+            print(f"WORKER: Converting result from {result_image.mode} to RGB", file=sys.stderr)
             result_image = result_image.convert('RGB')
         
         # Save output
+        print(f"WORKER: Saving to {args.output}", file=sys.stderr)
         result_image.save(args.output, 'PNG')
+        print(f"WORKER: Successfully saved output image", file=sys.stderr)
         
         # Compare images to detect API issues
         print(f"WORKER DEBUG: Starting image comparison...")
@@ -578,8 +657,19 @@ def main():
         print(f"Image generation completed successfully using {used_model}")
         
     except Exception as e:
+        import traceback
+        print(f"WORKER FATAL ERROR: {e}", file=sys.stderr)
+        print(f"ERROR Type: {type(e).__name__}", file=sys.stderr)
+        print(f"ERROR Traceback:", file=sys.stderr)
+        traceback.print_exc(file=sys.stderr)
         print(f"Gemini Worker Error: {e}", file=sys.stderr)
         sys.exit(1)
 
 if __name__ == "__main__":
+    print("="*60, file=sys.stderr)
+    print("GEMINI WORKER STARTING", file=sys.stderr)
+    print("="*60, file=sys.stderr)
     main()
+    print("="*60, file=sys.stderr)
+    print("GEMINI WORKER COMPLETED", file=sys.stderr)
+    print("="*60, file=sys.stderr)

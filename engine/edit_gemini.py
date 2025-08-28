@@ -96,15 +96,19 @@ async def generate_gemini_simulation(
         
         logger.info(f"DEBUG: Executing Gemini worker command: {' '.join(command)}")
         
+        # Add timeout to prevent hanging (40 seconds for subprocess, API has 30s timeout)
         process = subprocess.run(
             command,
             capture_output=True,
             text=True,
             check=True, # This will raise a CalledProcessError if the script fails
-            encoding='utf-8'
+            encoding='utf-8',
+            timeout=40  # 40 seconds timeout for subprocess
         )
         
         logger.info(f"Gemini worker stdout: {process.stdout}")
+        if process.stderr:
+            logger.info(f"Gemini worker stderr: {process.stderr}")
         
         # Extract image data from stdout instead of file
         stdout = process.stdout
