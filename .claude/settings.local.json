@@ -41,6 +41,8 @@
       "Read(C:\\Users\\phlpp\\Downloads/**)",
       "WebFetch(domain:developers.googleblog.com)",
       "WebFetch(domain:ai.google.dev)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
       "Read(c:\\Users\\phlpp\\Downloads/**)"
     ],
     "deny": []
