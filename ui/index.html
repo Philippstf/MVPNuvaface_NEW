@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NuvaFace - Aesthetic Simulation</title>
+    <title>NuvaFace - Ästhetische Simulation</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -11,8 +11,13 @@
     <div class="container">
         <!-- Header -->
         <header class="header">
-            <h1><i class="fas fa-face-smile"></i> NuvaFace</h1>
-            <p class="subtitle">AI-Powered Aesthetic Simulation</p>
+            <div class="logo-section">
+                <img src="nuvaface_logo.png" alt="NuvaFace Logo" class="logo">
+                <div class="brand-text">
+                    <h1>NuvaFace</h1>
+                    <p class="subtitle">KI-gestützte Ästhetische Simulation</p>
+                </div>
+            </div>
         </header>
 
         <!-- Main Content -->
@@ -21,43 +26,43 @@
             <section class="upload-section" id="uploadSection">
                 <div class="upload-area" id="uploadArea">
                     <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                    <h3>Upload Your Photo</h3>
-                    <p>Drop an image here or click to browse</p>
+                    <h3>Foto hochladen</h3>
+                    <p>Bild hierher ziehen oder klicken zum Durchsuchen</p>
                     <input type="file" id="fileInput" accept="image/*" style="display: none;">
                 </div>
                 <div class="upload-info">
-                    <p><strong>Requirements:</strong></p>
+                    <p><strong>Anforderungen:</strong></p>
                     <ul>
-                        <li>Clear frontal face photo</li>
-                        <li>Good lighting</li>
-                        <li>PNG or JPEG format</li>
-                        <li>Max 2048x2048 pixels</li>
+                        <li>Klares frontales Gesichtsfoto</li>
+                        <li>Gute Beleuchtung</li>
+                        <li>PNG oder JPEG Format</li>
+                        <li>Max 2048x2048 Pixel</li>
                     </ul>
                 </div>
             </section>
 
             <!-- Area Selection -->
             <section class="area-selection" id="areaSelection" style="display: none;">
-                <h3><i class="fas fa-crosshairs"></i> Select Treatment Area</h3>
+                <h3><i class="fas fa-crosshairs"></i> Behandlungsbereich wählen</h3>
                 <div class="area-buttons">
                     <button class="area-btn" data-area="lips" data-procedure="filler">
                         <i class="fas fa-kiss"></i>
-                        <span>Lips</span>
+                        <span>Lippen</span>
                         <small>Filler</small>
                     </button>
                     <button class="area-btn" data-area="chin" data-procedure="filler">
                         <i class="fas fa-user"></i>
-                        <span>Chin</span>
+                        <span>Kinn</span>
                         <small>Filler</small>
                     </button>
                     <button class="area-btn" data-area="cheeks" data-procedure="filler">
                         <i class="fas fa-smile"></i>
-                        <span>Cheeks</span>
+                        <span>Wangen</span>
                         <small>Filler</small>
                     </button>
                     <button class="area-btn" data-area="forehead" data-procedure="botox">
                         <i class="fas fa-head-side-brain"></i>
-                        <span>Forehead</span>
+                        <span>Stirn</span>
                         <small>Botox</small>
                     </button>
                 </div>
@@ -65,75 +70,79 @@
 
             <!-- Mask Editor -->
             <section class="mask-editor" id="maskEditor" style="display: none;">
-                <h3><i class="fas fa-edit"></i> Refine Treatment Area</h3>
+                <h3><i class="fas fa-edit"></i> Behandlungsbereich verfeinern</h3>
                 <div class="editor-container">
                     <div class="canvas-container">
                         <canvas id="maskCanvas"></canvas>
                         <canvas id="overlayCanvas"></canvas>
                     </div>
                     <div class="editor-tools">
-                        <h4>Tools</h4>
+                        <h4>Werkzeuge</h4>
                         <div class="tool-group">
                             <button class="tool-btn active" data-tool="brush">
-                                <i class="fas fa-paint-brush"></i> Add
+                                <i class="fas fa-paint-brush"></i> Hinzufügen
                             </button>
                             <button class="tool-btn" data-tool="eraser">
-                                <i class="fas fa-eraser"></i> Remove
+                                <i class="fas fa-eraser"></i> Entfernen
                             </button>
                         </div>
                         <div class="tool-group">
-                            <label>Brush Size:</label>
+                            <label>Pinselgröße:</label>
                             <input type="range" id="brushSize" min="5" max="50" value="20">
                             <span id="brushSizeValue">20</span>
                         </div>
                         <div class="tool-group">
                             <button class="action-btn" id="resetMask">
-                                <i class="fas fa-undo"></i> Reset
+                                <i class="fas fa-undo"></i> Zurücksetzen
                             </button>
                             <button class="action-btn" id="generateMask">
-                                <i class="fas fa-magic"></i> Auto Generate
+                                <i class="fas fa-magic"></i> Automatisch erstellen
                             </button>
                         </div>
                     </div>
                 </div>
                 <div class="editor-actions">
                     <button class="btn-secondary" id="backToArea">
-                        <i class="fas fa-arrow-left"></i> Back
+                        <i class="fas fa-arrow-left"></i> Zurück
                     </button>
                     <button class="btn-primary" id="proceedToSimulation">
-                        <i class="fas fa-arrow-right"></i> Continue
+                        <i class="fas fa-arrow-right"></i> Weiter
                     </button>
                 </div>
             </section>
 
             <!-- Simulation Section -->
             <section class="simulation-section" id="simulationSection" style="display: none;">
-                <h3><i class="fas fa-sliders-h"></i> Filler Volume Selection</h3>
-                <div class="volume-info">
-                    <p><small>
-                        <strong>0-1ml:</strong> Subtle hydration & definition • 
-                        <strong>1-3ml:</strong> Natural enhancement • 
-                        <strong>3-5ml:</strong> Dramatic, luxurious results
-                    </small></p>
-                </div>
+                <h3><i class="fas fa-sliders-h"></i> Filler Volumen wählen</h3>
                 
                 <div class="simulation-container">
                     <!-- Image Viewer -->
                     <div class="image-viewer">
                         <div class="viewer-header">
                             <div class="view-toggle">
-                                <button class="view-btn active" data-view="before">Before</button>
-                                <button class="view-btn" data-view="after">After</button>
-                                <button class="view-btn" data-view="split">Split View</button>
+                                <button class="view-btn active" data-view="before">Vorher</button>
+                                <button class="view-btn" data-view="after">Nachher</button>
+                                <button class="view-btn" data-view="split">Geteilte Ansicht</button>
                             </div>
                         </div>
                         <div class="image-container" id="imageContainer">
-                            <img id="beforeImage" class="result-image" alt="Before">
-                            <img id="afterImage" class="result-image" alt="After" style="display: none;">
+                            <img id="beforeImage" class="result-image" alt="Vorher">
+                            <img id="afterImage" class="result-image" alt="Nachher" style="display: none;">
                             <div id="splitView" class="split-view" style="display: none;">
-                                <div class="split-before"></div>
-                                <div class="split-after"></div>
-                                <div class="split-divider"></div>
+                                <div class="split-labels">
+                                    <span class="split-label-before">Vorher</span>
+                                    <span class="split-label-after">Nachher</span>
+                                </div>
+                                <div class="split-container">
+                                    <div class="split-before"></div>
+                                    <div class="split-after"></div>
+                                    <div class="split-divider">
+                                        <div class="split-handle">
+                                            <i class="fas fa-chevron-left"></i>
+                                            <i class="fas fa-chevron-right"></i>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -141,13 +150,8 @@
                     <!-- Controls -->
                     <div class="simulation-controls">
                         <div class="strength-control">
-                            <label for="strengthSlider">Volume: <span id="strengthValue">0.0</span> ml</label>
+                            <label for="strengthSlider">Volumen: <span id="strengthValue">0.0</span> ml</label>
                             <input type="range" id="strengthSlider" min="0" max="5" value="0" step="0.1">
-                            <div class="strength-labels">
-                                <span>0ml - Natural</span>
-                                <span>2.5ml - Moderate</span>
-                                <span>5ml - Maximum</span>
-                            </div>
                         </div>
 
                         <div class="simulation-options" style="display: none;"> // Hide old options
@@ -237,9 +241,9 @@
         <!-- Footer -->
         <footer class="footer">
             <div class="disclaimer">
-                <p><strong>Disclaimer:</strong> This is a visualization tool for educational purposes only. 
-                Results are simulated and do not guarantee actual treatment outcomes. 
-                Consult with qualified medical professionals for real aesthetic procedures.</p>
+                <p><strong>Wichtiger Hinweis:</strong> Dies ist eine Simulation eines potenziellen Behandlungsergebnisses und garantiert keinen Behandlungserfolg oder das tatsächliche Ergebnis einer Behandlung. 
+                Die Resultate sind computerbasierte Simulationen und können vom tatsächlichen Behandlungsergebnis abweichen. 
+                Bitte konsultieren Sie für eine individuelle Beratung und Behandlung immer einen qualifizierten Facharzt für Ästhetische Medizin.</p>
             </div>
             <div class="footer-links">
                 <a href="#privacy">Privacy Policy</a>
@@ -249,6 +253,6 @@
         </footer>
     </div>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=2.1"></script>
 </body>
 </html>

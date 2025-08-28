@@ -6,6 +6,7 @@ Implements endpoints for face segmentation and Gemini-powered aesthetic simulati
 import time
 import random
 import logging
+import io
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -135,7 +136,9 @@ async def _simulate_procedure(request: SimulationRequest):
 
         # --- New Gemini Call ---
         # The core of the simulation - now with mask support
-        logger.info(f"DEBUG: Calling generate_gemini_simulation with area='{request.area.value}'")
+        logger.info(f"DEBUG: Calling generate_gemini_simulation with area='{request.area.value}', volume_ml={volume_ml}")
+        logger.info(f"DEBUG: Original image size: {original_image.size}, mask size: {mask_image.size}")
+        
         result_image = await generate_gemini_simulation(
             original_image=original_image,
             volume_ml=float(volume_ml),
@@ -143,6 +146,29 @@ async def _simulate_procedure(request: SimulationRequest):
             mask_image=mask_image
         )
         logger.info(f"DEBUG: Received result image from Gemini: {result_image.size}")
+        
+        # Check if result is identical to input
+        original_bytes = io.BytesIO()
+        result_bytes = io.BytesIO()
+        original_image.save(original_bytes, format='PNG')
+        result_image.save(result_bytes, format='PNG')
+        
+        original_data = original_bytes.getvalue()
+        result_data = result_bytes.getvalue()
+        
+        identical = original_data == result_data
+        logger.info(f"DEBUG: Result image is identical to original: {identical}")
+        logger.info(f"DEBUG: Original image bytes: {len(original_data)}")
+        logger.info(f"DEBUG: Result image bytes: {len(result_data)}")
+        # logger.info(f"DEBUG: First 50 bytes original: {original_data[:50]}")
+        # logger.info(f"DEBUG: First 50 bytes result: {result_data[:50]}")
+        
+        if identical:
+            logger.warning(f"WARNING: Gemini returned identical image! Volume was {volume_ml}ml for area {request.area.value}")
+            logger.warning(f"WARNING: This indicates quota/rate limiting or API degradation")
+        else:
+            logger.info(f"SUCCESS: Gemini returned different image (expected behavior)")
+        
         # --- End of New Gemini Call ---
 
         # Convert images to base64 for the response

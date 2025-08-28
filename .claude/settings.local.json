@@ -16,7 +16,18 @@
       "Bash(cmd.exe:*)",
       "Bash(firebase --version)",
       "Bash(firebase:*)",
-      "Bash(gcloud:*)"
+      "Bash(gcloud:*)",
+      "Read(C:\\Users\\phlpp\\Downloads/**)",
+      "Read(C:\\Users\\phlpp\\Downloads/**)",
+      "Read(C:\\Users\\phlpp\\Downloads/**)",
+      "Read(C:\\Users\\phlpp\\Downloads/**)",
+      "Read(C:\\Users\\phlpp\\Downloads/**)",
+      "Read(C:\\Users\\phlpp\\Downloads/**)",
+      "Bash(copy:*)",
+      "Read(C:\\Users\\phlpp\\Downloads/**)",
+      "WebSearch",
+      "Read(C:\\Users\\phlpp\\Downloads/**)",
+      "Read(C:\\Users\\phlpp\\Downloads/**)"
     ],
     "deny": []
   }

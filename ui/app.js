@@ -29,6 +29,10 @@ class NuvaFaceApp {
         this.currentTool = 'brush';
         this.brushSize = 20;
         
+        // Split view state
+        this.isDragging = false;
+        this.splitPosition = 0.5; // 50% by default
+        
         this.init();
     }
 
@@ -86,6 +90,9 @@ class NuvaFaceApp {
 
         // Other buttons
         document.getElementById('startOver').addEventListener('click', this.startOver.bind(this));
+        
+        // Split view drag functionality
+        this.setupSplitViewDrag();
     }
 
     setupCanvases() {
@@ -147,7 +154,7 @@ class NuvaFaceApp {
         }
 
         try {
-            this.showLoading('Processing image...', 'Reading and optimizing your photo');
+            this.showLoading('Bild wird verarbeitet...', 'Ihr Foto wird gelesen und optimiert');
             
             const base64 = await this.fileToBase64(file);
             this.currentImage = base64;
@@ -216,7 +223,7 @@ class NuvaFaceApp {
         if (!this.currentImage || !this.selectedArea) return;
 
         try {
-            this.showLoading('Generating mask...', 'Analyzing facial features');
+            this.showLoading('Maske wird erstellt...', 'Gesichtsmerkmale werden analysiert');
 
             const response = await fetch(`${this.apiBaseUrl}/segment`, {
                 method: 'POST',
@@ -345,36 +352,26 @@ class NuvaFaceApp {
     
     updateVolumeRangeForArea(area) {
         const slider = document.getElementById('strengthSlider');
-        const volumeInfo = document.querySelector('.volume-info p');
-        const labels = document.querySelector('.strength-labels');
         
         switch(area) {
             case 'lips':
                 slider.max = 5;
                 slider.step = 0.1;
-                volumeInfo.innerHTML = '<small><strong>0-1ml:</strong> Subtle hydration & definition • <strong>1-3ml:</strong> Natural enhancement • <strong>3-5ml:</strong> Dramatic, luxurious results</small>';
-                labels.innerHTML = '<span>0ml - Natural</span><span>2.5ml - Moderate</span><span>5ml - Maximum</span>';
                 break;
                 
             case 'chin':
                 slider.max = 5;
                 slider.step = 0.1;
-                volumeInfo.innerHTML = '<small><strong>0-2ml:</strong> Subtle projection • <strong>2-4ml:</strong> Moderate augmentation • <strong>4-5ml:</strong> Strong, confident profile</small>';
-                labels.innerHTML = '<span>0ml - Natural</span><span>2.5ml - Enhanced</span><span>5ml - Strong</span>';
                 break;
                 
             case 'cheeks':
                 slider.max = 4;
                 slider.step = 0.1;
-                volumeInfo.innerHTML = '<small><strong>0-1ml:</strong> Natural freshness • <strong>1-2.5ml:</strong> Attractive contour • <strong>2.5-4ml:</strong> Model-like cheekbones</small>';
-                labels.innerHTML = '<span>0ml - Natural</span><span>2ml - Contoured</span><span>4ml - Sculpted</span>';
                 break;
                 
             case 'forehead':
                 slider.max = 1.5;
                 slider.step = 0.1;
-                volumeInfo.innerHTML = '<small><strong>0-0.5ml:</strong> Subtle smoothing • <strong>0.5-1ml:</strong> Clear reduction • <strong>1-1.5ml:</strong> Maximum smoothness (≈33 Units)</small>';
-                labels.innerHTML = '<span>0ml - Natural</span><span>0.7ml - Smooth</span><span>1.5ml - Maximum</span>';
                 break;
                 
             default:
@@ -408,7 +405,7 @@ class NuvaFaceApp {
                 return;
             }
 
-            this.showLoading('Generating simulation...', `Calling Gemini API for ${volumeMl}ml simulation.`);
+            this.showLoading('Ihre Simulation wird generiert bitte warten', `${volumeMl}ml Behandlungssimulation wird erstellt.`);
 
             const endpoint = this.selectedProcedure === 'filler' ? '/simulate/filler' : '/simulate/botox';
             
@@ -420,13 +417,59 @@ class NuvaFaceApp {
                 mask: this.currentMask // Mask is sent for UX display purposes
             };
 
+            console.log('🔍 DEBUG: API Request Details:');
+            console.log('🔍 DEBUG: Endpoint:', `${this.apiBaseUrl}${endpoint}`);
+            console.log('🔍 DEBUG: Request Body:', {
+                area: requestBody.area,
+                strength: requestBody.strength,
+                imageLength: requestBody.image ? requestBody.image.length : 0,
+                maskLength: requestBody.mask ? requestBody.mask.length : 0
+            });
+
             const response = await fetch(`${this.apiBaseUrl}${endpoint}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(requestBody)
             });
+            
+            console.log('🔍 DEBUG: Response status:', response.status);
+            console.log('🔍 DEBUG: Response headers:', response.headers);
 
             const result = await response.json();
+            
+            console.log('🔍 DEBUG: API Response:', {
+                ok: response.ok,
+                resultKeys: Object.keys(result),
+                originalPngLength: result.original_png ? result.original_png.length : 0,
+                resultPngLength: result.result_png ? result.result_png.length : 0,
+                qc: result.qc,
+                warnings: result.warnings
+            });
+            
+            // Check if result and original are identical
+            if (result.original_png && result.result_png) {
+                const identical = result.original_png === result.result_png;
+                console.log('🔍 DEBUG: Images are identical:', identical);
+                
+                // Additional detailed comparison
+                const originalFirst50 = result.original_png.substring(0, 50);
+                const resultFirst50 = result.result_png.substring(0, 50);
+                console.log('🔍 DEBUG: Original first 50 chars:', originalFirst50);
+                console.log('🔍 DEBUG: Result first 50 chars:', resultFirst50);
+                console.log('🔍 DEBUG: First 50 chars identical:', originalFirst50 === resultFirst50);
+                
+                if (identical) {
+                    console.log('⚠️ WARNING: API returned identical before/after images!');
+                    console.log('⚠️ Full original length:', result.original_png.length);
+                    console.log('⚠️ Full result length:', result.result_png.length);
+                    
+                    // Show user-friendly error message
+                    this.showError('⚠️ API-Problem erkannt: Gemini Image API ist derzeit gestört (Google Outage). Bitte versuchen Sie es in 10-15 Minuten erneut. Dies ist ein bekanntes Problem bei Google.');
+                    return; // Don't display identical images
+                } else {
+                    console.log('✅ Images are different (good!), but check visually if they look the same');
+                }
+            }
             
             if (!response.ok) {
                 throw new Error(result.detail || 'Simulation failed');
@@ -450,8 +493,7 @@ class NuvaFaceApp {
         beforeImg.src = `data:image/png;base64,${result.original_png}`;
         afterImg.src = `data:image/png;base64,${result.result_png}`;
 
-        // Show quality metrics
-        this.displayQualityMetrics(result.qc, result.warnings);
+        // Quality metrics removed per user request
 
         // Show download button
         document.getElementById('downloadButton').style.display = 'inline-flex';
@@ -520,9 +562,107 @@ class NuvaFaceApp {
                 afterImg.style.display = 'block';
                 break;
             case 'split':
+                console.log('🔍 DEBUG: Switching to split view');
+                console.log('🔍 DEBUG: splitView element:', splitView);
+                console.log('🔍 DEBUG: this.lastResult:', this.lastResult);
+                console.log('🔍 DEBUG: this.currentImage exists:', !!this.currentImage);
+                
                 splitView.style.display = 'block';
-                this.setupSplitView();
+                
+                // Initialize split view even if no result yet
+                if (this.lastResult) {
+                    console.log('🔍 DEBUG: Setting up split view with results');
+                    this.setupSplitView();
+                } else {
+                    console.log('🔍 DEBUG: No results yet, showing current image on both sides');
+                    // Show current image on both sides if no result yet
+                    const splitBefore = document.querySelector('.split-before');
+                    const splitAfter = document.querySelector('.split-after');
+                    
+                    console.log('🔍 DEBUG: splitBefore element:', splitBefore);
+                    console.log('🔍 DEBUG: splitAfter element:', splitAfter);
+                    
+                    if (this.currentImage && splitBefore && splitAfter) {
+                        const imgSrc = `url(data:image/jpeg;base64,${this.currentImage})`;
+                        console.log('🔍 DEBUG: Setting background image:', imgSrc.substring(0, 50) + '...');
+                        
+                        splitBefore.style.backgroundImage = imgSrc;
+                        splitAfter.style.backgroundImage = imgSrc;
+                        this.updateSplitView();
+                        
+                        console.log('🔍 DEBUG: Split view setup complete');
+                        console.log('🔍 DEBUG: splitBefore computed style:', window.getComputedStyle(splitBefore));
+                    } else {
+                        console.log('🔍 DEBUG: Missing elements or currentImage');
+                        console.log('🔍 DEBUG: currentImage:', !!this.currentImage);
+                        console.log('🔍 DEBUG: splitBefore:', !!splitBefore);
+                        console.log('🔍 DEBUG: splitAfter:', !!splitAfter);
+                    }
+                }
                 break;
+        }
+    }
+
+    setupSplitViewDrag() {
+        const splitView = document.getElementById('splitView');
+        if (!splitView) return;
+        
+        splitView.addEventListener('mousedown', this.startSplitDrag.bind(this));
+        document.addEventListener('mousemove', this.handleSplitDrag.bind(this));
+        document.addEventListener('mouseup', this.endSplitDrag.bind(this));
+        
+        // Touch events for mobile
+        splitView.addEventListener('touchstart', this.startSplitDrag.bind(this));
+        document.addEventListener('touchmove', this.handleSplitDrag.bind(this));
+        document.addEventListener('touchend', this.endSplitDrag.bind(this));
+    }
+    
+    startSplitDrag(e) {
+        e.preventDefault();
+        this.isDragging = true;
+        document.body.style.cursor = 'col-resize';
+    }
+    
+    handleSplitDrag(e) {
+        if (!this.isDragging) return;
+        
+        const splitView = document.getElementById('splitView');
+        if (!splitView) return;
+        
+        const rect = splitView.getBoundingClientRect();
+        const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+        const position = (clientX - rect.left) / rect.width;
+        
+        // Clamp position between 0.1 and 0.9
+        this.splitPosition = Math.max(0.1, Math.min(0.9, position));
+        this.updateSplitView();
+    }
+    
+    endSplitDrag() {
+        this.isDragging = false;
+        document.body.style.cursor = '';
+    }
+    
+    updateSplitView() {
+        console.log('🔍 DEBUG: updateSplitView called, splitPosition:', this.splitPosition);
+        
+        const splitAfter = document.querySelector('.split-after');
+        const splitDivider = document.querySelector('.split-divider');
+        
+        console.log('🔍 DEBUG: splitAfter element:', splitAfter);
+        console.log('🔍 DEBUG: splitDivider element:', splitDivider);
+        
+        if (splitAfter && splitDivider) {
+            const percentage = this.splitPosition * 100;
+            console.log('🔍 DEBUG: Setting clip-path to percentage:', percentage);
+            
+            splitAfter.style.clipPath = `polygon(${percentage}% 0%, 100% 0%, 100% 100%, ${percentage}% 100%)`;
+            splitDivider.style.left = `${percentage}%`;
+            
+            console.log('🔍 DEBUG: Applied styles - clipPath:', splitAfter.style.clipPath);
+            console.log('🔍 DEBUG: Applied styles - left:', splitDivider.style.left);
+        } else {
+            console.log('🔍 DEBUG: Missing splitAfter or splitDivider elements');
         }
     }
 
@@ -532,8 +672,11 @@ class NuvaFaceApp {
         const splitBefore = document.querySelector('.split-before');
         const splitAfter = document.querySelector('.split-after');
 
-        splitBefore.style.backgroundImage = `url(data:image/png;base64,${this.lastResult.original_png})`;
-        splitAfter.style.backgroundImage = `url(data:image/png;base64,${this.lastResult.result_png})`;
+        if (splitBefore && splitAfter) {
+            splitBefore.style.backgroundImage = `url(data:image/png;base64,${this.lastResult.original_png})`;
+            splitAfter.style.backgroundImage = `url(data:image/png;base64,${this.lastResult.result_png})`;
+            this.updateSplitView();
+        }
     }
 
     downloadResult() {
@@ -558,6 +701,25 @@ class NuvaFaceApp {
         // Initialize section-specific functionality
         if (sectionId === 'maskEditor' && this.currentImage) {
             setTimeout(() => this.displayMaskOnCanvas(), 100);
+        }
+        
+        // Show "Before" image by default when entering simulation section
+        if (sectionId === 'simulationSection') {
+            setTimeout(() => {
+                // Reset to "Before" view
+                document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector('.view-btn[data-view="before"]').classList.add('active');
+                
+                // Show only before image
+                document.getElementById('beforeImage').style.display = 'block';
+                document.getElementById('afterImage').style.display = 'none';
+                document.getElementById('splitView').style.display = 'none';
+                
+                // Set before image source only if no result exists yet
+                if (this.currentImage && !this.lastResult) {
+                    document.getElementById('beforeImage').src = `data:image/jpeg;base64,${this.currentImage}`;
+                }
+            }, 100);
         }
     }
 

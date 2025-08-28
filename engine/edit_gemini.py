@@ -61,23 +61,23 @@ async def generate_gemini_simulation(
     mask_path = TEMP_INPUT_DIR / f"{session_id}_mask.png"
     output_path = TEMP_OUTPUT_DIR / f"{session_id}_output.png"
     
-    logger.info(f"🔍 DEBUG: Session ID: {session_id}")
-    logger.info(f"🔍 DEBUG: Area parameter: '{area}'")
-    logger.info(f"🔍 DEBUG: Volume: {volume_ml}ml")
+    logger.info(f"DEBUG: Session ID: {session_id}")
+    logger.info(f"DEBUG: Area parameter: '{area}'")
+    logger.info(f"DEBUG: Volume: {volume_ml}ml")
     
     # Save original image
     original_image.save(input_path, "PNG")
-    logger.info(f"🔍 DEBUG: Saved input image to: {input_path}")
+    logger.info(f"DEBUG: Saved input image to: {input_path}")
     
     # Save mask if provided
     mask_arg = ""
     if mask_image is not None:
         mask_image.save(mask_path, "PNG")
         mask_arg = f"--mask {mask_path}"
-        logger.info(f"🔍 DEBUG: Saved mask image to: {mask_path}")
-        logger.info(f"🔍 DEBUG: Mask image mode: {mask_image.mode}, size: {mask_image.size}")
+        logger.info(f"DEBUG: Saved mask image to: {mask_path}")
+        logger.info(f"DEBUG: Mask image mode: {mask_image.mode}, size: {mask_image.size}")
     else:
-        logger.info(f"🔍 DEBUG: No mask image provided!")
+        logger.info(f"DEBUG: No mask image provided!")
 
     try:
         command = [
@@ -92,9 +92,9 @@ async def generate_gemini_simulation(
         # Add mask if provided
         if mask_image is not None:
             command.extend(["--mask", str(mask_path)])
-            logger.info(f"🔍 DEBUG: Added mask argument to command")
+            logger.info(f"DEBUG: Added mask argument to command")
         
-        logger.info(f"🔍 DEBUG: Executing Gemini worker command: {' '.join(command)}")
+        logger.info(f"DEBUG: Executing Gemini worker command: {' '.join(command)}")
         
         process = subprocess.run(
             command,

@@ -6,11 +6,20 @@ dependency conflicts between mediapipe and google-generativeai.
 """
 import os
 import sys
+import time
 import argparse
 from pathlib import Path
 from PIL import Image
 from dotenv import load_dotenv
 from io import BytesIO
+
+# Force UTF-8 encoding for Windows
+if sys.platform.startswith('win'):
+    import codecs
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='ignore')
+    if hasattr(sys.stderr, 'reconfigure'):
+        sys.stderr.reconfigure(encoding='utf-8', errors='ignore')
 
 # Using the new google-genai package for Gemini 2.5 Flash Image
 try:
@@ -39,7 +48,8 @@ TECHNICAL REQUIREMENTS:
 - Preserve all facial features except lips
 - Maintain original lighting and skin texture
 - No glossy or artificial appearance
-- Keep lip color natural and unchanged"""
+- CRITICAL: Preserve the exact original lip color - no color changes, no darkening, no reddening
+- Keep lip color completely natural and unchanged"""
 
     elif volume_ml <= 1.5:
         return """Perform a conservative lip enhancement using {volume_ml}ml hyaluronic acid filler.
@@ -56,7 +66,9 @@ TECHNICAL REQUIREMENTS:
 - Preserve all facial features except lips
 - Maintain original lighting and skin texture
 - Create balanced, proportional enhancement
-- No artificial shine or unrealistic texture"""
+- No artificial shine or unrealistic texture
+- CRITICAL: Preserve the exact original lip color - no color changes, no darkening, no reddening
+- CRITICAL: Preserve the exact original lip color - no color changes, no darkening, no reddening"""
 
     elif volume_ml <= 2.5:
         return """Perform a moderate lip enhancement using {volume_ml}ml hyaluronic acid filler.
@@ -450,10 +462,67 @@ A second image (mask) is provided showing EXACTLY which area to edit:
         print(f"DEBUG: About to send request to Gemini 2.5 Flash Image API...")
         print(f"Worker: Sending request to Gemini 2.5 Flash Image API with {volume_ml}ml...")
         
-        resp = client.models.generate_content(
-            model="gemini-2.5-flash-image-preview",
-            contents=contents,  # Text + Image + optional Mask as input
-        )
+        # Model fallback hierarchy (best to fallback)
+        model_hierarchy = [
+            "gemini-2.5-flash-image-preview",  # Primary: Best image generation
+            "gemini-2.0-flash",                # Fallback 1: Native image generation
+            "gemini-1.5-pro",                  # Fallback 2: Pro multimodal 
+            "gemini-1.5-flash"                 # Fallback 3: Fast multimodal
+        ]
+        
+        resp = None
+        used_model = None
+        
+        for model_name in model_hierarchy:
+            try:
+                print(f"🤖 Trying model: {model_name}")
+                
+                resp = client.models.generate_content(
+                    model=model_name,
+                    contents=contents,  # Text + Image + optional Mask as input
+                )
+                
+                used_model = model_name
+                print(f"SUCCESS: Using model {model_name}")
+                break
+                
+            except Exception as model_error:
+                error_str = str(model_error).lower()
+                
+                if 'quota' in error_str or 'rate' in error_str or '429' in error_str or 'resource_exhausted' in error_str:
+                    print(f"ERROR QUOTA/RATE LIMIT: {model_name} - {model_error}")
+                    print(f"GEMINI {model_name} nicht verfügbar, weiter mit nächstem Modell...")
+                    continue
+                elif 'not found' in error_str or 'invalid' in error_str:
+                    print(f"ERROR MODEL NOT FOUND: {model_name} - {model_error}")
+                    print(f"GEMINI {model_name} nicht verfügbar, weiter mit nächstem Modell...")
+                    continue
+                else:
+                    print(f"ERROR UNKNOWN: {model_name} - {model_error}")
+                    print(f"GEMINI {model_name} nicht verfügbar, weiter mit nächstem Modell...")
+                    continue
+        
+        if resp is None:
+            print("💥 CRITICAL: Alle Gemini Image Models sind nicht verfügbar!")
+            raise Exception("All Gemini image models are unavailable. Please check your API quota and billing status.")
+        
+        # Log response metadata for quota debugging
+        print(f"DEBUG: API Response received successfully with model: {used_model}")
+        if hasattr(resp, '_response') and hasattr(resp._response, 'headers'):
+            headers = resp._response.headers
+            print(f"DEBUG: Response headers: {dict(headers)}")
+            
+            # Check for quota-related headers
+            quota_headers = ['x-goog-quota-remaining', 'x-ratelimit-remaining', 'retry-after']
+            for header in quota_headers:
+                if header in headers:
+                    print(f"DEBUG: Quota header {header}: {headers[header]}")
+        
+        # Check response status
+        if hasattr(resp, 'candidates') and resp.candidates:
+            print(f"DEBUG: Response has {len(resp.candidates)} candidates")
+        else:
+            print("WARNING: Response has no candidates - possible quota/rate limit issue")
         
         # --- Extract image from response (ignore text) ---
         image_found = False
@@ -484,6 +553,39 @@ A second image (mask) is provided showing EXACTLY which area to edit:
         
         if not image_found:
             raise RuntimeError(f"Gemini 2.5 Flash Image API did not return an image in the response.")
+        
+        # --- Debug: Compare result with original ---
+        print(f"WORKER DEBUG: Starting image comparison...")
+        
+        # Save both images to compare
+        original_path = Path(args.output).parent / f"debug_original_{int(time.time())}.png"
+        result_path = Path(args.output)
+        
+        original_image.save(original_path)
+        result_image.save(result_path)
+        
+        # Compare byte-level
+        with open(original_path, 'rb') as f:
+            original_data = f.read()
+        with open(result_path, 'rb') as f:
+            result_data = f.read()
+            
+        identical = original_data == result_data
+        
+        print(f"WORKER DEBUG: Images are identical: {identical}")
+        print(f"WORKER DEBUG: Original size: {len(original_data)} bytes")
+        print(f"WORKER DEBUG: Result size: {len(result_data)} bytes")
+        print(f"WORKER DEBUG: Used model: {used_model}")
+        print(f"WORKER DEBUG: Volume: {volume_ml}ml, Area: {area}")
+        
+        if identical:
+            print(f"WORKER WARNING: Gemini returned identical image! API degradation detected.")
+        else:
+            print(f"WORKER SUCCESS: Gemini returned different image as expected!")
+        
+        # Clean up debug file
+        if original_path.exists():
+            original_path.unlink()
             
     except Exception as e:
         # Print error to stderr so the main process can capture it
