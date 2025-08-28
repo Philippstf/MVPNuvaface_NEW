@@ -317,12 +317,12 @@ def create_gemini_client():
         print("Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.")
     
     # Add HTTP timeout based on latest Aug 26 docs: SDK has 60s hard limit, 30s is optimal
-    # Use stable v1 API instead of beta for better reliability
+    # Gemini 2.5 Flash Image requires v1alpha (not v1 stable yet)
     return genai.Client(
         api_key=api_key,
         http_options=types.HttpOptions(
             timeout=30_000,  # 30 seconds - optimal based on Aug 26 docs
-            api_version='v1'  # Use stable API instead of beta
+            api_version='v1alpha'  # Gemini 2.5 Flash Image only available in v1alpha
         )
     )
 
