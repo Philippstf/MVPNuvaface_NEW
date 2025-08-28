@@ -136,7 +136,26 @@ async def generate_gemini_simulation(
 
     except subprocess.CalledProcessError as e:
         logger.error(f"Gemini worker script failed with code {e.returncode}:\n{e.stderr}")
-        raise RuntimeError(f"Gemini Worker Error: {e.stderr}")
+        
+        # Check for specific error types
+        stderr_content = e.stderr or ""
+        stdout_content = process.stdout if 'process' in locals() else ""
+        
+        # Check for regional restrictions first
+        if "Regional restriction" in stderr_content or "SOLUTION: Please use a VPN" in stderr_content:
+            raise RuntimeError("REGIONAL_RESTRICTION: Image generation is not available in your region. Please use a VPN or deploy to a supported region (US, Canada, etc.)")
+        
+        # Check for server overload
+        elif "SERVER_OVERLOAD_MESSAGE:" in stderr_content or "SERVER_OVERLOAD_MESSAGE:" in stdout_content:
+            # Extract the actual message after the marker
+            if "SERVER_OVERLOAD_MESSAGE:" in stderr_content:
+                message_start = stderr_content.find("SERVER_OVERLOAD_MESSAGE:") + len("SERVER_OVERLOAD_MESSAGE:")
+                message_line = stderr_content[message_start:].split('\n')[0].strip()
+                raise RuntimeError(f"SERVER_OVERLOAD: {message_line}")
+            else:
+                raise RuntimeError("SERVER_OVERLOAD: Entschuldigung! :( Die Server sind aktuell überlastet, Ergebnisse können schlechter ausfallen als sonst")
+        else:
+            raise RuntimeError(f"Gemini Worker Error: {e.stderr}")
     except Exception as e:
         logger.error(f"Error in generate_gemini_simulation: {e}")
         raise

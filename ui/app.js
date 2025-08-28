@@ -154,10 +154,11 @@ class NuvaFaceApp {
         }
 
         try {
-            this.showLoading('Bild wird verarbeitet...', 'Ihr Foto wird gelesen und optimiert');
+            this.showLoading('Bild wird verarbeitet...', 'Ihr Foto wird gelesen und in quadratisches Format gebracht');
             
-            const base64 = await this.fileToBase64(file);
-            this.currentImage = base64;
+            // Load and crop image to square format
+            const croppedBase64 = await this.cropImageToSquare(file);
+            this.currentImage = croppedBase64;
             
             // Show preview
             const img = new Image();
@@ -165,12 +166,50 @@ class NuvaFaceApp {
                 this.hideLoading();
                 this.showSection('areaSelection');
             };
-            img.src = `data:image/${file.type.split('/')[1]};base64,${base64}`;
+            img.src = `data:image/jpeg;base64,${croppedBase64}`;
             
         } catch (error) {
             this.hideLoading();
             this.showError('Failed to process image: ' + error.message);
         }
+    }
+
+    cropImageToSquare(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    // Create canvas for cropping
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Calculate square dimensions (use minimum dimension)
+                    const minDimension = Math.min(img.width, img.height);
+                    canvas.width = minDimension;
+                    canvas.height = minDimension;
+                    
+                    // Calculate crop position (center crop)
+                    const cropX = (img.width - minDimension) / 2;
+                    const cropY = (img.height - minDimension) / 2;
+                    
+                    // Draw cropped image
+                    ctx.drawImage(
+                        img,
+                        cropX, cropY, minDimension, minDimension,  // Source
+                        0, 0, minDimension, minDimension          // Destination
+                    );
+                    
+                    // Convert to base64 (JPEG format for consistency)
+                    const base64 = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
+                    resolve(base64);
+                };
+                img.onerror = reject;
+                img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
     }
 
     fileToBase64(file) {

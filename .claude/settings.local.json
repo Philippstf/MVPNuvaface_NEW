@@ -27,7 +27,9 @@
       "Read(C:\\Users\\phlpp\\Downloads/**)",
       "WebSearch",
       "Read(C:\\Users\\phlpp\\Downloads/**)",
-      "Read(C:\\Users\\phlpp\\Downloads/**)"
+      "Read(C:\\Users\\phlpp\\Downloads/**)",
+      "Read(C:\\Users\\phlpp\\Downloads/**)",
+      "Bash(.deploy-cloudrun.bat)"
     ],
     "deny": []
   }

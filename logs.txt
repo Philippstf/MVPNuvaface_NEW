@@ -1,0 +1,227 @@
+(nuvaface_env) PS C:\Users\phlpp\Downloads\NuvaFace_MVPneu> uvicorn api.main:app --host 0.0.0.0 --port 8000
+INFO:     Started server process [21448]
+INFO:     Waiting for application startup.
+INFO:api.main:Starting NuvaFace API with Gemini Engine...
+INFO:api.main:Local device for segmentation: cpu
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:52641 - "GET /ui/index.html HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:52641 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:52641 - "GET /health HTTP/1.1" 200 OK
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+W0000 00:00:1756384684.903699   22500 inference_feedback_manager.cc:114] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+W0000 00:00:1756384684.921389   25884 inference_feedback_manager.cc:114] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+W0000 00:00:1756384684.927055   15300 landmark_projection_calculator.cc:186] Using NORM_RECT without IMAGE_DIMENSIONS is only supported for the square ROI. Provide IMAGE_DIMENSIONS or use PROJECTION_MATRIX.
+INFO:     127.0.0.1:59335 - "POST /segment HTTP/1.1" 200 OK
+INFO:api.main:DEBUG: Received simulation request for AreaType.LIPS with 4.0ml
+INFO:api.main:DEBUG: Request area value: lips
+INFO:api.main:DEBUG: Loaded original image: (2062, 2062)
+W0000 00:00:1756384689.954360   28176 inference_feedback_manager.cc:114] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+INFO:api.main:DEBUG: Processed image size: (768, 768)
+INFO:api.main:DEBUG: Generated mask for area 'AreaType.LIPS', mask size: (768, 768)
+INFO:api.main:DEBUG: Segment metadata: {'area': <AreaType.LIPS: 'lips'>, 'landmarks_count': 478, 'mask_coverage': 0.04278564453125, 'bbox': {'x': 231, 'y': 546, 'width': 267, 'height': 121}, 'feather_px': 3, 'confidence': 1.0}
+INFO:api.main:DEBUG: Calling generate_gemini_simulation with area='lips', volume_ml=4.0
+INFO:api.main:DEBUG: Original image size: (2062, 2062), mask size: (768, 768)
+INFO:engine.edit_gemini:DEBUG: Session ID: dfc6b21a-d679-442c-8c1a-0cb1b7b9a77b
+INFO:engine.edit_gemini:DEBUG: Area parameter: 'lips'
+INFO:engine.edit_gemini:DEBUG: Volume: 4.0ml
+INFO:engine.edit_gemini:DEBUG: Saved input image to: C:\Users\phlpp\Downloads\NuvaFace_MVPneu\temp_inputs\dfc6b21a-d679-442c-8c1a-0cb1b7b9a77b_input.png
+INFO:engine.edit_gemini:DEBUG: Saved mask image to: C:\Users\phlpp\Downloads\NuvaFace_MVPneu\temp_inputs\dfc6b21a-d679-442c-8c1a-0cb1b7b9a77b_mask.png
+INFO:engine.edit_gemini:DEBUG: Mask image mode: L, size: (768, 768)
+INFO:engine.edit_gemini:DEBUG: Added mask argument to command
+INFO:engine.edit_gemini:DEBUG: Executing Gemini worker command: C:\Users\phlpp\Downloads\NuvaFace_MVPneu\nuvaface_env\Scripts\python.exe C:\Users\phlpp\Downloads\NuvaFace_MVPneu\gemini_worker.py --input C:\Users\phlpp\Downloads\NuvaFace_MVPneu\temp_inputs\dfc6b21a-d679-442c-8c1a-0cb1b7b9a77b_input.png --output C:\Users\phlpp\Downloads\NuvaFace_MVPneu\temp_outputs\dfc6b21a-d679-442c-8c1a-0cb1b7b9a77b_output.png --volume 4.0 --area lips --mask C:\Users\phlpp\Downloads\NuvaFace_MVPneu\temp_inputs\dfc6b21a-d679-442c-8c1a-0cb1b7b9a77b_mask.png
+ERROR:engine.edit_gemini:Gemini worker script failed with code 1:
+Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+ERROR: All Gemini models failed: All Gemini models failed. Last error: 31 validation errors for _GenerateContentParameters
+contents.Content
+  Input should be a valid dictionary or object to extract fields from [type=model_attributes_type, input_value=["Perform dramatic lip en...x00\x00IEND\xaeB`\x82'}], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_attributes_type
+contents.str
+  Input should be a valid string [type=string_type, input_value=["Perform dramatic lip en...x00\x00IEND\xaeB`\x82'}], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+contents.is-instance[Image]
+  Input should be an instance of Image [type=is_instance_of, input_value=["Perform dramatic lip en...x00\x00IEND\xaeB`\x82'}], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.11/v/is_instance_of
+contents.File
+  Input should be a valid dictionary or object to extract fields from [type=model_attributes_type, input_value=["Perform dramatic lip en...x00\x00IEND\xaeB`\x82'}], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_attributes_type
+contents.Part
+  Input should be a valid dictionary or object to extract fields from [type=model_attributes_type, input_value=["Perform dramatic lip en...x00\x00IEND\xaeB`\x82'}], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_attributes_type
+contents.list[union[str,is-instance[Image],File,Part]].1.str
+  Input should be a valid string [type=string_type, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+contents.list[union[str,is-instance[Image],File,Part]].1.is-instance[Image]
+  Input should be an instance of Image [type=is_instance_of, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/is_instance_of
+contents.list[union[str,is-instance[Image],File,Part]].1.File.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[str,is-instance[Image],File,Part]].1.Part.mime_type
+  Extra inputs are not permitted [type=extra_forbidden, input_value='image/png', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[str,is-instance[Image],File,Part]].1.Part.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[str,is-instance[Image],File,Part]].2.str
+  Input should be a valid string [type=string_type, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+contents.list[union[str,is-instance[Image],File,Part]].2.is-instance[Image]
+  Input should be an instance of Image [type=is_instance_of, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/is_instance_of
+contents.list[union[str,is-instance[Image],File,Part]].2.File.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[str,is-instance[Image],File,Part]].2.Part.mime_type
+  Extra inputs are not permitted [type=extra_forbidden, input_value='image/png', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[str,is-instance[Image],File,Part]].2.Part.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].1.Content.mime_type
+  Extra inputs are not permitted [type=extra_forbidden, input_value='image/png', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].1.Content.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].1.str
+  Input should be a valid string [type=string_type, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].1.is-instance[Image]
+  Input should be an instance of Image [type=is_instance_of, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/is_instance_of
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].1.File.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].1.Part.mime_type
+  Extra inputs are not permitted [type=extra_forbidden, input_value='image/png', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].1.Part.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].1.list[union[str,is-instance[Image],File,Part]]
+  Input should be a valid list [type=list_type, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].2.Content.mime_type
+  Extra inputs are not permitted [type=extra_forbidden, input_value='image/png', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].2.Content.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].2.str
+  Input should be a valid string [type=string_type, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].2.is-instance[Image]
+  Input should be an instance of Image [type=is_instance_of, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/is_instance_of
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].2.File.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].2.Part.mime_type
+  Extra inputs are not permitted [type=extra_forbidden, input_value='image/png', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].2.Part.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].2.list[union[str,is-instance[Image],File,Part]]
+  Input should be a valid list [type=list_type, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+SERVER_OVERLOAD_MESSAGE: Entschuldigung! :( Die Server sind aktuell überlastet, Ergebnisse können schlechter ausfallen als sonst
+Gemini Worker Error: All Gemini models failed or returned corrupt data: All Gemini models failed. Last error: 31 validation errors for _GenerateContentParameters
+contents.Content
+  Input should be a valid dictionary or object to extract fields from [type=model_attributes_type, input_value=["Perform dramatic lip en...x00\x00IEND\xaeB`\x82'}], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_attributes_type
+contents.str
+  Input should be a valid string [type=string_type, input_value=["Perform dramatic lip en...x00\x00IEND\xaeB`\x82'}], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+contents.is-instance[Image]
+  Input should be an instance of Image [type=is_instance_of, input_value=["Perform dramatic lip en...x00\x00IEND\xaeB`\x82'}], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.11/v/is_instance_of
+contents.File
+  Input should be a valid dictionary or object to extract fields from [type=model_attributes_type, input_value=["Perform dramatic lip en...x00\x00IEND\xaeB`\x82'}], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_attributes_type
+contents.Part
+  Input should be a valid dictionary or object to extract fields from [type=model_attributes_type, input_value=["Perform dramatic lip en...x00\x00IEND\xaeB`\x82'}], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_attributes_type
+contents.list[union[str,is-instance[Image],File,Part]].1.str
+  Input should be a valid string [type=string_type, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+contents.list[union[str,is-instance[Image],File,Part]].1.is-instance[Image]
+  Input should be an instance of Image [type=is_instance_of, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/is_instance_of
+contents.list[union[str,is-instance[Image],File,Part]].1.File.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[str,is-instance[Image],File,Part]].1.Part.mime_type
+  Extra inputs are not permitted [type=extra_forbidden, input_value='image/png', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[str,is-instance[Image],File,Part]].1.Part.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[str,is-instance[Image],File,Part]].2.str
+  Input should be a valid string [type=string_type, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+contents.list[union[str,is-instance[Image],File,Part]].2.is-instance[Image]
+  Input should be an instance of Image [type=is_instance_of, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/is_instance_of
+contents.list[union[str,is-instance[Image],File,Part]].2.File.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[str,is-instance[Image],File,Part]].2.Part.mime_type
+  Extra inputs are not permitted [type=extra_forbidden, input_value='image/png', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[str,is-instance[Image],File,Part]].2.Part.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].1.Content.mime_type
+  Extra inputs are not permitted [type=extra_forbidden, input_value='image/png', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].1.Content.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].1.str
+  Input should be a valid string [type=string_type, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].1.is-instance[Image]
+  Input should be an instance of Image [type=is_instance_of, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/is_instance_of
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].1.File.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].1.Part.mime_type
+  Extra inputs are not permitted [type=extra_forbidden, input_value='image/png', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].1.Part.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].1.list[union[str,is-instance[Image],File,Part]]
+  Input should be a valid list [type=list_type, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].2.Content.mime_type
+  Extra inputs are not permitted [type=extra_forbidden, input_value='image/png', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].2.Content.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].2.str
+  Input should be a valid string [type=string_type, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].2.is-instance[Image]
+  Input should be an instance of Image [type=is_instance_of, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/is_instance_of
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].2.File.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].2.Part.mime_type
+  Extra inputs are not permitted [type=extra_forbidden, input_value='image/png', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].2.Part.data
+  Extra inputs are not permitted [type=extra_forbidden, input_value=b'\x89PNG\r\n\x1a\n\x00\x...0\x00\x00IEND\xaeB`\x82', input_type=bytes]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+contents.list[union[Content,str,is-instance[Image],File,Part,list[union[str,is-instance[Image],File,Part]]]].2.list[union[str,is-instance[Image],File,Part]]
+  Input should be a valid list [type=list_type, input_value={'mime_type': 'image/png'...\x00\x00IEND\xaeB`\x82'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/list_type
+
+ERROR:api.main:Gemini simulation error: SERVER_OVERLOAD: Entschuldigung! :( Die Server sind aktuell überlastet, Ergebnisse können schlechter ausfallen als sonst
+INFO:     127.0.0.1:59335 - "POST /simulate/filler HTTP/1.1" 500 Internal Server Error

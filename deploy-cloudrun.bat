@@ -4,7 +4,7 @@ echo Deploying NuvaFace API to Google Cloud Run...
 REM Set your Google Cloud project ID
 set PROJECT_ID=nuvafacemvp
 set SERVICE_NAME=nuvaface-api
-set REGION=europe-west1
+set REGION=us-central1
 
 echo.
 echo Project: %PROJECT_ID%

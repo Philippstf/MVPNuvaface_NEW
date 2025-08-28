@@ -24,12 +24,10 @@ if sys.platform.startswith('win'):
 # Using the new google-genai package for Gemini 2.5 Flash Image
 try:
     from google import genai
-    from google.genai import types
     print("Using google-genai SDK")
 except ImportError:
     print("Error: google-genai package not found. Please install it with: pip install google-genai", file=sys.stderr)
     sys.exit(1)
-
 
 # --- Precise Volume-Based Prompt System for Consistent Results ---
 def get_prompt_for_lips(volume_ml: float) -> str:
@@ -318,7 +316,6 @@ def create_gemini_client():
     
     return genai.Client(api_key=api_key)
 
-
 def generate_with_fallback(client, prompt, image_data, mask_data=None):
     """Try multiple Gemini models with fallback logic"""
     last_error = None
@@ -326,75 +323,34 @@ def generate_with_fallback(client, prompt, image_data, mask_data=None):
     for model_name in GEMINI_MODELS:
         try:
             print(f"Trying model: {model_name}")
-            print(f"DEBUG: Image data type: {type(image_data)}")
-            print(f"DEBUG: Mask provided: {mask_data is not None}")
-            if mask_data:
-                print(f"DEBUG: Mask data type: {type(mask_data)}")
-            print(f"DEBUG: Prompt length: {len(prompt)} chars")
             
-            # Prepare the content for new google-genai SDK using correct format
-            print(f"DEBUG: Calling Gemini API...")
-            
-            # Create the content parts list
-            contents = [prompt, image_data]
+            # Prepare the request parts
+            parts = [prompt, image_data]
             if mask_data:
-                contents.append(mask_data)
+                parts.append(mask_data)
             
             response = client.models.generate_content(
                 model=model_name,
-                contents=contents,
+                contents=[{
+                    "parts": parts
+                }],
                 config={
                     "temperature": 0.1,
                     "top_p": 0.8,
                     "max_output_tokens": 8192,
-                    "response_modalities": ["TEXT", "IMAGE"]  # Explicitly request images!
                 }
             )
             
-            print(f"DEBUG: Got response from {model_name}")
-            
             if response and response.candidates and len(response.candidates) > 0:
-                print(f"DEBUG: Response has {len(response.candidates)} candidates")
                 candidate = response.candidates[0]
-                print(f"DEBUG: Candidate has content: {candidate.content is not None}")
                 if candidate.content and candidate.content.parts:
-                    print(f"DEBUG: Content has {len(candidate.content.parts)} parts")
-                    for i, part in enumerate(candidate.content.parts):
-                        print(f"DEBUG: Part {i}: has inline_data = {hasattr(part, 'inline_data') and part.inline_data is not None}")
+                    for part in candidate.content.parts:
                         if hasattr(part, 'inline_data') and part.inline_data:
-                            data_size = len(part.inline_data.data) if part.inline_data.data else 0
-                            print(f"DEBUG: Part {i} data size: {data_size} bytes")
-                            
-                            # Validate that we got actual data
-                            if not part.inline_data.data or len(part.inline_data.data) < 100:
-                                print(f"ERROR: {model_name} returned empty or too small image data, trying next model...")
-                                last_error = f"Empty image data from {model_name}"
-                                break
-                            
-                            # Try to validate the image data by decoding it
-                            try:
-                                test_bytes = base64.b64decode(part.inline_data.data)
-                                test_image = Image.open(BytesIO(test_bytes))
-                                # Validate dimensions
-                                if test_image.size[0] < 10 or test_image.size[1] < 10:
-                                    raise ValueError(f"Invalid dimensions: {test_image.size}")
-                                print(f"SUCCESS: Using model {model_name}")
-                                return part.inline_data.data, model_name
-                            except Exception as validation_error:
-                                print(f"ERROR: {model_name} returned corrupt image data: {validation_error}")
-                                print(f"ERROR: Trying next model...")
-                                last_error = f"Corrupt image data from {model_name}: {validation_error}"
-                                break
-                        else:
-                            print(f"DEBUG: Part {i} has text: {hasattr(part, 'text') and part.text}")
-                else:
-                    print(f"DEBUG: Candidate content is None or has no parts")
+                            print(f"SUCCESS: Using model {model_name}")
+                            return part.inline_data.data, model_name
                 
-                print(f"ERROR: No valid image data in response from {model_name}")
-                last_error = f"No valid image data in response from {model_name}"
-            else:
-                print(f"DEBUG: No response or no candidates from {model_name}")
-                last_error = f"No response from {model_name}"
+                print(f"ERROR: No image data in response from {model_name}")
+                last_error = f"No image data in response from {model_name}"
                 
         except Exception as model_error:
             error_str = str(model_error).lower()
@@ -434,13 +390,13 @@ def main():
         if input_image.mode != 'RGB':
             input_image = input_image.convert('RGB')
         
-        # Prepare image data for Gemini using correct google-genai format
+        # Prepare image data for Gemini
         img_byte_array = BytesIO()
         input_image.save(img_byte_array, format='PNG')
-        image_data = types.Part.from_bytes(
-            data=img_byte_array.getvalue(),
-            mime_type="image/png"
-        )
+        image_data = {
+            "mime_type": "image/png",
+            "data": img_byte_array.getvalue()
+        }
         
         # Load mask if provided
         mask_data = None
@@ -451,10 +407,10 @@ def main():
             
             mask_byte_array = BytesIO()
             mask_image.save(mask_byte_array, format='PNG')
-            mask_data = types.Part.from_bytes(
-                data=mask_byte_array.getvalue(),
-                mime_type="image/png"
-            )
+            mask_data = {
+                "mime_type": "image/png", 
+                "data": mask_byte_array.getvalue()
+            }
         
         # Generate appropriate prompt based on area
         if args.area.lower() == 'lips':
@@ -470,29 +426,7 @@ def main():
         
         # Create client and generate image
         client = create_gemini_client()
-        
-        try:
-            result_data, used_model = generate_with_fallback(client, prompt, image_data, mask_data)
-        except Exception as e:
-            error_str = str(e).lower()
-            print(f"ERROR: All Gemini models failed: {e}", file=sys.stderr)
-            
-            # Check for regional restriction
-            if "not available in your country" in error_str or "failed_precondition" in error_str:
-                print("DETECTED: Regional restriction for image generation", file=sys.stderr)
-                print("SOLUTION: Please use a VPN to connect from a supported region (US, Canada, etc.)", file=sys.stderr)
-                print("ALTERNATIVE: Deploy to Google Cloud Run in us-central1 region", file=sys.stderr)
-                
-                # For now, return original image with a clear message
-                print("FALLBACK: Returning original image due to regional restrictions", file=sys.stderr)
-                original_bytes = BytesIO()
-                input_image.save(original_bytes, format='PNG')
-                result_data = base64.b64encode(original_bytes.getvalue()).decode('utf-8')
-                used_model = "regional-fallback-original"
-            else:
-                print("SERVER_OVERLOAD_MESSAGE: Entschuldigung! :( Die Server sind aktuell überlastet, Ergebnisse können schlechter ausfallen als sonst", file=sys.stderr)
-                # Don't fallback to original - let the error propagate
-                raise Exception(f"All Gemini models failed or returned corrupt data: {e}")
+        result_data, used_model = generate_with_fallback(client, prompt, image_data, mask_data)
         
         # Decode and save result
         import base64
@@ -529,15 +463,6 @@ def main():
             print(f"WORKER WARNING: Gemini returned identical image! API degradation detected.")
         else:
             print(f"WORKER SUCCESS: Gemini returned different image as expected!")
-        
-        # Always output the image data via stdout for the engine to process
-        final_bytes = BytesIO()
-        result_image.save(final_bytes, format='PNG')
-        final_data = final_bytes.getvalue()
-        final_base64 = base64.b64encode(final_data).decode('utf-8')
-        
-        print("IMAGE_DATA_START:" + final_base64)
-        print("IMAGE_DATA_END")
         
         print(f"Image generation completed successfully using {used_model}")
         
