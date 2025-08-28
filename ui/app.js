@@ -9,7 +9,7 @@ class NuvaFaceApp {
             this.apiBaseUrl = 'http://localhost:8000';
         } else {
             // Production: Use Cloud Run URL
-            this.apiBaseUrl = 'https://nuvaface-api-212268956806.europe-west1.run.app';
+            this.apiBaseUrl = 'https://nuvaface-api-212268956806.us-central1.run.app';
         }
         
         this.currentImage = null;
