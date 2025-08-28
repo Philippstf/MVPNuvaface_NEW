@@ -86,7 +86,8 @@ TECHNICAL REQUIREMENTS:
 - Preserve all facial features except lips
 - Maintain original lighting and skin texture
 - Create balanced, attractive enhancement
-- Result should look like naturally very attractive lips"""
+- Result should look like naturally very attractive lips
+- CRITICAL: Preserve the exact original lip color - no color changes, no darkening, no reddening"""
 
     elif volume_ml <= 4.0:
         return """Perform a significant lip enhancement using {volume_ml}ml hyaluronic acid filler.
@@ -105,7 +106,8 @@ TECHNICAL REQUIREMENTS:
 - Preserve all facial features except lips
 - Maintain original lighting and skin texture
 - Create dramatic but balanced enhancement
-- Result should look like expertly enhanced, luxurious lips"""
+- Result should look like expertly enhanced, luxurious lips
+- CRITICAL: Preserve the exact original lip color - no color changes, no darkening, no reddening"""
 
     else:  # 4.0ml+
         return """Perform a maximum lip enhancement using {volume_ml}ml hyaluronic acid filler.
@@ -120,6 +122,7 @@ SPECIFIC INSTRUCTIONS:
 - Add significant eversion for maximum natural-looking fullness
 - Enhance the philtral columns for facial balance
 - Result should look like premium cosmetic enhancement
+- CRITICAL: Preserve the exact original lip color - no color changes, no darkening, no reddening
         
 TECHNICAL REQUIREMENTS:
 - Preserve all facial features except lips
