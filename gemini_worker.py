@@ -363,14 +363,13 @@ def generate_with_fallback(client, prompt, image_data, mask_data=None):
                 contents.append(mask_data)
             print(f"DEBUG: Contents list has {len(contents)} parts", file=sys.stderr)
             
-            # Use proper config object with thinking disabled for speed
+            # Use proper config object - simplified for Flash Image models
             print(f"DEBUG: Creating GenerateContentConfig...", file=sys.stderr)
             config = types.GenerateContentConfig(
                 temperature=0.1,
                 top_p=0.8,
-                max_output_tokens=8192,
-                response_modalities=[types.Modality.TEXT, types.Modality.IMAGE],
-                thinking_config=types.ThinkingConfig(thinking_budget=0)  # Disable thinking for speed!
+                max_output_tokens=8192
+                # Removed response_modalities and thinking_config - not supported by Flash Image models
             )
             print(f"DEBUG: Config created: temp={config.temperature}, top_p={config.top_p}", file=sys.stderr)
             
