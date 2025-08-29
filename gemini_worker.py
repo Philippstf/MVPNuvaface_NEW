@@ -420,8 +420,15 @@ def main():
         result_image.save(final_buffer, format='JPEG', quality=85)
         final_base64 = base64.b64encode(final_buffer.getvalue()).decode('utf-8')
         
-        print("IMAGE_DATA_START:" + final_base64 + ":IMAGE_DATA_END")
+        # Force stdout flush und debug output
+        import sys
+        sys.stdout.flush()
         
+        print(f"🔍 DEBUG: About to print {len(final_base64)} chars to stdout", file=sys.stderr)
+        print("IMAGE_DATA_START:" + final_base64 + ":IMAGE_DATA_END")
+        sys.stdout.flush()
+        
+        print(f"🔍 DEBUG: Stdout print completed", file=sys.stderr)
         print(f"🔍 DEBUG: Final output base64 length = {len(final_base64)}", file=sys.stderr)
         print(f"🔍 DEBUG: Output format changed to JPEG quality=85 for stdout compatibility", file=sys.stderr)
         

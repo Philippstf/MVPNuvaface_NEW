@@ -112,6 +112,12 @@ async def generate_gemini_simulation(
         
         # Extract image data from stdout instead of file
         stdout = process.stdout
+        logger.info(f"🔍 DEBUG: Stdout length = {len(stdout)} chars")
+        logger.info(f"🔍 DEBUG: Stdout contains IMAGE_DATA_START: {'IMAGE_DATA_START:' in stdout}")
+        logger.info(f"🔍 DEBUG: Stdout contains :IMAGE_DATA_END: {':IMAGE_DATA_END' in stdout}")
+        logger.info(f"🔍 DEBUG: First 200 chars of stdout: {stdout[:200]}")
+        logger.info(f"🔍 DEBUG: Last 200 chars of stdout: {stdout[-200:]}")
+        
         if "IMAGE_DATA_START:" in stdout and ":IMAGE_DATA_END" in stdout:
             # Extract base64 image data from stdout
             start_marker = "IMAGE_DATA_START:"
