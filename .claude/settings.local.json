@@ -48,7 +48,17 @@
       "Read(C:\\Users\\phlpp\\Downloads/**)",
       "Read(C:\\Users\\phlpp\\Downloads/**)",
       "Read(C:\\Users\\phlpp\\Downloads/**)",
-      "Read(C:\\Users\\phlpp\\Downloads/**)"
+      "Read(C:\\Users\\phlpp\\Downloads/**)",
+      "Read(C:\\Users\\phlpp\\Downloads/**)",
+      "Read(C:\\Users\\phlpp\\Downloads/**)",
+      "Bash(bash:*)",
+      "Bash(where python3)",
+      "Bash(py --version)",
+      "Read(C:\\Users\\phlpp\\AppData\\Local\\Programs\\Python/**)",
+      "Bash(\"C:\\Users\\phlpp\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\" --version)",
+      "Bash(\"C:\\Users\\phlpp\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\" \"C:\\Users\\phlpp\\Downloads\\NuvaFace_MVPneu\\test_gemini_simple.py\")",
+      "Bash(\"C:\\Users\\phlpp\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\" -m pip install google-genai)",
+      "Bash(\"C:\\Users\\phlpp\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\" -m pip install Pillow)"
     ],
     "deny": []
   }

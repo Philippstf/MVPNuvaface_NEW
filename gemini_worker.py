@@ -289,6 +289,34 @@ The output must be a visual image, not a text description."""
                         # Schaue nach Bilddaten
                         if hasattr(part, 'inline_data') and part.inline_data and part.inline_data.data:
                             print(f"✅ SUCCESS with {model_name}!", file=sys.stderr)
+                            
+                            # 🔍 DEBUG: Analysiere Datenformat
+                            data = part.inline_data.data
+                            print(f"🔍 DEBUG: Data type = {type(data)}", file=sys.stderr)
+                            print(f"🔍 DEBUG: Data length = {len(data)}", file=sys.stderr)
+                            
+                            if isinstance(data, str):
+                                print(f"🔍 DEBUG: First 50 chars = {data[:50]}", file=sys.stderr)
+                                print(f"🔍 DEBUG: Last 50 chars = {data[-50:]}", file=sys.stderr)
+                                
+                                # Test if base64
+                                import re
+                                if re.match(r'^[A-Za-z0-9+/]*={0,2}$', data[:100]):
+                                    print("🔍 DEBUG: Looks like Base64! ✅", file=sys.stderr)
+                                else:
+                                    print("🔍 DEBUG: Does NOT look like Base64! ❌", file=sys.stderr)
+                            
+                            elif isinstance(data, bytes):
+                                print(f"🔍 DEBUG: First 20 bytes (hex) = {data[:20].hex()}", file=sys.stderr)
+                                
+                                # Check image signatures
+                                if data.startswith(b'\xff\xd8\xff'):
+                                    print("🔍 DEBUG: Raw JPEG signature detected! ✅", file=sys.stderr)
+                                elif data.startswith(b'\x89PNG\r\n\x1a\n'):
+                                    print("🔍 DEBUG: Raw PNG signature detected! ✅", file=sys.stderr)
+                                else:
+                                    print("🔍 DEBUG: Unknown raw format ❓", file=sys.stderr)
+                            
                             return part.inline_data.data, model_name
             
             print(f"⚠️ No image data from {model_name}, trying next...", file=sys.stderr)
@@ -347,9 +375,37 @@ def main():
         print("🎨 Starting image edit with Gemini...", file=sys.stderr)
         result_base64, used_model = generate_image_edit(client, prompt, input_image)
         
-        # Base64 zu Bild konvertieren
-        image_bytes = base64.b64decode(result_base64)
-        result_image = Image.open(BytesIO(image_bytes))
+        # Bild-Daten verarbeiten (Gemini gibt RAW BYTES zurück, nicht Base64!)
+        print(f"🔍 DEBUG: Processing image data, type = {type(result_base64)}", file=sys.stderr)
+        
+        if isinstance(result_base64, bytes):
+            # Gemini gibt RAW BYTES zurück - direkt verwenden!
+            print("🔍 DEBUG: Got RAW BYTES from Gemini - using directly! ✅", file=sys.stderr)
+            image_bytes = result_base64
+        elif isinstance(result_base64, str):
+            # Falls es doch Base64 ist
+            print("🔍 DEBUG: Got Base64 string - decoding...", file=sys.stderr)
+            image_bytes = base64.b64decode(result_base64)
+        else:
+            raise ValueError(f"Unexpected data type: {type(result_base64)}")
+        
+        print(f"🔍 DEBUG: Final image bytes length = {len(image_bytes)}", file=sys.stderr)
+        print(f"🔍 DEBUG: First 20 bytes (hex) = {image_bytes[:20].hex()}", file=sys.stderr)
+        
+        # Check image signature
+        if image_bytes.startswith(b'\xff\xd8\xff'):
+            print("🔍 DEBUG: Image has JPEG signature! ✅", file=sys.stderr)
+        elif image_bytes.startswith(b'\x89PNG\r\n\x1a\n'):
+            print("🔍 DEBUG: Image has PNG signature! ✅", file=sys.stderr)
+        else:
+            print("🔍 DEBUG: Unknown image format ❓", file=sys.stderr)
+        
+        try:
+            result_image = Image.open(BytesIO(image_bytes))
+            print(f"🔍 DEBUG: PIL Image.open() SUCCESS! Size: {result_image.size} ✅", file=sys.stderr)
+        except Exception as pil_error:
+            print(f"🔍 DEBUG: PIL Image.open() FAILED: {pil_error}", file=sys.stderr)
+            raise
         
         # Zu RGB konvertieren falls nötig
         if result_image.mode != 'RGB':
@@ -366,6 +422,8 @@ def main():
         
         print("IMAGE_DATA_START:" + final_base64)
         print("IMAGE_DATA_END")
+        
+        print(f"🔍 DEBUG: Final output base64 length = {len(final_base64)}", file=sys.stderr)
         
         print(f"✅ Success with {used_model}")
         
