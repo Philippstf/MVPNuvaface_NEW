@@ -128,32 +128,19 @@ async def _simulate_procedure(request: SimulationRequest):
         logger.info(f"DEBUG: Received simulation request for {request.area} with {volume_ml}ml")
         logger.info(f"DEBUG: Request area value: {request.area.value}")
 
-        # Load the original, unprocessed image for the highest quality input to Gemini
+        # Load original image - use directly like working test (NO preprocessing!)
         original_image = load_image(request.image)
         logger.info(f"DEBUG: Loaded original image: {original_image.size}")
-
-        # Generate the mask from the SAME image we send to Gemini (no face alignment!)
-        processed_original, _ = preprocess_image(original_image, target_size=768, align_face=False)
-        logger.info(f"DEBUG: Processed image size: {processed_original.size}")
         
-        mask_image, segment_metadata = segment_area(processed_original, request.area)
-        logger.info(f"DEBUG: Generated mask for area '{request.area}', mask size: {mask_image.size}")
-        logger.info(f"DEBUG: Segment metadata: {segment_metadata}")
-
-        # --- New Gemini Call ---
-        # The core of the simulation - now with mask support
-        logger.info(f"DEBUG: Calling generate_gemini_simulation with area='{request.area.value}', volume_ml={volume_ml}")
-        logger.info(f"DEBUG: SENDING TO GEMINI: processed image size: {processed_original.size}, mask size: {mask_image.size}")
-        logger.info(f"DEBUG: (Original was {original_image.size}, but we send processed {processed_original.size})")
-        
-        # Use the working direct Gemini call instead of broken subprocess version  
-        result_image = await _direct_gemini_call_working(processed_original, float(volume_ml), request.area.value)
+        # Use the working direct Gemini call (same as test endpoint - NO masks, NO preprocessing!)
+        logger.info(f"DEBUG: Calling working direct Gemini with {volume_ml}ml {request.area.value}")
+        result_image = await _direct_gemini_call_working(original_image, float(volume_ml), request.area.value)
         logger.info(f"DEBUG: Received result image from Gemini: {result_image.size}")
         
         # Check if result is identical to input (compare the same images we sent to Gemini)
         original_bytes = io.BytesIO()
         result_bytes = io.BytesIO()
-        processed_original.save(original_bytes, format='PNG')  # Use processed_original, not original_image!
+        original_image.save(original_bytes, format='PNG')  # Use original_image like working test!
         result_image.save(result_bytes, format='PNG')
         
         original_data = original_bytes.getvalue()
@@ -174,10 +161,13 @@ async def _simulate_procedure(request: SimulationRequest):
         
         # --- End of New Gemini Call ---
 
-        # Convert images to base64 for the response
+        # Convert images to base64 for the response (no masks in direct mode)
         result_base64 = image_to_base64(result_image)
-        original_base64 = image_to_base64(processed_original)
-        mask_base64 = image_to_base64(mask_image)
+        original_base64 = image_to_base64(original_image)
+        # Create empty mask for compatibility
+        from PIL import Image as PILImage
+        empty_mask = PILImage.new('L', original_image.size, 0)  # Empty black mask
+        mask_base64 = image_to_base64(empty_mask)
         
         end_time = time.time()
         
