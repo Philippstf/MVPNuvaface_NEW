@@ -363,51 +363,84 @@ TECHNICAL REQUIREMENTS:
 - Natural lip texture and color
 - Keep all other facial features exactly unchanged"""
     
-    elif volume_ml <= 2.0:  # 0.5-2ml: Natural enhancement
-        return f"""Perform natural lip enhancement with {volume_ml}ml hyaluronic acid.
-VOLUME EFFECT: {intensity:.0f}% intensity - NATURAL ENHANCEMENT
-- Moderate volume increase with natural fullness
-- Subtle lip projection and healthy appearance
-- Well-defined cupid's bow
-- Result: naturally fuller, attractive lips
+    elif volume_ml <= 2.0:  # 0.5-2ml: Natural enhancement - ENHANCED for real portraits  
+        return f"""Perform professional lip enhancement with {volume_ml}ml hyaluronic acid.
+VOLUME EFFECT: {intensity:.0f}% intensity - STRONG NATURAL ENHANCEMENT
+- Significant volume increase with noticeable fullness
+- Clear lip projection and attractive, youthful appearance
+- Well-defined, pronounced cupid's bow
+- Result: visibly fuller, more attractive lips with natural beauty
 
-SPECIFIC INSTRUCTIONS:
-- Add 25-40% volume to both upper and lower lips
-- Create subtle definition of lip borders
-- Enhance cupid's bow naturally
-- Show realistic skin texture with natural fullness
+SPECIFIC INSTRUCTIONS FOR VISIBLE RESULTS:
+- Add 40-60% volume to both upper (35%) and lower lips (65%) 
+- Create clear, defined lip borders that are noticeably enhanced
+- Enhance cupid's bow prominently for attractive definition
+- Show realistic skin texture with VISIBLE fullness increase
+- Make the enhancement clearly noticeable but naturally beautiful
 - Maintain natural skin tone and lighting
-- NO other facial changes - only lip enhancement
+- NO other facial changes - only lip enhancement with visible results
 
 TECHNICAL REQUIREMENTS:
-- Photorealistic result
+- Photorealistic result with noticeable before/after difference
 - Same resolution and quality as input
-- Natural lip texture and color
+- Natural lip texture and color but clearly enhanced size
 - Professional aesthetic treatment appearance
-- Keep all other facial features exactly unchanged"""
+- Keep all other facial features exactly unchanged
+- IMPORTANT: Enhancement should be clearly visible and attractive
     
-    else:  # 2ml+: Major enhancement
-        return f"""Perform major lip enhancement with {volume_ml}ml hyaluronic acid.
-VOLUME EFFECT: {intensity:.0f}% intensity - MAJOR VOLUME TRANSFORMATION
-- Major volume increase with dramatic fullness
-- Strong lip projection and luxurious appearance  
-- Very pronounced cupid's bow definition
-- Result: dramatically fuller, luxurious-looking lips
+    elif volume_ml <= 4.0:  # 2-4ml: Major enhancement - AGGRESSIVE for real portraits
+        return f"""Perform DRAMATIC lip enhancement with {volume_ml}ml hyaluronic acid injection.
+VOLUME EFFECT: {intensity:.0f}% intensity - EXTREME VOLUME TRANSFORMATION
+- MASSIVE volume increase with dramatic, pronounced fullness
+- Very strong lip projection creating luxurious, plump appearance  
+- Dramatically pronounced cupid's bow definition
+- Bold, Instagram-worthy lip enhancement
+- Result: DRAMATICALLY fuller, model-like, luxury lips
 
-SPECIFIC INSTRUCTIONS:
-- Add 50-65% volume to both upper (45%) and lower lips (55%)
-- Create strong definition of lip borders
-- Enhance cupid's bow prominently
-- Show realistic skin texture with enhanced fullness
+SPECIFIC INSTRUCTIONS FOR MAXIMUM EFFECT:
+- Add 70-90% volume increase to BOTH upper (40%) and lower lips (60%)
+- Create BOLD definition of lip borders with clear edges
+- Enhance cupid's bow DRAMATICALLY and prominently
+- Make lips noticeably LARGER and more voluminous than original
+- Show enhanced fullness with realistic texture but OBVIOUS size increase
+- Create professional aesthetic treatment look with VISIBLE transformation
 - Maintain natural skin tone and lighting
-- NO other facial changes - only lip enhancement
+- NO other facial changes - ONLY dramatic lip enhancement
 
 TECHNICAL REQUIREMENTS:
-- Photorealistic result
+- Photorealistic result with CLEAR before/after difference
 - Same resolution and quality as input
-- Natural lip texture and color
-- Professional aesthetic treatment appearance
-- Keep all other facial features exactly unchanged"""
+- Natural lip texture and color but ENHANCED size
+- Professional luxury aesthetic treatment appearance
+- Keep all other facial features exactly unchanged
+- CRITICAL: Make the lip enhancement VISIBLY DRAMATIC and obvious
+
+    else:  # 4ml+: Ultra-high volume - MAXIMUM TRANSFORMATION
+        return f"""Perform ULTRA-DRAMATIC lip enhancement with {volume_ml}ml hyaluronic acid injection.
+VOLUME EFFECT: {intensity:.0f}% intensity - MAXIMUM VOLUME TRANSFORMATION
+- EXTREME volume increase with MAXIMUM dramatic fullness
+- Ultra-strong lip projection creating bold, luxury appearance
+- EXTREMELY pronounced cupid's bow definition
+- Celebrity-level, ultra-plump lip enhancement  
+- Result: MAXIMUM fuller, glamorous, ultra-luxury lips
+
+ULTRA-AGGRESSIVE INSTRUCTIONS:
+- Add 90-110% volume increase to BOTH upper (35%) and lower lips (65%)
+- Create EXTREMELY BOLD definition of lip borders with sharp, clear edges
+- Enhance cupid's bow to MAXIMUM prominence and definition
+- Make lips SIGNIFICANTLY LARGER and dramatically more voluminous than original
+- Show ultra-enhanced fullness with realistic texture but EXTREME size increase
+- Create luxury celebrity aesthetic treatment look with MAXIMUM transformation
+- Maintain natural skin tone and lighting
+- NO other facial changes - ONLY ultra-dramatic lip enhancement
+
+TECHNICAL REQUIREMENTS:
+- Photorealistic result with EXTREME before/after difference
+- Same resolution and quality as input  
+- Natural lip texture and color but MAXIMUM enhanced size
+- Ultra-luxury celebrity aesthetic treatment appearance
+- Keep all other facial features exactly unchanged
+- CRITICAL: Make the lip enhancement EXTREMELY DRAMATIC and unmistakable
 
 async def _direct_gemini_test_inline(input_image):
     """Inline direct Gemini test to avoid import issues"""
