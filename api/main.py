@@ -137,7 +137,8 @@ async def _simulate_procedure(request: SimulationRequest):
         # --- New Gemini Call ---
         # The core of the simulation - now with mask support
         logger.info(f"DEBUG: Calling generate_gemini_simulation with area='{request.area.value}', volume_ml={volume_ml}")
-        logger.info(f"DEBUG: Original image size: {original_image.size}, mask size: {mask_image.size}")
+        logger.info(f"DEBUG: SENDING TO GEMINI: processed image size: {processed_original.size}, mask size: {mask_image.size}")
+        logger.info(f"DEBUG: (Original was {original_image.size}, but we send processed {processed_original.size})")
         
         result_image = await generate_gemini_simulation(
             original_image=processed_original,  # Use the SAME processed image for consistency
@@ -147,10 +148,10 @@ async def _simulate_procedure(request: SimulationRequest):
         )
         logger.info(f"DEBUG: Received result image from Gemini: {result_image.size}")
         
-        # Check if result is identical to input
+        # Check if result is identical to input (compare the same images we sent to Gemini)
         original_bytes = io.BytesIO()
         result_bytes = io.BytesIO()
-        original_image.save(original_bytes, format='PNG')
+        processed_original.save(original_bytes, format='PNG')  # Use processed_original, not original_image!
         result_image.save(result_bytes, format='PNG')
         
         original_data = original_bytes.getvalue()

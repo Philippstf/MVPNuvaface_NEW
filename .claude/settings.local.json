@@ -72,7 +72,23 @@
       "Bash(\"C:\\Users\\phlpp\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\" -c \"\nimport asyncio\nimport sys\nsys.stdout.reconfigure(encoding=''utf-8'')\nfrom engine.edit_gemini import generate_gemini_simulation\nfrom PIL import Image\n\nasync def test_optimized():\n    # Load test image  \n    img = Image.open(''testbild.png'')\n    print(''Testing optimized 4.0ml lip enhancement...'')\n    \n    # Test with 4.0ml (should trigger maximum enhancement prompt)\n    result = await generate_gemini_simulation(img, 4.0, ''lips'')\n    \n    # Save result\n    result.save(''test_optimized_4ml_result.jpg'', ''JPEG'', quality=85)\n    print(''Result saved as test_optimized_4ml_result.jpg'')\n    \n    # Compare sizes  \n    original_size = img.size\n    result_size = result.size\n    print(f''Original: {original_size}, Result: {result_size}'')\n\nasyncio.run(test_optimized())\n\")",
       "Bash(set GOOGLE_API_KEY=AIzaSyC8_sample_key_placeholder)",
       "Bash(\"C:\\Users\\phlpp\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\" gemini_worker_optimized.py --input testbild.png --output test_optimized_result.jpg --volume 4.0 --area lips)",
-      "Bash(\"C:\\Users\\phlpp\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\" gemini_worker.py --input \"temp_inputs\\5dd440f3-ee5e-47ca-aa06-9bd8395acb10_input.png\" --output \"test_direct_result.jpg\" --volume 4.0 --area lips)"
+      "Bash(\"C:\\Users\\phlpp\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\" gemini_worker.py --input \"temp_inputs\\5dd440f3-ee5e-47ca-aa06-9bd8395acb10_input.png\" --output \"test_direct_result.jpg\" --volume 4.0 --area lips)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Bash(dir:*)",
+      "Bash(\"C:\\Users\\phlpp\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\" gemini_worker.py --input testbild.png --output test_new_result.jpg --volume 3.7 --area lips)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": []
   }
