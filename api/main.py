@@ -300,6 +300,13 @@ async def _direct_gemini_call_working(input_image, volume_ml: float, area: str):
     # Get the right prompt based on area and volume
     if area == "lips":
         prompt = get_prompt_for_lips(volume_ml)
+    elif area == "chin":
+        prompt = get_prompt_for_chin(volume_ml)
+    elif area == "cheeks":
+        prompt = get_prompt_for_cheeks(volume_ml)
+    elif area == "forehead":
+        # Botox behandelt Units, nicht ml - aber wir konvertieren für UI-Konsistenz
+        prompt = get_prompt_for_botox_forehead(volume_ml)
     else:
         # Default fallback prompt
         prompt = f"Perform {area} enhancement with {volume_ml}ml treatment. Show natural, photorealistic results with enhanced volume and definition while keeping all other facial features exactly unchanged."
@@ -500,6 +507,294 @@ POSITION & TECHNICAL REQUIREMENTS:
 - Ultra-luxury celebrity aesthetic treatment appearance
 - Keep all other facial features exactly unchanged
 - CRITICAL: Make the lip enhancement EXTREMELY DRAMATIC and unmistakable
+
+def get_prompt_for_chin(volume_ml: float) -> str:
+    """Generate volume-specific prompts for chin correction with hyaluronic acid"""
+    
+    # Medical chin volume: 1-5ml typical range
+    intensity = min(volume_ml * 20, 100)  # 5ml = 100%
+    
+    if volume_ml <= 1.0:  # 0-1ml: Minimal correction
+        return f"""Perform minimal chin correction with {volume_ml}ml hyaluronic acid.
+CORRECTION EFFECT: {intensity:.0f}% intensity - SUBTLE HARMONIZATION
+- Subtle chin projection improvement for facial harmony
+- Gentle forward positioning of chin profile
+- Minimal asymmetry correction
+- Result: slightly more defined, balanced chin profile
+
+SPECIFIC INSTRUCTIONS FOR CHIN CORRECTION:
+- Create subtle 15-25% forward projection of chin area
+- Enhance chin definition without dramatic changes
+- Maintain natural jawline harmony
+- Show realistic skin texture with slight volume increase
+- Keep natural chin shape and proportions
+- Maintain natural skin tone and lighting
+- NO other facial changes - only subtle chin enhancement
+
+POSITION & TECHNICAL REQUIREMENTS:
+- CRITICAL: Keep EXACT same face position, angle, and framing as input
+- CRITICAL: Maintain IDENTICAL head position and orientation 
+- CRITICAL: Keep SAME background, lighting, and composition
+- CRITICAL: Do NOT center, crop, or reposition the face
+- CRITICAL: Only chin changes - everything else EXACTLY as original
+- Photorealistic result with subtle before/after difference
+- Same resolution and quality as input
+- Natural chin texture and color but slightly enhanced projection
+- Professional aesthetic treatment appearance
+- Keep all other facial features exactly unchanged"""
+
+    elif volume_ml <= 3.0:  # 1-3ml: Standard correction
+        return f"""Perform professional chin correction with {volume_ml}ml hyaluronic acid.
+CORRECTION EFFECT: {intensity:.0f}% intensity - BALANCED HARMONIZATION
+- Clear chin projection for improved facial balance
+- Noticeable forward positioning creating profile harmony
+- Effective asymmetry correction and volume restoration
+- Result: well-defined, harmonious chin with balanced proportions
+
+SPECIFIC INSTRUCTIONS FOR VISIBLE CORRECTION:
+- Create 30-50% forward projection of chin area
+- Enhance chin definition with noticeable improvement
+- Balance facial proportions by strengthening chin presence
+- Show realistic skin texture with clear volume enhancement
+- Improve overall facial harmony and profile definition
+- Maintain natural skin tone and lighting
+- NO other facial changes - only chin enhancement with visible results
+
+POSITION & TECHNICAL REQUIREMENTS:
+- CRITICAL: Keep EXACT same face position, angle, and framing as input
+- CRITICAL: Maintain IDENTICAL head position and orientation 
+- CRITICAL: Keep SAME background, lighting, and composition
+- CRITICAL: Do NOT center, crop, or reposition the face
+- CRITICAL: Only chin changes - everything else EXACTLY as original
+- Photorealistic result with clear before/after difference
+- Same resolution and quality as input
+- Natural chin texture and color but clearly enhanced projection
+- Professional aesthetic treatment appearance
+- Keep all other facial features exactly unchanged
+- IMPORTANT: Chin enhancement should be clearly visible and harmonious"""
+
+    else:  # 3ml+: Major correction
+        return f"""Perform dramatic chin correction with {volume_ml}ml hyaluronic acid.
+CORRECTION EFFECT: {intensity:.0f}% intensity - STRONG STRUCTURAL ENHANCEMENT
+- Significant chin projection for dramatic profile improvement  
+- Strong forward positioning creating bold facial harmony
+- Major correction of receding chin and asymmetries
+- Result: prominently defined, strong chin with dramatic impact
+
+SPECIFIC INSTRUCTIONS FOR MAXIMUM CORRECTION:
+- Create 60-80% forward projection of chin area
+- Dramatically enhance chin definition and presence
+- Create strong, defined jawline connection
+- Show realistic skin texture with substantial volume enhancement
+- Achieve dramatic facial proportion improvement
+- Transform weak chin into strong, confident appearance
+- Maintain natural skin tone and lighting
+- NO other facial changes - only dramatic chin enhancement
+
+POSITION & TECHNICAL REQUIREMENTS:
+- CRITICAL: Keep EXACT same face position, angle, and framing as input
+- CRITICAL: Maintain IDENTICAL head position and orientation 
+- CRITICAL: Keep SAME background, lighting, and composition
+- CRITICAL: Do NOT center, crop, or reposition the face
+- CRITICAL: Only chin changes - everything else EXACTLY as original
+- Photorealistic result with dramatic before/after difference
+- Same resolution and quality as input
+- Natural chin texture and color but substantially enhanced projection
+- Professional aesthetic treatment appearance
+- Keep all other facial features exactly unchanged
+- CRITICAL: Make the chin correction VISIBLY DRAMATIC and transformative
+
+def get_prompt_for_cheeks(volume_ml: float) -> str:
+    """Generate volume-specific prompts for cheek enhancement with hyaluronic acid"""
+    
+    # Medical cheek volume: 2-4ml typical range per side
+    intensity = min(volume_ml * 25, 100)  # 4ml = 100%
+    
+    if volume_ml <= 1.5:  # 0-1.5ml: Subtle contouring
+        return f"""Perform subtle cheek enhancement with {volume_ml}ml hyaluronic acid.
+ENHANCEMENT EFFECT: {intensity:.0f}% intensity - NATURAL CONTOURING
+- Gentle cheek volume restoration for youthful appearance
+- Subtle lifting effect in mid-face area
+- Light contouring of cheekbone area
+- Result: naturally refreshed, slightly more defined cheeks
+
+SPECIFIC INSTRUCTIONS FOR CHEEK CONTOURING:
+- Add 20-30% volume to cheek area for natural lift
+- Enhance cheekbone definition subtly
+- Create gentle mid-face volume restoration
+- Show realistic skin texture with natural fullness
+- Maintain natural facial proportions
+- Keep natural skin tone and lighting
+- NO other facial changes - only subtle cheek enhancement
+
+POSITION & TECHNICAL REQUIREMENTS:
+- CRITICAL: Keep EXACT same face position, angle, and framing as input
+- CRITICAL: Maintain IDENTICAL head position and orientation 
+- CRITICAL: Keep SAME background, lighting, and composition
+- CRITICAL: Do NOT center, crop, or reposition the face
+- CRITICAL: Only cheeks change - everything else EXACTLY as original
+- Photorealistic result with subtle before/after difference
+- Same resolution and quality as input
+- Natural cheek texture and color but gently enhanced volume
+- Professional aesthetic treatment appearance
+- Keep all other facial features exactly unchanged"""
+
+    elif volume_ml <= 3.0:  # 1.5-3ml: Standard enhancement
+        return f"""Perform professional cheek enhancement with {volume_ml}ml hyaluronic acid.
+ENHANCEMENT EFFECT: {intensity:.0f}% intensity - BALANCED REJUVENATION
+- Clear cheek volume for youthful mid-face restoration
+- Noticeable lifting effect reducing nasolabial folds
+- Well-defined cheekbone contouring
+- Result: rejuvenated, attractively contoured cheeks with natural beauty
+
+SPECIFIC INSTRUCTIONS FOR VISIBLE ENHANCEMENT:
+- Add 40-60% volume to cheek area for clear lifting effect
+- Enhance cheekbone definition with attractive contouring
+- Create noticeable mid-face volume restoration
+- Show realistic skin texture with enhanced fullness
+- Improve overall facial proportion and youthfulness
+- Maintain natural skin tone and lighting
+- NO other facial changes - only cheek enhancement with visible results
+
+POSITION & TECHNICAL REQUIREMENTS:
+- CRITICAL: Keep EXACT same face position, angle, and framing as input
+- CRITICAL: Maintain IDENTICAL head position and orientation 
+- CRITICAL: Keep SAME background, lighting, and composition
+- CRITICAL: Do NOT center, crop, or reposition the face
+- CRITICAL: Only cheeks change - everything else EXACTLY as original
+- Photorealistic result with clear before/after difference
+- Same resolution and quality as input
+- Natural cheek texture and color but clearly enhanced volume
+- Professional aesthetic treatment appearance
+- Keep all other facial features exactly unchanged
+- IMPORTANT: Cheek enhancement should be clearly visible and attractive"""
+
+    else:  # 3ml+: Dramatic enhancement
+        return f"""Perform dramatic cheek enhancement with {volume_ml}ml hyaluronic acid.
+ENHANCEMENT EFFECT: {intensity:.0f}% intensity - HIGH-IMPACT CONTOURING
+- Significant cheek volume for dramatic mid-face transformation
+- Strong lifting effect with major nasolabial fold reduction
+- Bold cheekbone contouring for model-like definition
+- Result: dramatically contoured, high-fashion cheeks with striking impact
+
+SPECIFIC INSTRUCTIONS FOR MAXIMUM ENHANCEMENT:
+- Add 70-90% volume to cheek area for dramatic transformation
+- Create bold cheekbone definition and contouring
+- Achieve significant mid-face lift and rejuvenation
+- Show realistic skin texture with substantial volume enhancement
+- Transform flat cheeks into prominently defined features
+- Create high-fashion, editorial-style cheek contouring
+- Maintain natural skin tone and lighting
+- NO other facial changes - only dramatic cheek enhancement
+
+POSITION & TECHNICAL REQUIREMENTS:
+- CRITICAL: Keep EXACT same face position, angle, and framing as input
+- CRITICAL: Maintain IDENTICAL head position and orientation 
+- CRITICAL: Keep SAME background, lighting, and composition
+- CRITICAL: Do NOT center, crop, or reposition the face
+- CRITICAL: Only cheeks change - everything else EXACTLY as original
+- Photorealistic result with dramatic before/after difference
+- Same resolution and quality as input
+- Natural cheek texture and color but substantially enhanced volume
+- Professional aesthetic treatment appearance
+- Keep all other facial features exactly unchanged
+- CRITICAL: Make the cheek enhancement VISIBLY DRAMATIC and striking
+
+def get_prompt_for_botox_forehead(volume_ml: float) -> str:
+    """Generate dosage-specific prompts for Botox forehead treatment (volume_ml converted to units)"""
+    
+    # Convert ml to Botox units for medical accuracy: 1ml ≈ 10 units (UI convenience)
+    units = int(volume_ml * 10)
+    intensity = min(volume_ml * 20, 100)  # 5ml input = 50 units = 100%
+    
+    if volume_ml <= 1.5:  # 0-1.5ml = 0-15 units: Light treatment
+        return f"""Perform light Botox forehead treatment with approximately {units} units.
+TREATMENT EFFECT: {intensity:.0f}% intensity - SUBTLE WRINKLE SOFTENING
+- Gentle reduction of horizontal forehead lines
+- Subtle muscle relaxation for natural movement
+- Light smoothing without frozen appearance
+- Result: softly smoothed forehead with preserved natural expressions
+
+SPECIFIC INSTRUCTIONS FOR LIGHT BOTOX TREATMENT:
+- Reduce horizontal forehead wrinkles by 30-50%
+- Maintain natural facial expressions and eyebrow movement
+- Create subtle smoothing without over-treatment
+- Preserve skin texture and natural forehead mobility
+- Keep natural skin tone and lighting unchanged
+- NO other facial changes - only light forehead smoothing
+
+POSITION & TECHNICAL REQUIREMENTS:
+- CRITICAL: Keep EXACT same face position, angle, and framing as input
+- CRITICAL: Maintain IDENTICAL head position and orientation 
+- CRITICAL: Keep SAME background, lighting, and composition
+- CRITICAL: Do NOT center, crop, or reposition the face
+- CRITICAL: Only forehead wrinkles change - everything else EXACTLY as original
+- Photorealistic result with subtle before/after difference
+- Same resolution and quality as input
+- Natural forehead texture but with reduced wrinkle visibility
+- Professional aesthetic treatment appearance
+- Keep all other facial features exactly unchanged"""
+
+    elif volume_ml <= 3.0:  # 1.5-3ml = 15-30 units: Standard treatment
+        return f"""Perform professional Botox forehead treatment with approximately {units} units.
+TREATMENT EFFECT: {intensity:.0f}% intensity - BALANCED WRINKLE REDUCTION
+- Clear reduction of horizontal forehead lines
+- Effective muscle relaxation with natural movement preservation
+- Noticeable smoothing with refreshed appearance
+- Result: significantly smoother forehead maintaining natural expressions
+
+SPECIFIC INSTRUCTIONS FOR STANDARD BOTOX TREATMENT:
+- Reduce horizontal forehead wrinkles by 60-80%
+- Create clear smoothing while preserving eyebrow mobility
+- Balance wrinkle reduction with natural facial expressions
+- Show realistic skin texture with enhanced smoothness
+- Achieve professional aesthetic results
+- Keep natural skin tone and lighting unchanged
+- NO other facial changes - only forehead wrinkle reduction
+
+POSITION & TECHNICAL REQUIREMENTS:
+- CRITICAL: Keep EXACT same face position, angle, and framing as input
+- CRITICAL: Maintain IDENTICAL head position and orientation 
+- CRITICAL: Keep SAME background, lighting, and composition
+- CRITICAL: Do NOT center, crop, or reposition the face
+- CRITICAL: Only forehead wrinkles change - everything else EXACTLY as original
+- Photorealistic result with clear before/after difference
+- Same resolution and quality as input
+- Natural forehead texture but with significantly reduced wrinkles
+- Professional aesthetic treatment appearance
+- Keep all other facial features exactly unchanged
+- IMPORTANT: Forehead smoothing should be clearly visible yet natural"""
+
+    else:  # 3ml+ = 30+ units: Intensive treatment
+        return f"""Perform intensive Botox forehead treatment with approximately {units} units.
+TREATMENT EFFECT: {intensity:.0f}% intensity - MAXIMUM WRINKLE ELIMINATION
+- Dramatic reduction of all horizontal forehead lines
+- Strong muscle relaxation for smooth, youthful appearance
+- Maximum smoothing with professional results
+- Result: dramatically smoothed forehead with youthful, refreshed look
+
+SPECIFIC INSTRUCTIONS FOR INTENSIVE BOTOX TREATMENT:
+- Reduce horizontal forehead wrinkles by 85-95%
+- Create dramatic smoothing for maximum aesthetic impact
+- Achieve professional-grade wrinkle elimination
+- Show realistic skin texture with exceptional smoothness
+- Transform aged forehead into youthfully smooth appearance
+- Maintain some natural expression capability
+- Keep natural skin tone and lighting unchanged
+- NO other facial changes - only dramatic forehead transformation
+
+POSITION & TECHNICAL REQUIREMENTS:
+- CRITICAL: Keep EXACT same face position, angle, and framing as input
+- CRITICAL: Maintain IDENTICAL head position and orientation 
+- CRITICAL: Keep SAME background, lighting, and composition
+- CRITICAL: Do NOT center, crop, or reposition the face
+- CRITICAL: Only forehead wrinkles change - everything else EXACTLY as original
+- Photorealistic result with dramatic before/after difference
+- Same resolution and quality as input
+- Natural forehead texture but with maximally reduced wrinkles
+- Professional aesthetic treatment appearance
+- Keep all other facial features exactly unchanged
+- CRITICAL: Make the forehead smoothing DRAMATICALLY VISIBLE and transformative
 
 async def _direct_gemini_test_inline(input_image):
     """Inline direct Gemini test to avoid import issues"""
