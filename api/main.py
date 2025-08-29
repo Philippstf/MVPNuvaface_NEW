@@ -252,6 +252,19 @@ async def test_direct_gemini(request: dict):
         logger.error(f"Direct Gemini test error: {e}")
         raise HTTPException(status_code=500, detail=f"Direct test failed: {str(e)}")
 
+@app.get("/debug/api-key")
+async def debug_api_key():
+    """Debug endpoint to check API key setup"""
+    api_key = os.getenv("GOOGLE_API_KEY") 
+    if not api_key:
+        return {"error": "GOOGLE_API_KEY not set"}
+    
+    return {
+        "api_key_prefix": api_key[:10] + "...",
+        "api_key_length": len(api_key),
+        "environment": "cloud_run"
+    }
+
 async def _direct_gemini_test_inline(input_image):
     """Inline direct Gemini test to avoid import issues"""
     import base64
