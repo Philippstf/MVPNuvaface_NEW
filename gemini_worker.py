@@ -420,8 +420,7 @@ def main():
         result_image.save(final_buffer, format='PNG')
         final_base64 = base64.b64encode(final_buffer.getvalue()).decode('utf-8')
         
-        print("IMAGE_DATA_START:" + final_base64)
-        print("IMAGE_DATA_END")
+        print("IMAGE_DATA_START:" + final_base64 + ":IMAGE_DATA_END")
         
         print(f"🔍 DEBUG: Final output base64 length = {len(final_base64)}", file=sys.stderr)
         
