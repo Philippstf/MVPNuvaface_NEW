@@ -324,14 +324,20 @@
                 const API_BASE = window.location.hostname === 'nuvafacemvp.web.app' ? 
                     'https://rmgpgab-nuvaface-api-europe-west1-philippstf-mvpn-hapllrcw7a-uc.a.run.app' : '';
                 
-                const response = await fetch(`${API_BASE}/test/direct-gemini`, {
+                // Anti-Cache: Add cache buster and no-store headers
+                const cacheBuster = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
+                
+                const response = await fetch(`${API_BASE}/test/direct-gemini?v=${cacheBuster}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache',
+                        'X-Test-Request-ID': `test-${Date.now()}`
                     },
                     body: JSON.stringify({
                         image: selectedImageBase64
-                    })
+                    }),
+                    cache: 'no-store'  // Force no browser caching
                 });
                 
                 if (!response.ok) {

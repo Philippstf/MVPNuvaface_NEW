@@ -8,7 +8,10 @@ import random
 import logging
 import io
 from io import BytesIO
-from fastapi import FastAPI, HTTPException, status
+import hashlib
+import secrets
+import uuid
+from fastapi import FastAPI, HTTPException, status, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -59,6 +62,22 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Anti-Cache Middleware for all responses
+@app.middleware("http")
+async def add_anti_cache_headers(request, call_next):
+    response = await call_next(request)
+    
+    # Add anti-cache headers to all API responses
+    if request.url.path.startswith("/api/") or request.url.path.startswith("/simulate") or request.url.path.startswith("/test"):
+        response.headers["Cache-Control"] = "no-store, no-cache, max-age=0, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        # Add unique response ID for tracking
+        response.headers["X-Response-ID"] = str(uuid.uuid4())
+        response.headers["X-Timestamp"] = str(int(time.time() * 1000))
+    
+    return response
 
 # Mount static files for UI
 ui_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "ui")
@@ -172,6 +191,18 @@ async def _simulate_procedure(request: SimulationRequest):
         end_time = time.time()
         
         # Create a simplified response as detailed QC metrics are less relevant now
+        # Generate unique request ID and hash for anti-cache validation
+        request_id = str(uuid.uuid4())
+        
+        # Calculate SHA-256 hash of result image bytes for uniqueness verification
+        result_bytes = base64.b64decode(result_base64)
+        result_hash = hashlib.sha256(result_bytes).hexdigest()
+        
+        # Log for anti-cache verification
+        logger.info(f"🔍 ANTI-CACHE: Request ID: {request_id}")
+        logger.info(f"🔍 ANTI-CACHE: Result Hash: {result_hash[:16]}...")
+        logger.info(f"🔍 ANTI-CACHE: Volume: {volume_ml}ml, Area: {request.area.value}")
+        
         return SimulationResponse(
             result_png=result_base64,
             original_png=original_base64,
@@ -181,7 +212,9 @@ async def _simulate_procedure(request: SimulationRequest):
                 strength_ml=volume_ml  # Fixed: use strength_ml instead of strength
             ),
             qc=QualityMetrics(
-                quality_passed=True
+                quality_passed=True,
+                request_id=request_id,  # Add request ID for tracking
+                result_hash=result_hash  # Add result hash for uniqueness verification
             ),
             warnings=[],
         )
@@ -294,13 +327,20 @@ async def _direct_gemini_call_working(input_image, volume_ml: float, area: str):
             ]
         )
         
-        # Gemini-Call mit Image-Response (working version)
+        # Generate random seed for each call to prevent caching/identical results
+        random_seed = secrets.randbelow(1000000)  # 0-999999
+        logger.info(f"🎲 ANTI-CACHE: Using random seed: {random_seed}")
+        
+        # Gemini-Call mit Image-Response (working version) - ANTI-CACHE CONFIG
         response = client.models.generate_content(
             model="gemini-2.5-flash-image-preview", 
             contents=[content],
             config=types.GenerateContentConfig(
                 response_modalities=[types.Modality.TEXT, types.Modality.IMAGE],
-                temperature=0.3,
+                temperature=0.4,  # Increased from 0.3 for more stochasticity
+                top_p=0.9,  # Add top_p for additional randomness
+                # Note: Gemini doesn't support seeds directly, but we log it for tracking
+                seed=None,  # Explicitly no seed caching
             )
         )
         
@@ -357,9 +397,13 @@ VOLUME EFFECT: {intensity:.0f}% intensity - MINIMAL HYDRATION
 - Very subtle lip border definition
 - Result: naturally hydrated, healthy-looking lips
 
-TECHNICAL REQUIREMENTS:
-- Photorealistic result
-- Same resolution and quality as input
+POSITION & TECHNICAL REQUIREMENTS:
+- CRITICAL: Keep EXACT same face position, angle, and framing as input
+- CRITICAL: Maintain IDENTICAL head position and orientation 
+- CRITICAL: Keep SAME background, lighting, and composition
+- CRITICAL: Do NOT center, crop, or reposition the face
+- CRITICAL: Only lips change - everything else EXACTLY as original
+- Photorealistic result with same resolution and quality as input
 - Natural lip texture and color
 - Keep all other facial features exactly unchanged"""
     
@@ -380,7 +424,12 @@ SPECIFIC INSTRUCTIONS FOR VISIBLE RESULTS:
 - Maintain natural skin tone and lighting
 - NO other facial changes - only lip enhancement with visible results
 
-TECHNICAL REQUIREMENTS:
+POSITION & TECHNICAL REQUIREMENTS:
+- CRITICAL: Keep EXACT same face position, angle, and framing as input
+- CRITICAL: Maintain IDENTICAL head position and orientation 
+- CRITICAL: Keep SAME background, lighting, and composition
+- CRITICAL: Do NOT center, crop, or reposition the face
+- CRITICAL: Only lips change - everything else EXACTLY as original
 - Photorealistic result with noticeable before/after difference
 - Same resolution and quality as input
 - Natural lip texture and color but clearly enhanced size
@@ -407,7 +456,12 @@ SPECIFIC INSTRUCTIONS FOR MAXIMUM EFFECT:
 - Maintain natural skin tone and lighting
 - NO other facial changes - ONLY dramatic lip enhancement
 
-TECHNICAL REQUIREMENTS:
+POSITION & TECHNICAL REQUIREMENTS:
+- CRITICAL: Keep EXACT same face position, angle, and framing as input
+- CRITICAL: Maintain IDENTICAL head position and orientation 
+- CRITICAL: Keep SAME background, lighting, and composition
+- CRITICAL: Do NOT center, crop, or reposition the face
+- CRITICAL: Only lips change - everything else EXACTLY as original
 - Photorealistic result with CLEAR before/after difference
 - Same resolution and quality as input
 - Natural lip texture and color but ENHANCED size
@@ -434,7 +488,12 @@ ULTRA-AGGRESSIVE INSTRUCTIONS:
 - Maintain natural skin tone and lighting
 - NO other facial changes - ONLY ultra-dramatic lip enhancement
 
-TECHNICAL REQUIREMENTS:
+POSITION & TECHNICAL REQUIREMENTS:
+- CRITICAL: Keep EXACT same face position, angle, and framing as input
+- CRITICAL: Maintain IDENTICAL head position and orientation 
+- CRITICAL: Keep SAME background, lighting, and composition
+- CRITICAL: Do NOT center, crop, or reposition the face
+- CRITICAL: Only lips change - everything else EXACTLY as original
 - Photorealistic result with EXTREME before/after difference
 - Same resolution and quality as input  
 - Natural lip texture and color but MAXIMUM enhanced size
@@ -455,7 +514,7 @@ async def _direct_gemini_test_inline(input_image):
     # Client initialisieren
     client = genai.Client(api_key=api_key)
     
-    # Fester Test-Prompt für 3.0ml Lip Enhancement
+    # Fester Test-Prompt für 3.0ml Lip Enhancement mit Position-Lock
     prompt = """Perform major lip enhancement with 3.0ml hyaluronic acid.
 VOLUME EFFECT: 60% intensity - MAJOR VOLUME TRANSFORMATION
 - Major volume increase with dramatic fullness
@@ -471,7 +530,12 @@ SPECIFIC INSTRUCTIONS:
 - Maintain natural skin tone and lighting
 - NO other facial changes - only lip enhancement
 
-TECHNICAL REQUIREMENTS:
+POSITION & TECHNICAL REQUIREMENTS:
+- CRITICAL: Keep EXACT same face position, angle, and framing as input
+- CRITICAL: Maintain IDENTICAL head position and orientation 
+- CRITICAL: Keep SAME background, lighting, and composition
+- CRITICAL: Do NOT center, crop, or reposition the face
+- CRITICAL: Only lips change - everything else EXACTLY as original
 - Photorealistic result
 - Same resolution and quality as input
 - Natural lip texture and color

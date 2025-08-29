@@ -115,7 +115,7 @@ class NuvaFaceApp {
 
     async checkApiHealth() {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/health`);
+            const response = await fetch(`${this.apiBaseUrl}/health?v=${Date.now()}`, { cache: 'no-store' });
             const health = await response.json();
             console.log('API Health:', health);
         } catch (error) {
@@ -264,14 +264,21 @@ class NuvaFaceApp {
         try {
             this.showLoading('Maske wird erstellt...', 'Gesichtsmerkmale werden analysiert');
 
-            const response = await fetch(`${this.apiBaseUrl}/segment`, {
+            // Anti-Cache: Add query buster for segment requests
+            const cacheBuster = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
+            
+            const response = await fetch(`${this.apiBaseUrl}/segment?v=${cacheBuster}`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache'
+                },
                 body: JSON.stringify({
                     image: this.currentImage,
                     area: this.selectedArea,
                     feather_px: 3
-                })
+                }),
+                cache: 'no-store'
             });
 
             const result = await response.json();
@@ -465,10 +472,19 @@ class NuvaFaceApp {
                 maskLength: requestBody.mask ? requestBody.mask.length : 0
             });
 
-            const response = await fetch(`${this.apiBaseUrl}${endpoint}`, {
+            // Anti-Cache: Add query buster and cache-busting headers
+            const cacheBuster = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
+            const urlWithBuster = `${this.apiBaseUrl}${endpoint}?v=${cacheBuster}`;
+            
+            const response = await fetch(urlWithBuster, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody)
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache',
+                    'X-Request-ID': `req-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+                },
+                body: JSON.stringify(requestBody),
+                cache: 'no-store'  // Force no browser caching
             });
             
             console.log('🔍 DEBUG: Response status:', response.status);

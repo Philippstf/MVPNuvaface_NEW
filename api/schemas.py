@@ -53,6 +53,9 @@ class QualityMetrics(BaseModel):
     """Simplified quality metrics for Gemini response."""
     notes: str = Field(default="Metrics like ID similarity are not applicable for direct generation models.", description="Notes on quality assessment")
     quality_passed: bool = Field(default=True)
+    # Anti-cache fields for uniqueness tracking
+    request_id: Optional[str] = Field(default=None, description="Unique request ID for anti-cache validation")
+    result_hash: Optional[str] = Field(default=None, description="SHA-256 hash of result image for uniqueness verification")
 
 class SimulationResponse(BaseModel):
     """Response model for aesthetic simulation."""
