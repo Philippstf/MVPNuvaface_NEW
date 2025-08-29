@@ -36,7 +36,7 @@ for python_path in possible_pythons:
 if not GEMINI_ENV_PYTHON:
     GEMINI_ENV_PYTHON = sys.executable  # Use current Python as last resort
 
-WORKER_SCRIPT = ROOT_DIR / 'gemini_worker_optimized.py'
+WORKER_SCRIPT = ROOT_DIR / 'gemini_worker.py'
 
 os.makedirs(TEMP_INPUT_DIR, exist_ok=True)
 os.makedirs(TEMP_OUTPUT_DIR, exist_ok=True)
