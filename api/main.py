@@ -7,6 +7,7 @@ import time
 import random
 import logging
 import io
+from io import BytesIO
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -30,6 +31,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from engine.utils import load_image, image_to_base64, preprocess_image
 from engine.parsing import segment_area, validate_area
 from engine.edit_gemini import generate_gemini_simulation # New Gemini Engine
+from engine.test_gemini import direct_gemini_test # Direct Gemini Test
 from models import get_device, get_cache_info
 
 # Configure logging
@@ -197,6 +199,54 @@ async def _simulate_procedure(request: SimulationRequest):
     except Exception as e:
         logger.error(f"Gemini simulation error: {e}")
         raise HTTPException(status_code=500, detail=f"Simulation failed: {str(e)}")
+
+@app.post("/test/direct-gemini")
+async def test_direct_gemini(request: dict):
+    """
+    TEST ENDPOINT: Direkter Gemini-Call ohne Pipeline-Komplexität
+    Upload -> Direkter 3.0ml Lip Enhancement Test
+    """
+    try:
+        start_time = time.time()
+        
+        logger.info("DEBUG: Starting direct Gemini test...")
+        
+        # Bild laden (nur Base64 Support für Test)
+        if 'image' not in request:
+            raise HTTPException(status_code=400, detail="No image provided")
+            
+        original_image = load_image(request['image'])
+        logger.info(f"DEBUG: Direct test - loaded image: {original_image.size}")
+        
+        # Direkter Gemini-Call ohne jegliche Pipeline-Verarbeitung
+        result_image = await direct_gemini_test(original_image)
+        
+        logger.info(f"DEBUG: Direct test - result image: {result_image.size}")
+        
+        # Einfacher Vergleich
+        original_bytes = BytesIO()
+        result_bytes = BytesIO()
+        original_image.save(original_bytes, format='PNG')
+        result_image.save(result_bytes, format='PNG')
+        
+        identical = original_bytes.getvalue() == result_bytes.getvalue()
+        logger.info(f"DEBUG: Direct test - images identical: {identical}")
+        
+        end_time = time.time()
+        
+        return {
+            "success": True,
+            "result_png": image_to_base64(result_image),
+            "original_png": image_to_base64(original_image),
+            "processing_time_ms": int((end_time - start_time) * 1000),
+            "images_identical": identical,
+            "test_prompt": "3.0ml Lip Enhancement (Major Volume Transformation)",
+            "message": "Direct Gemini call completed - compare with normal pipeline"
+        }
+        
+    except Exception as e:
+        logger.error(f"Direct Gemini test error: {e}")
+        raise HTTPException(status_code=500, detail=f"Direct test failed: {str(e)}")
 
 if __name__ == "__main__":
     uvicorn.run("api.main:app", host="0.0.0.0", port=8000, reload=True)

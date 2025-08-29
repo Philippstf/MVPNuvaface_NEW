@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NuvaFace - Direkter Gemini Test</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 18px;
+        }
+        
+        .test-section {
+            background: #f8f9ff;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid #667eea;
+        }
+        
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f8f9ff;
+        }
+        
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #f0f4ff;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .test-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .test-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .image-container {
+            text-align: center;
+        }
+        
+        .image-container h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .test-info {
+            background: #e8f4fd;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .test-info h3 {
+            color: #667eea;
+            margin-top: 0;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #ffe6e6;
+            border: 1px solid #ff4444;
+            border-radius: 10px;
+            padding: 15px;
+            color: #cc0000;
+            margin: 15px 0;
+            display: none;
+        }
+        
+        .success-badge {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        
+        .warning-badge {
+            display: inline-block;
+            background: #ff9800;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 NuvaFace Direkter Gemini Test</h1>
+        <p class="subtitle">Pipeline-Debugging: Upload → Direkter Gemini-Call ohne Komplexität</p>
+        
+        <div class="test-section">
+            <div class="test-info">
+                <h3>🎯 Was dieser Test macht:</h3>
+                <ul>
+                    <li><strong>Fester Prompt:</strong> 3.0ml Lip Enhancement (Major Volume Transformation)</li>
+                    <li><strong>Keine Pipeline:</strong> Direkter Gemini 2.5 Flash Image Call</li>
+                    <li><strong>Keine Verarbeitung:</strong> Originalbild → Gemini → Ergebnis</li>
+                    <li><strong>Zweck:</strong> Prüfen ob das Grundprinzip funktioniert</li>
+                </ul>
+            </div>
+            
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📸</div>
+                <h3>Bild für Test hochladen</h3>
+                <p>Klicken oder Datei hierhin ziehen</p>
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+            
+            <button class="test-button" id="testButton" onclick="runDirectTest()" disabled>
+                🚀 Direkter Gemini Test starten (3.0ml Lips)
+            </button>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>Direkter Gemini-Call läuft... (kann 5-10 Sekunden dauern)</p>
+        </div>
+        
+        <div class="error" id="errorDiv"></div>
+        
+        <div class="results" id="results">
+            <div class="test-info">
+                <h3>📊 Test-Ergebnisse:</h3>
+                <div id="testStats"></div>
+            </div>
+            
+            <div class="comparison">
+                <div class="image-container">
+                    <h3>📤 Original (Input)</h3>
+                    <img id="originalImage" alt="Original">
+                </div>
+                <div class="image-container">
+                    <h3>📥 Gemini Ergebnis (Output)</h3>
+                    <img id="resultImage" alt="Result">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedImage = null;
+        let selectedImageBase64 = null;
+        
+        // File Upload Handling
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const testButton = document.getElementById('testButton');
+        
+        fileInput.addEventListener('change', handleFileSelect);
+        
+        // Drag & Drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+        
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+        
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showError('Bitte wählen Sie eine Bilddatei aus.');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                selectedImageBase64 = e.target.result;
+                selectedImage = file.name;
+                
+                // Upload Area aktualisieren
+                uploadArea.innerHTML = `
+                    <div class="upload-icon">✅</div>
+                    <h3>Bild hochgeladen: ${file.name}</h3>
+                    <p>Bereit für direkten Gemini Test</p>
+                `;
+                
+                testButton.disabled = false;
+                hideError();
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        async function runDirectTest() {
+            if (!selectedImageBase64) {
+                showError('Bitte laden Sie zuerst ein Bild hoch.');
+                return;
+            }
+            
+            showLoading();
+            hideError();
+            hideResults();
+            
+            try {
+                console.log('🚀 Starting direct Gemini test...');
+                
+                const response = await fetch('/test/direct-gemini', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        image: selectedImageBase64
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Test fehlgeschlagen');
+                }
+                
+                const result = await response.json();
+                console.log('✅ Direct test completed:', result);
+                
+                displayResults(result);
+                
+            } catch (error) {
+                console.error('❌ Direct test error:', error);
+                showError(`Test fehlgeschlagen: ${error.message}`);
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        function displayResults(result) {
+            document.getElementById('originalImage').src = 'data:image/png;base64,' + result.original_png;
+            document.getElementById('resultImage').src = 'data:image/png;base64,' + result.result_png;
+            
+            const identicalBadge = result.images_identical ? 
+                '<span class="warning-badge">⚠️ Identische Bilder</span>' : 
+                '<span class="success-badge">✅ Bilder unterschiedlich</span>';
+            
+            document.getElementById('testStats').innerHTML = `
+                <p><strong>Verarbeitungszeit:</strong> ${result.processing_time_ms} ms</p>
+                <p><strong>Test-Prompt:</strong> ${result.test_prompt}</p>
+                <p><strong>Ergebnis:</strong> ${identicalBadge}</p>
+                <p><strong>Status:</strong> ${result.message}</p>
+            `;
+            
+            document.getElementById('results').style.display = 'block';
+        }
+        
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorDiv');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        function hideError() {
+            document.getElementById('errorDiv').style.display = 'none';
+        }
+        
+        function hideResults() {
+            document.getElementById('results').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
