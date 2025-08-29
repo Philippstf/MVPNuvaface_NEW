@@ -126,8 +126,8 @@ async def _simulate_procedure(request: SimulationRequest):
         original_image = load_image(request.image)
         logger.info(f"DEBUG: Loaded original image: {original_image.size}")
 
-        # Generate the mask first - we'll send it to Gemini
-        processed_original, _ = preprocess_image(original_image, target_size=768, align_face=True)
+        # Generate the mask from the SAME image we send to Gemini (no face alignment!)
+        processed_original, _ = preprocess_image(original_image, target_size=768, align_face=False)
         logger.info(f"DEBUG: Processed image size: {processed_original.size}")
         
         mask_image, segment_metadata = segment_area(processed_original, request.area)
@@ -140,7 +140,7 @@ async def _simulate_procedure(request: SimulationRequest):
         logger.info(f"DEBUG: Original image size: {original_image.size}, mask size: {mask_image.size}")
         
         result_image = await generate_gemini_simulation(
-            original_image=original_image,
+            original_image=processed_original,  # Use the SAME processed image for consistency
             volume_ml=float(volume_ml),
             area=request.area.value,
             mask_image=mask_image

@@ -31,32 +31,30 @@ except ImportError:
 
 # --- PROMPT SYSTEM (UNVERÄNDERT) ---
 def get_prompt_for_lips(volume_ml: float) -> str:
-    """Generate volume-specific prompts with consistent progression from 0-5ml"""
+    """Generate volume-specific prompts optimized for Gemini 2.5 Flash Image"""
     
     # Calculate intensity percentage (0-100%) based on volume
     intensity = min(volume_ml * 20, 100)  # 5ml = 100%
     
     if volume_ml <= 0.5:  # 0-0.5ml: Minimal hydration and tightening
-        return f"""Perform minimal lip hydration treatment with {volume_ml}ml hyaluronic acid.
+        return f"""Using the provided facial photograph, create a photorealistic visualization showing the result of a {volume_ml}ml hyaluronic acid lip treatment. 
 
-VOLUME EFFECT: {intensity:.0f}% intensity - MINIMAL CHANGE ONLY
-- Effect should be BARELY VISIBLE to naked eye
-- Primary goal: slight skin tightening and hydration
-- NO volume increase, only subtle texture improvement
-- Result: lips look slightly more moisturized and defined
+TRANSFORMATION REQUIRED: Apply {intensity:.0f}% enhancement intensity to show minimal but visible lip improvement. The lips should appear slightly more hydrated and defined, as if professionally treated.
 
-SPECIFIC INSTRUCTIONS:
-- Minimal skin tightening effect around lip edges
-- Slight definition of natural lip border (very subtle)
-- NO volume addition to lip body
-- Preserve exact original lip size and shape
-- Effect should be like professional lip care, not enhancement
+SPECIFIC VISUAL CHANGES:
+- Enhance lip texture to appear more moisturized and smooth
+- Add subtle definition to the natural lip border
+- Create slight skin tightening effect around lip edges
+- NO volume increase to lip body - maintain exact original size and shape
+- Result should look like professional lip care, not enhancement
 
-TECHNICAL REQUIREMENTS:
-- CRITICAL: Preserve exact original lip color - no changes whatsoever
-- AVOID: Any visible volume increase or shape change
-- AVOID: Lip borders, outlines, or color transitions  
-- Ensure natural skin texture and lighting"""
+CRITICAL PRESERVATION:
+- Keep identical lip color, undertones, and pigmentation
+- Maintain original lighting, shadows, and image composition
+- Preserve all facial proportions and natural skin texture
+- Keep the same background and camera angle
+
+The output should demonstrate the subtle but professional result of minimal aesthetic lip treatment."""
 
     elif volume_ml <= 1.0:  # 0.5-1ml: Light tightening + minimal volume
         return f"""Perform light lip enhancement with {volume_ml}ml hyaluronic acid.
