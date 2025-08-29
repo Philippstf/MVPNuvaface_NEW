@@ -415,14 +415,15 @@ def main():
         result_image.save(args.output, 'PNG')
         print(f"💾 Saved result: {args.output}", file=sys.stderr)
         
-        # Für edit_gemini.py: Base64 Output auf stdout
+        # Für edit_gemini.py: Base64 Output auf stdout (JPEG für kleinere Dateigröße)
         final_buffer = BytesIO()
-        result_image.save(final_buffer, format='PNG')
+        result_image.save(final_buffer, format='JPEG', quality=85)
         final_base64 = base64.b64encode(final_buffer.getvalue()).decode('utf-8')
         
         print("IMAGE_DATA_START:" + final_base64 + ":IMAGE_DATA_END")
         
         print(f"🔍 DEBUG: Final output base64 length = {len(final_base64)}", file=sys.stderr)
+        print(f"🔍 DEBUG: Output format changed to JPEG quality=85 for stdout compatibility", file=sys.stderr)
         
         print(f"✅ Success with {used_model}")
         
