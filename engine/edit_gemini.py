@@ -125,7 +125,7 @@ async def generate_gemini_simulation(
             start_idx = stdout.find(start_marker) + len(start_marker)
             end_idx = stdout.find(end_marker)
             
-            if start_idx > len(start_marker) and end_idx > start_idx:
+            if start_idx >= len(start_marker) and end_idx > start_idx:
                 base64_data = stdout[start_idx:end_idx].strip()
                 
                 # Decode base64 to image
