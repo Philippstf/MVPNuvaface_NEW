@@ -146,7 +146,7 @@ async def _simulate_procedure(request: SimulationRequest):
         logger.info(f"DEBUG: SENDING TO GEMINI: processed image size: {processed_original.size}, mask size: {mask_image.size}")
         logger.info(f"DEBUG: (Original was {original_image.size}, but we send processed {processed_original.size})")
         
-        # Use the working direct Gemini call instead of broken subprocess version
+        # Use the working direct Gemini call instead of broken subprocess version  
         result_image = await _direct_gemini_call_working(processed_original, float(volume_ml), request.area.value)
         logger.info(f"DEBUG: Received result image from Gemini: {result_image.size}")
         
@@ -218,7 +218,7 @@ async def test_direct_gemini(request: dict):
         original_image = load_image(request['image'])
         logger.info(f"DEBUG: Direct test - loaded image: {original_image.size}")
         
-        # Use the working direct Gemini call instead of the broken subprocess version
+        # Use the working direct Gemini call for test endpoint (fixed 3.0ml lips)
         result_image = await _direct_gemini_call_working(original_image, 3.0, "lips")
         
         logger.info(f"DEBUG: Direct test - result image: {result_image.size}")
