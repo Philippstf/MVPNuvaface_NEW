@@ -30,6 +30,8 @@ except ImportError:
     print("Error: google-genai package not found. Please install it with: pip install google-genai", file=sys.stderr)
     sys.exit(1)
 
+import base64
+
 
 # --- Precise Volume-Based Prompt System for Consistent Results ---
 def get_prompt_for_lips(volume_ml: float) -> str:
@@ -357,21 +359,22 @@ def generate_with_fallback(client, prompt, image_data, mask_data=None):
             # Prepare the content for new google-genai SDK using correct format
             print(f"DEBUG: Preparing Gemini API call...", file=sys.stderr)
             
-            # Create the content parts list
-            contents = [prompt, image_data]
+            # Create the content parts list with explicit prompt for image generation
+            image_gen_prompt = f"{prompt}\n\nPLEASE GENERATE AN IMAGE showing the result of this aesthetic treatment. The output MUST include a generated/modified image."
+            contents = [image_gen_prompt, image_data]
             if mask_data:
                 contents.append(mask_data)
             print(f"DEBUG: Contents list has {len(contents)} parts", file=sys.stderr)
             
-            # Use proper config object - simplified for Flash Image models
+            # Use proper config object with response_modalities for image generation
             print(f"DEBUG: Creating GenerateContentConfig...", file=sys.stderr)
             config = types.GenerateContentConfig(
                 temperature=0.1,
                 top_p=0.8,
-                max_output_tokens=8192
-                # Removed response_modalities and thinking_config - not supported by Flash Image models
+                max_output_tokens=8192,
+                response_modalities=[types.Modality.TEXT, types.Modality.IMAGE]  # Enable multimodal output
             )
-            print(f"DEBUG: Config created: temp={config.temperature}, top_p={config.top_p}", file=sys.stderr)
+            print(f"DEBUG: Config created: temp={config.temperature}, top_p={config.top_p}, modalities={config.response_modalities}", file=sys.stderr)
             
             # Wrap API call with timeout handling (SDK has 60s hard limit)
             print(f"DEBUG: About to call client.models.generate_content...", file=sys.stderr)
@@ -383,6 +386,7 @@ def generate_with_fallback(client, prompt, image_data, mask_data=None):
                 start_time = time.time()
                 print(f"DEBUG: API CALL START at {start_time}", file=sys.stderr)
                 
+                # Correct content structure for multimodal generation
                 response = client.models.generate_content(
                     model=model_name,
                     contents=contents,
@@ -432,20 +436,9 @@ def generate_with_fallback(client, prompt, image_data, mask_data=None):
                                 last_error = f"Empty image data from {model_name}"
                                 break
                             
-                            # Try to validate the image data by decoding it
-                            try:
-                                test_bytes = base64.b64decode(part.inline_data.data)
-                                test_image = Image.open(BytesIO(test_bytes))
-                                # Validate dimensions
-                                if test_image.size[0] < 10 or test_image.size[1] < 10:
-                                    raise ValueError(f"Invalid dimensions: {test_image.size}")
-                                print(f"SUCCESS: Using model {model_name}")
-                                return part.inline_data.data, model_name
-                            except Exception as validation_error:
-                                print(f"ERROR: {model_name} returned corrupt image data: {validation_error}")
-                                print(f"ERROR: Trying next model...")
-                                last_error = f"Corrupt image data from {model_name}: {validation_error}"
-                                break
+                            # The data is already base64 encoded, return it directly
+                            print(f"SUCCESS: Using model {model_name}")
+                            return part.inline_data.data, model_name
                         else:
                             print(f"DEBUG: Part {i} has text: {hasattr(part, 'text') and part.text}")
                 else:
