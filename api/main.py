@@ -31,8 +31,12 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from engine.utils import load_image, image_to_base64, preprocess_image
 from engine.parsing import segment_area, validate_area
 from engine.edit_gemini import generate_gemini_simulation # New Gemini Engine
-from engine.test_gemini import direct_gemini_test # Direct Gemini Test
 from models import get_device, get_cache_info
+
+# Direct Gemini Test (inline to avoid import issues)
+import os
+from google import genai
+from google.genai import types
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -219,7 +223,7 @@ async def test_direct_gemini(request: dict):
         logger.info(f"DEBUG: Direct test - loaded image: {original_image.size}")
         
         # Direkter Gemini-Call ohne jegliche Pipeline-Verarbeitung
-        result_image = await direct_gemini_test(original_image)
+        result_image = await _direct_gemini_test_inline(original_image)
         
         logger.info(f"DEBUG: Direct test - result image: {result_image.size}")
         
@@ -247,6 +251,115 @@ async def test_direct_gemini(request: dict):
     except Exception as e:
         logger.error(f"Direct Gemini test error: {e}")
         raise HTTPException(status_code=500, detail=f"Direct test failed: {str(e)}")
+
+async def _direct_gemini_test_inline(input_image):
+    """Inline direct Gemini test to avoid import issues"""
+    import base64
+    from PIL import Image
+    
+    # API Key prüfen
+    api_key = os.getenv("GOOGLE_API_KEY")
+    if not api_key:
+        raise ValueError("GOOGLE_API_KEY environment variable not set")
+    
+    # Client initialisieren
+    client = genai.Client(api_key=api_key)
+    
+    # Fester Test-Prompt für 3.0ml Lip Enhancement
+    prompt = """Perform major lip enhancement with 3.0ml hyaluronic acid.
+VOLUME EFFECT: 60% intensity - MAJOR VOLUME TRANSFORMATION
+- Major volume increase with dramatic fullness
+- Strong lip projection and luxurious appearance  
+- Very pronounced cupid's bow definition
+- Result: dramatically fuller, luxurious-looking lips
+
+SPECIFIC INSTRUCTIONS:
+- Add 50-65% volume to both upper (45%) and lower lips (55%)
+- Create strong definition of lip borders
+- Enhance cupid's bow prominently
+- Show realistic skin texture with enhanced fullness
+- Maintain natural skin tone and lighting
+- NO other facial changes - only lip enhancement
+
+TECHNICAL REQUIREMENTS:
+- Photorealistic result
+- Same resolution and quality as input
+- Natural lip texture and color
+- Professional aesthetic treatment appearance
+- Keep all other facial features exactly unchanged"""
+
+    logger.info(f"🔍 DEBUG: Using inline test prompt for 3.0ml lips")
+    logger.info(f"🔍 DEBUG: Input image size: {input_image.size}")
+    
+    # Bild in JPEG konvertieren (für bessere Kompatibilität)
+    if input_image.mode != 'RGB':
+        input_image = input_image.convert('RGB')
+    
+    # Bild zu Bytes
+    img_buffer = BytesIO()
+    input_image.save(img_buffer, format='JPEG', quality=95)
+    img_bytes = img_buffer.getvalue()
+    
+    try:
+        logger.info(f"🔍 DEBUG: Calling Gemini 2.5 Flash Image directly...")
+        
+        # Content für multimodalen Input
+        content = types.Content(
+            parts=[
+                types.Part.from_text(prompt),
+                types.Part.from_bytes(data=img_bytes, mime_type="image/jpeg")
+            ]
+        )
+        
+        # Gemini-Call mit Image-Response
+        response = client.models.generate_content(
+            model="gemini-2.5-flash-image-preview", 
+            contents=[content],
+            config=types.GenerateContentConfig(
+                response_modalities=[types.Modality.TEXT, types.Modality.IMAGE],
+                temperature=0.3,
+            )
+        )
+        
+        logger.info(f"✅ Gemini call successful!")
+        
+        # Response verarbeiten
+        if not response.candidates or not response.candidates[0].content:
+            raise Exception("No response content from Gemini")
+        
+        # Bild-Part finden
+        image_part = None
+        for part in response.candidates[0].content.parts:
+            if hasattr(part, 'inline_data') and part.inline_data:
+                image_part = part
+                break
+        
+        if not image_part:
+            raise Exception("No image data in Gemini response")
+        
+        # Bild-Daten extrahieren
+        image_data = image_part.inline_data.data
+        
+        if isinstance(image_data, bytes):
+            logger.info("🔍 DEBUG: Got RAW BYTES from Gemini - using directly! ✅")
+            image_bytes = image_data
+        elif isinstance(image_data, str):
+            logger.info("🔍 DEBUG: Got Base64 string - decoding...")
+            image_bytes = base64.b64decode(image_data)
+        else:
+            raise Exception(f"Unexpected image data type: {type(image_data)}")
+        
+        # Bytes zu PIL Image
+        result_image = Image.open(BytesIO(image_bytes))
+        
+        logger.info(f"🔍 DEBUG: Result image size: {result_image.size}")
+        logger.info(f"✅ Direct Gemini test completed successfully!")
+        
+        return result_image
+        
+    except Exception as e:
+        logger.error(f"❌ ERROR: Direct Gemini call failed: {e}")
+        raise Exception(f"Direct Gemini test failed: {e}")
 
 if __name__ == "__main__":
     uvicorn.run("api.main:app", host="0.0.0.0", port=8000, reload=True)
