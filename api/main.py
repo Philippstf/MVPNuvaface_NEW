@@ -146,12 +146,8 @@ async def _simulate_procedure(request: SimulationRequest):
         logger.info(f"DEBUG: SENDING TO GEMINI: processed image size: {processed_original.size}, mask size: {mask_image.size}")
         logger.info(f"DEBUG: (Original was {original_image.size}, but we send processed {processed_original.size})")
         
-        result_image = await generate_gemini_simulation(
-            original_image=processed_original,  # Use the SAME processed image for consistency
-            volume_ml=float(volume_ml),
-            area=request.area.value,
-            mask_image=mask_image
-        )
+        # Use the working direct Gemini call instead of broken subprocess version
+        result_image = await _direct_gemini_call_working(processed_original, float(volume_ml), request.area.value)
         logger.info(f"DEBUG: Received result image from Gemini: {result_image.size}")
         
         # Check if result is identical to input (compare the same images we sent to Gemini)
@@ -222,8 +218,8 @@ async def test_direct_gemini(request: dict):
         original_image = load_image(request['image'])
         logger.info(f"DEBUG: Direct test - loaded image: {original_image.size}")
         
-        # Direkter Gemini-Call ohne jegliche Pipeline-Verarbeitung
-        result_image = await _direct_gemini_test_inline(original_image)
+        # Use the working direct Gemini call instead of the broken subprocess version
+        result_image = await _direct_gemini_call_working(original_image, 3.0, "lips")
         
         logger.info(f"DEBUG: Direct test - result image: {result_image.size}")
         
@@ -264,6 +260,164 @@ async def debug_api_key():
         "api_key_length": len(api_key),
         "environment": "cloud_run"
     }
+
+async def _direct_gemini_call_working(input_image, volume_ml: float, area: str):
+    """Working direct Gemini call - based on successful test endpoint"""
+    import base64
+    from PIL import Image
+    
+    # API Key
+    api_key = os.getenv("GOOGLE_API_KEY")
+    if not api_key:
+        raise ValueError("GOOGLE_API_KEY environment variable not set")
+    
+    # Client initialisieren
+    client = genai.Client(api_key=api_key)
+    
+    # Get the right prompt based on area and volume
+    if area == "lips":
+        prompt = get_prompt_for_lips(volume_ml)
+    else:
+        # Default fallback prompt
+        prompt = f"Perform {area} enhancement with {volume_ml}ml treatment. Show natural, photorealistic results with enhanced volume and definition while keeping all other facial features exactly unchanged."
+    
+    logger.info(f"🔍 DEBUG: Using working direct call for {volume_ml}ml {area}")
+    logger.info(f"🔍 DEBUG: Input image size: {input_image.size}")
+    
+    # Bild in JPEG konvertieren (für bessere Kompatibilität)
+    if input_image.mode != 'RGB':
+        input_image = input_image.convert('RGB')
+    
+    # Bild zu Bytes
+    img_buffer = BytesIO()
+    input_image.save(img_buffer, format='JPEG', quality=95)
+    img_bytes = img_buffer.getvalue()
+    
+    try:
+        logger.info(f"🔍 DEBUG: Calling Gemini 2.5 Flash Image directly...")
+        
+        # Content für multimodalen Input (working version)
+        content = types.Content(
+            parts=[
+                types.Part(text=prompt),
+                types.Part(inline_data=types.Blob(mime_type="image/jpeg", data=img_bytes))
+            ]
+        )
+        
+        # Gemini-Call mit Image-Response (working version)
+        response = client.models.generate_content(
+            model="gemini-2.5-flash-image-preview", 
+            contents=[content],
+            config=types.GenerateContentConfig(
+                response_modalities=[types.Modality.TEXT, types.Modality.IMAGE],
+                temperature=0.3,
+            )
+        )
+        
+        logger.info(f"✅ Working Gemini call successful!")
+        
+        # Response verarbeiten
+        if not response.candidates or not response.candidates[0].content:
+            raise Exception("No response content from Gemini")
+        
+        # Bild-Part finden
+        image_part = None
+        for part in response.candidates[0].content.parts:
+            if hasattr(part, 'inline_data') and part.inline_data:
+                image_part = part
+                break
+        
+        if not image_part:
+            raise Exception("No image data in Gemini response")
+        
+        # Bild-Daten extrahieren
+        image_data = image_part.inline_data.data
+        
+        if isinstance(image_data, bytes):
+            logger.info("🔍 DEBUG: Got RAW BYTES from Gemini - using directly! ✅")
+            image_bytes = image_data
+        elif isinstance(image_data, str):
+            logger.info("🔍 DEBUG: Got Base64 string - decoding...")
+            image_bytes = base64.b64decode(image_data)
+        else:
+            raise Exception(f"Unexpected image data type: {type(image_data)}")
+        
+        # Bytes zu PIL Image
+        result_image = Image.open(BytesIO(image_bytes))
+        
+        logger.info(f"🔍 DEBUG: Result image size: {result_image.size}")
+        logger.info(f"✅ Working direct Gemini call completed successfully!")
+        
+        return result_image
+        
+    except Exception as e:
+        logger.error(f"❌ ERROR: Working Gemini call failed: {e}")
+        raise Exception(f"Working Gemini call failed: {e}")
+
+def get_prompt_for_lips(volume_ml: float) -> str:
+    """Generate volume-specific prompts optimized for Gemini 2.5 Flash Image"""
+    
+    # Calculate intensity percentage (0-100%) based on volume
+    intensity = min(volume_ml * 20, 100)  # 5ml = 100%
+    
+    if volume_ml <= 0.5:  # 0-0.5ml: Minimal hydration
+        return f"""Perform minimal lip enhancement with {volume_ml}ml hyaluronic acid.
+VOLUME EFFECT: {intensity:.0f}% intensity - MINIMAL HYDRATION
+- Slight hydration and natural texture enhancement
+- Very subtle lip border definition
+- Result: naturally hydrated, healthy-looking lips
+
+TECHNICAL REQUIREMENTS:
+- Photorealistic result
+- Same resolution and quality as input
+- Natural lip texture and color
+- Keep all other facial features exactly unchanged"""
+    
+    elif volume_ml <= 2.0:  # 0.5-2ml: Natural enhancement
+        return f"""Perform natural lip enhancement with {volume_ml}ml hyaluronic acid.
+VOLUME EFFECT: {intensity:.0f}% intensity - NATURAL ENHANCEMENT
+- Moderate volume increase with natural fullness
+- Subtle lip projection and healthy appearance
+- Well-defined cupid's bow
+- Result: naturally fuller, attractive lips
+
+SPECIFIC INSTRUCTIONS:
+- Add 25-40% volume to both upper and lower lips
+- Create subtle definition of lip borders
+- Enhance cupid's bow naturally
+- Show realistic skin texture with natural fullness
+- Maintain natural skin tone and lighting
+- NO other facial changes - only lip enhancement
+
+TECHNICAL REQUIREMENTS:
+- Photorealistic result
+- Same resolution and quality as input
+- Natural lip texture and color
+- Professional aesthetic treatment appearance
+- Keep all other facial features exactly unchanged"""
+    
+    else:  # 2ml+: Major enhancement
+        return f"""Perform major lip enhancement with {volume_ml}ml hyaluronic acid.
+VOLUME EFFECT: {intensity:.0f}% intensity - MAJOR VOLUME TRANSFORMATION
+- Major volume increase with dramatic fullness
+- Strong lip projection and luxurious appearance  
+- Very pronounced cupid's bow definition
+- Result: dramatically fuller, luxurious-looking lips
+
+SPECIFIC INSTRUCTIONS:
+- Add 50-65% volume to both upper (45%) and lower lips (55%)
+- Create strong definition of lip borders
+- Enhance cupid's bow prominently
+- Show realistic skin texture with enhanced fullness
+- Maintain natural skin tone and lighting
+- NO other facial changes - only lip enhancement
+
+TECHNICAL REQUIREMENTS:
+- Photorealistic result
+- Same resolution and quality as input
+- Natural lip texture and color
+- Professional aesthetic treatment appearance
+- Keep all other facial features exactly unchanged"""
 
 async def _direct_gemini_test_inline(input_image):
     """Inline direct Gemini test to avoid import issues"""
