@@ -421,7 +421,6 @@ def main():
         final_base64 = base64.b64encode(final_buffer.getvalue()).decode('utf-8')
         
         # Force stdout flush und debug output
-        import sys
         sys.stdout.flush()
         
         print(f"🔍 DEBUG: About to print {len(final_base64)} chars to stdout", file=sys.stderr)
