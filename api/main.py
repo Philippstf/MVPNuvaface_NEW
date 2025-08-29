@@ -303,11 +303,11 @@ TECHNICAL REQUIREMENTS:
     try:
         logger.info(f"🔍 DEBUG: Calling Gemini 2.5 Flash Image directly...")
         
-        # Content für multimodalen Input
+        # Content für multimodalen Input (corrected syntax)
         content = types.Content(
             parts=[
-                types.Part.from_text(prompt),
-                types.Part.from_bytes(data=img_bytes, mime_type="image/jpeg")
+                types.Part(text=prompt),
+                types.Part(inline_data=types.Blob(mime_type="image/jpeg", data=img_bytes))
             ]
         )
         
