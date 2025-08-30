@@ -399,18 +399,21 @@ async def _direct_gemini_call_working(input_image, volume_ml: float, area: str):
                 text_response = part.text.strip()
                 logger.info(f"📊 TEXT-RESPONSE: {text_response}")
                 
-                # Look for geometric confirmation (for chin and cheek treatments)
+                # Look for geometric confirmation (for chin, cheek, and Botox treatments)
                 if area == "chin" and any(keyword in text_response.lower() for keyword in ['mm', 'projection', 'applied', 'enhanced']):
                     geometry_confirmed = True
                     logger.info(f"✅ CHIN GEOMETRY CONFIRMED: {text_response}")
                 elif area == "cheeks" and any(keyword in text_response.lower() for keyword in ['mm', 'malar', 'apex', 'nlf', 'applied', 'enhanced']):
                     geometry_confirmed = True
                     logger.info(f"✅ CHEEKS GEOMETRY CONFIRMED: {text_response}")
+                elif area == "forehead" and any(keyword in text_response.lower() for keyword in ['units', 'softening', 'wrinkle', 'reduction', 'applied']):
+                    geometry_confirmed = True
+                    logger.info(f"✅ BOTOX UNITS CONFIRMED: {text_response}")
                 break
         
-        # Warning if no text confirmation (especially for chin and cheeks)
-        if area in ["chin", "cheeks"] and not geometry_confirmed:
-            logger.warning(f"⚠️ NO GEOMETRY CONFIRMATION for {area.upper()}: Text response missing or incomplete")
+        # Warning if no text confirmation (especially for treatments with precise targets)
+        if area in ["chin", "cheeks", "forehead"] and not geometry_confirmed:
+            logger.warning(f"⚠️ NO TREATMENT CONFIRMATION for {area.upper()}: Text response missing or incomplete")
         
         # Bild-Part finden
         image_part = None
@@ -698,101 +701,73 @@ OUTPUT:
 - Also return one short sentence confirming the applied targets (mm/%)."""
 
 
-def get_prompt_for_botox_forehead(volume_ml: float) -> str:
-    """Generate dosage-specific prompts for Botox forehead treatment (volume_ml converted to units)"""
+def ml_to_botox_deltas(ml: float):
+    """
+    Convert ml volume to precise Botox units and softening parameters.
+    Based on ChatGPT's frontalis muscle treatment analysis.
+    """
+    ml_clamped = max(0.0, min(ml, 4.0))  # Clamp to 0-4ml range
+    units = round(ml_clamped * 10)  # Convert to units: 0-40 units
+    t = units / 40.0  # Normalize to 0-1 range
+    intensity_pct = round(100 * t)  # Overall intensity: 0-100%
+    wrinkle_softening_pct = round(90 * t)  # Wrinkle reduction: 0-90% (never 100%)
+    return units, intensity_pct, wrinkle_softening_pct
+
+def get_prompt_for_botox_forehead(volume_ml: float, sex: str = "female", style: str = "natural") -> str:
+    """
+    Generate precise Botox forehead treatment prompts with unit-based targets.
+    Uses ChatGPT's enhanced frontalis treatment system.
+    """
     
-    # Convert ml to Botox units for medical accuracy: 1ml ≈ 10 units (UI convenience)
-    units = int(volume_ml * 10)
-    intensity = min(volume_ml * 20, 100)  # 5ml input = 50 units = 100%
+    # Get precise treatment parameters
+    units, intensity, wrinkle_pct = ml_to_botox_deltas(volume_ml)
     
-    if volume_ml <= 1.5:  # 0-1.5ml = 0-15 units: Light treatment
-        return f"""Perform light Botox forehead treatment with approximately {units} units.
-TREATMENT EFFECT: {int(intensity)} percent intensity - SUBTLE WRINKLE SOFTENING
-- Gentle reduction of horizontal forehead lines
-- Subtle muscle relaxation for natural movement
-- Light smoothing without frozen appearance
-- Result: softly smoothed forehead with preserved natural expressions
+    # Generate unique request ID for anti-cache
+    request_id = str(uuid.uuid4())
+    
+    # ChatGPT's Random Token System
+    import secrets
+    import string
+    random_token = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(8))
+    
+    # Build enhanced prompt with unit-based targets
+    return f"""REQUEST_ID: {request_id}
+RANDOM_TOKEN: {random_token}
 
-SPECIFIC INSTRUCTIONS FOR LIGHT BOTOX TREATMENT:
-- Reduce horizontal forehead wrinkles by 30-50 percent
-- Maintain natural facial expressions and eyebrow movement
-- Create subtle smoothing without over-treatment
-- Preserve skin texture and natural forehead mobility
-- Keep natural skin tone and lighting unchanged
-- NO other facial changes - only light forehead smoothing
+You are simulating a forehead (frontalis) botulinum-toxin treatment effect using {units} Units (UI-scaled).
+INTENSITY: {intensity}%
 
-POSITION & TECHNICAL REQUIREMENTS:
-- CRITICAL: Keep EXACT same face position, angle, and framing as input
-- CRITICAL: Maintain IDENTICAL head position and orientation 
-- CRITICAL: Keep SAME background, lighting, and composition
-- CRITICAL: Do NOT center, crop, or reposition the face
-- CRITICAL: Only forehead wrinkles change - everything else EXACTLY as original
-- Photorealistic result with subtle before/after difference
-- Same resolution and quality as input
-- Natural forehead texture but with reduced wrinkle visibility
-- Professional aesthetic treatment appearance
-- Keep all other facial features exactly unchanged"""
+EDIT SCOPE (CRITICAL):
+- Edit ONLY the horizontal forehead lines (frontalis region).
+- Keep EVERYTHING ELSE IDENTICAL to the input: head pose, camera angle, framing, background,
+  exposure, color balance, hair, brows, eyelids, eyes, nose, lips, teeth, and overall skin texture.
 
-    elif volume_ml <= 3.0:  # 1.5-3ml = 15-30 units: Standard treatment
-        return f"""Perform professional Botox forehead treatment with approximately {units} units.
-TREATMENT EFFECT: {int(intensity)} percent intensity - BALANCED WRINKLE REDUCTION
-- Clear reduction of horizontal forehead lines
-- Effective muscle relaxation with natural movement preservation
-- Noticeable smoothing with refreshed appearance
-- Result: significantly smoother forehead maintaining natural expressions
+TREATMENT EFFECT TARGETS:
+- Reduce horizontal forehead wrinkle visibility by about {wrinkle_pct}%.
+- Preserve natural skin pores; avoid plastic/over-smoothed look.
+- Maintain natural eyebrow movement; no "frozen" appearance.
 
-SPECIFIC INSTRUCTIONS FOR STANDARD BOTOX TREATMENT:
-- Reduce horizontal forehead wrinkles by 60-80 percent
-- Create clear smoothing while preserving eyebrow mobility
-- Balance wrinkle reduction with natural facial expressions
-- Show realistic skin texture with enhanced smoothness
-- Achieve professional aesthetic results
-- Keep natural skin tone and lighting unchanged
-- NO other facial changes - only forehead wrinkle reduction
+AESTHETIC STYLE:
+- Sex: {sex}
+- Overall style: {style} (natural = conservative softening; defined = clearer smoothing but realistic texture; dramatic = stronger softening while preserving believable detail)
+
+HARD NEGATIVE CONSTRAINTS:
+- Do NOT change head position, field-of-view, composition, or re-center/zoom the face.
+- Do NOT alter brows shape/height, eyelids, eye canthi, glabella, temples, jawline, neck width, hair, or background.
+- No artifacts: no halos, banding, blur streaks, duplicated textures, or loss of pore detail.
+- Preserve input resolution and noise pattern; do not brighten or recolor the image.
 
 POSITION & TECHNICAL REQUIREMENTS:
 - CRITICAL: Keep EXACT same face position, angle, and framing as input
 - CRITICAL: Maintain IDENTICAL head position and orientation 
 - CRITICAL: Keep SAME background, lighting, and composition
 - CRITICAL: Do NOT center, crop, or reposition the face
-- CRITICAL: Only forehead wrinkles change - everything else EXACTLY as original
-- Photorealistic result with clear before/after difference
-- Same resolution and quality as input
-- Natural forehead texture but with significantly reduced wrinkles
-- Professional aesthetic treatment appearance
-- Keep all other facial features exactly unchanged
-- IMPORTANT: Forehead smoothing should be clearly visible yet natural"""
+- CRITICAL: Only horizontal forehead lines change - everything else EXACTLY as original
 
-    else:  # 3ml+ = 30+ units: Intensive treatment
-        return f"""Perform intensive Botox forehead treatment with approximately {units} units.
-TREATMENT EFFECT: {int(intensity)} percent intensity - MAXIMUM WRINKLE ELIMINATION
-- Dramatic reduction of all horizontal forehead lines
-- Strong muscle relaxation for smooth, youthful appearance
-- Maximum smoothing with professional results
-- Result: dramatically smoothed forehead with youthful, refreshed look
+OUTPUT:
+- Return the edited image at the SAME resolution as the input.
+- Also return one short sentence confirming the applied Units and % softening target."""
 
-SPECIFIC INSTRUCTIONS FOR INTENSIVE BOTOX TREATMENT:
-- Reduce horizontal forehead wrinkles by 85-95 percent
-- Create dramatic smoothing for maximum aesthetic impact
-- Achieve professional-grade wrinkle elimination
-- Show realistic skin texture with exceptional smoothness
-- Transform aged forehead into youthfully smooth appearance
-- Maintain some natural expression capability
-- Keep natural skin tone and lighting unchanged
-- NO other facial changes - only dramatic forehead transformation
-
-POSITION & TECHNICAL REQUIREMENTS:
-- CRITICAL: Keep EXACT same face position, angle, and framing as input
-- CRITICAL: Maintain IDENTICAL head position and orientation 
-- CRITICAL: Keep SAME background, lighting, and composition
-- CRITICAL: Do NOT center, crop, or reposition the face
-- CRITICAL: Only forehead wrinkles change - everything else EXACTLY as original
-- Photorealistic result with dramatic before/after difference
-- Same resolution and quality as input
-- Natural forehead texture but with maximally reduced wrinkles
-- Professional aesthetic treatment appearance
-- Keep all other facial features exactly unchanged
-- CRITICAL: Make the forehead smoothing DRAMATICALLY VISIBLE and transformative"""
 
 async def _direct_gemini_test_inline(input_image):
     """Inline direct Gemini test to avoid import issues"""
