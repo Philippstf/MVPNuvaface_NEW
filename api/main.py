@@ -399,15 +399,18 @@ async def _direct_gemini_call_working(input_image, volume_ml: float, area: str):
                 text_response = part.text.strip()
                 logger.info(f"📊 TEXT-RESPONSE: {text_response}")
                 
-                # Look for geometric confirmation (for chin treatments)
+                # Look for geometric confirmation (for chin and cheek treatments)
                 if area == "chin" and any(keyword in text_response.lower() for keyword in ['mm', 'projection', 'applied', 'enhanced']):
                     geometry_confirmed = True
-                    logger.info(f"✅ GEOMETRY CONFIRMED: {text_response}")
+                    logger.info(f"✅ CHIN GEOMETRY CONFIRMED: {text_response}")
+                elif area == "cheeks" and any(keyword in text_response.lower() for keyword in ['mm', 'malar', 'apex', 'nlf', 'applied', 'enhanced']):
+                    geometry_confirmed = True
+                    logger.info(f"✅ CHEEKS GEOMETRY CONFIRMED: {text_response}")
                 break
         
-        # Warning if no text confirmation (especially for chin)
-        if area == "chin" and not geometry_confirmed:
-            logger.warning(f"⚠️ NO GEOMETRY CONFIRMATION: Text response missing or incomplete")
+        # Warning if no text confirmation (especially for chin and cheeks)
+        if area in ["chin", "cheeks"] and not geometry_confirmed:
+            logger.warning(f"⚠️ NO GEOMETRY CONFIRMATION for {area.upper()}: Text response missing or incomplete")
         
         # Bild-Part finden
         image_part = None
@@ -624,57 +627,64 @@ OUTPUT:
 - Also return a short text note (one sentence) confirming the mm targets were applied."""
 
 
-def get_prompt_for_cheeks(volume_ml: float) -> str:
-    """Generate volume-specific prompts for cheek enhancement with hyaluronic acid"""
+def ml_to_cheeks_deltas(ml: float):
+    """
+    Convert ml volume to precise geometric parameters for cheek enhancement.
+    Based on ChatGPT's bilateral cheek augmentation analysis.
+    """
+    t = max(0.0, min(ml, 4.0)) / 4.0  # Normalize to 0-1 range
+    malar_proj_mm = round(4.0 * t, 1)   # Lateral malar projection: 0-4mm
+    apex_lift_mm = round(3.0 * t, 1)    # Vertical apex lift: 0-3mm  
+    nlf_soften_pct = int(round(25.0 * t))  # NLF softening: 0-25%
+    intensity_pct = int(round(100.0 * t))  # Overall intensity: 0-100%
+    return malar_proj_mm, apex_lift_mm, nlf_soften_pct, intensity_pct
+
+def get_prompt_for_cheeks(volume_ml: float, sex: str = "female", style: str = "natural", 
+                         left_pct: int = 50, right_pct: int = 50) -> str:
+    """
+    Generate precise cheek augmentation prompts with geometric targets.
+    Uses ChatGPT's enhanced bilateral cheek enhancement system.
+    """
     
-    # Medical cheek volume: 2-4ml typical range per side
-    intensity = min(volume_ml * 25, 100)  # 4ml = 100%
+    # Get precise geometric parameters
+    malar_mm, apex_mm, nlf_pct, intensity = ml_to_cheeks_deltas(volume_ml)
     
-    if volume_ml <= 1.5:  # 0-1.5ml: Subtle contouring
-        return f"""Perform subtle cheek enhancement with {volume_ml}ml hyaluronic acid.
-ENHANCEMENT EFFECT: {int(intensity)} percent intensity - NATURAL CONTOURING
-- Gentle cheek volume restoration for youthful appearance
-- Subtle lifting effect in mid-face area
-- Light contouring of cheekbone area
-- Result: naturally refreshed, slightly more defined cheeks
+    # Generate unique request ID for anti-cache
+    request_id = str(uuid.uuid4())
+    
+    # ChatGPT's Random Token System
+    import secrets
+    import string
+    random_token = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(8))
+    
+    # Build enhanced prompt with geometric targets
+    return f"""REQUEST_ID: {request_id}
+RANDOM_TOKEN: {random_token}
 
-SPECIFIC INSTRUCTIONS FOR CHEEK CONTOURING:
-- Add 20-30 percent volume to cheek area for natural lift
-- Enhance cheekbone definition subtly
-- Create gentle mid-face volume restoration
-- Show realistic skin texture with natural fullness
-- Maintain natural facial proportions
-- Keep natural skin tone and lighting
-- NO other facial changes - only subtle cheek enhancement
+You are performing a bilateral cheek augmentation with {volume_ml} ml of hyaluronic acid.
+INTENSITY: {intensity}%
 
-POSITION & TECHNICAL REQUIREMENTS:
-- CRITICAL: Keep EXACT same face position, angle, and framing as input
-- CRITICAL: Maintain IDENTICAL head position and orientation 
-- CRITICAL: Keep SAME background, lighting, and composition
-- CRITICAL: Do NOT center, crop, or reposition the face
-- CRITICAL: Only cheeks change - everything else EXACTLY as original
-- Photorealistic result with subtle before/after difference
-- Same resolution and quality as input
-- Natural cheek texture and color but gently enhanced volume
-- Professional aesthetic treatment appearance
-- Keep all other facial features exactly unchanged"""
+EDIT SCOPE (CRITICAL):
+- Edit ONLY the midface/cheek region (malar apex, zygomatic arch, submalar).
+- Keep EVERYTHING ELSE IDENTICAL to the input: head pose, camera angle, framing, background,
+  exposure, color balance, hair, makeup, nose, lips, eyes, teeth, and skin texture.
 
-    elif volume_ml <= 3.0:  # 1.5-3ml: Standard enhancement
-        return f"""Perform professional cheek enhancement with {volume_ml}ml hyaluronic acid.
-ENHANCEMENT EFFECT: {int(intensity)} percent intensity - BALANCED REJUVENATION
-- Clear cheek volume for youthful mid-face restoration
-- Noticeable lifting effect reducing nasolabial folds
-- Well-defined cheekbone contouring
-- Result: rejuvenated, attractively contoured cheeks with natural beauty
+GEOMETRY TARGETS:
+- Lateral malar projection increase: +{malar_mm} mm
+- Vertical apex lift: +{apex_mm} mm
+- Nasolabial fold softening: {nlf_pct}% (do not erase completely)
+- Volume distribution (Left/Right): {left_pct}% / {right_pct}%
+- Maintain smooth blending into tear trough and buccal area; do not widen the lower face.
 
-SPECIFIC INSTRUCTIONS FOR VISIBLE ENHANCEMENT:
-- Add 40-60 percent volume to cheek area for clear lifting effect
-- Enhance cheekbone definition with attractive contouring
-- Create noticeable mid-face volume restoration
-- Show realistic skin texture with enhanced fullness
-- Improve overall facial proportion and youthfulness
-- Maintain natural skin tone and lighting
-- NO other facial changes - only cheek enhancement with visible results
+AESTHETIC STYLE:
+- Sex: {sex}
+- Overall style: {style} (natural = softer transitions; defined = clearer cheekbone contour; dramatic = strong but photorealistic volume)
+
+HARD NEGATIVE CONSTRAINTS:
+- Do NOT change head position, field-of-view, composition, or re-center/zoom the face.
+- Do NOT alter jawline, chin, nose, lips, eyes, brows, neck width, hair, or background.
+- No beauty-retouch outside the cheeks; preserve natural skin pores and the input noise pattern.
+- No artifacts (no halos, ghost edges, duplicated textures, or plastic skin).
 
 POSITION & TECHNICAL REQUIREMENTS:
 - CRITICAL: Keep EXACT same face position, angle, and framing as input
@@ -682,43 +692,11 @@ POSITION & TECHNICAL REQUIREMENTS:
 - CRITICAL: Keep SAME background, lighting, and composition
 - CRITICAL: Do NOT center, crop, or reposition the face
 - CRITICAL: Only cheeks change - everything else EXACTLY as original
-- Photorealistic result with clear before/after difference
-- Same resolution and quality as input
-- Natural cheek texture and color but clearly enhanced volume
-- Professional aesthetic treatment appearance
-- Keep all other facial features exactly unchanged
-- IMPORTANT: Cheek enhancement should be clearly visible and attractive"""
 
-    else:  # 3ml+: Dramatic enhancement
-        return f"""Perform dramatic cheek enhancement with {volume_ml}ml hyaluronic acid.
-ENHANCEMENT EFFECT: {int(intensity)} percent intensity - HIGH-IMPACT CONTOURING
-- Significant cheek volume for dramatic mid-face transformation
-- Strong lifting effect with major nasolabial fold reduction
-- Bold cheekbone contouring for model-like definition
-- Result: dramatically contoured, high-fashion cheeks with striking impact
+OUTPUT:
+- Return the edited image at the SAME resolution as the input.
+- Also return one short sentence confirming the applied targets (mm/%)."""
 
-SPECIFIC INSTRUCTIONS FOR MAXIMUM ENHANCEMENT:
-- Add 70-90 percent volume to cheek area for dramatic transformation
-- Create bold cheekbone definition and contouring
-- Achieve significant mid-face lift and rejuvenation
-- Show realistic skin texture with substantial volume enhancement
-- Transform flat cheeks into prominently defined features
-- Create high-fashion, editorial-style cheek contouring
-- Maintain natural skin tone and lighting
-- NO other facial changes - only dramatic cheek enhancement
-
-POSITION & TECHNICAL REQUIREMENTS:
-- CRITICAL: Keep EXACT same face position, angle, and framing as input
-- CRITICAL: Maintain IDENTICAL head position and orientation 
-- CRITICAL: Keep SAME background, lighting, and composition
-- CRITICAL: Do NOT center, crop, or reposition the face
-- CRITICAL: Only cheeks change - everything else EXACTLY as original
-- Photorealistic result with dramatic before/after difference
-- Same resolution and quality as input
-- Natural cheek texture and color but substantially enhanced volume
-- Professional aesthetic treatment appearance
-- Keep all other facial features exactly unchanged
-- CRITICAL: Make the cheek enhancement VISIBLY DRAMATIC and striking"""
 
 def get_prompt_for_botox_forehead(volume_ml: float) -> str:
     """Generate dosage-specific prompts for Botox forehead treatment (volume_ml converted to units)"""
