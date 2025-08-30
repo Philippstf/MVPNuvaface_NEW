@@ -399,7 +399,7 @@ def get_prompt_for_lips(volume_ml: float) -> str:
     
     if volume_ml <= 0.5:  # 0-0.5ml: Minimal hydration
         return f"""Perform minimal lip enhancement with {volume_ml}ml hyaluronic acid.
-VOLUME EFFECT: {intensity:.0f}% intensity - MINIMAL HYDRATION
+VOLUME EFFECT: {int(intensity)} percent intensity - MINIMAL HYDRATION
 - Slight hydration and natural texture enhancement
 - Very subtle lip border definition
 - Result: naturally hydrated, healthy-looking lips
@@ -416,16 +416,16 @@ POSITION & TECHNICAL REQUIREMENTS:
     
     elif volume_ml <= 2.0:  # 0.5-2ml: Natural enhancement - ENHANCED for real portraits  
         return f"""Perform professional lip enhancement with {volume_ml}ml hyaluronic acid.
-VOLUME EFFECT: {intensity:.0f}% intensity - STRONG NATURAL ENHANCEMENT
+VOLUME EFFECT: {int(intensity)} percent intensity - STRONG NATURAL ENHANCEMENT
 - Significant volume increase with noticeable fullness
 - Clear lip projection and attractive, youthful appearance
-- Well-defined, pronounced cupid's bow
+- Well-defined, pronounced cupid bow
 - Result: visibly fuller, more attractive lips with natural beauty
 
 SPECIFIC INSTRUCTIONS FOR VISIBLE RESULTS:
-- Add 40-60% volume to both upper (35%) and lower lips (65%) 
+- Add 40-60 percent volume to both upper (35 percent) and lower lips (65 percent) 
 - Create clear, defined lip borders that are noticeably enhanced
-- Enhance cupid's bow prominently for attractive definition
+- Enhance cupid bow prominently for attractive definition
 - Show realistic skin texture with VISIBLE fullness increase
 - Make the enhancement clearly noticeable but naturally beautiful
 - Maintain natural skin tone and lighting
@@ -446,17 +446,17 @@ POSITION & TECHNICAL REQUIREMENTS:
     
     elif volume_ml <= 4.0:  # 2-4ml: Major enhancement - AGGRESSIVE for real portraits
         return f"""Perform DRAMATIC lip enhancement with {volume_ml}ml hyaluronic acid injection.
-VOLUME EFFECT: {intensity:.0f}% intensity - EXTREME VOLUME TRANSFORMATION
+VOLUME EFFECT: {int(intensity)} percent intensity - EXTREME VOLUME TRANSFORMATION
 - MASSIVE volume increase with dramatic, pronounced fullness
 - Very strong lip projection creating luxurious, plump appearance  
-- Dramatically pronounced cupid's bow definition
+- Dramatically pronounced cupid bow definition
 - Bold, Instagram-worthy lip enhancement
 - Result: DRAMATICALLY fuller, model-like, luxury lips
 
 SPECIFIC INSTRUCTIONS FOR MAXIMUM EFFECT:
-- Add 70-90% volume increase to BOTH upper (40%) and lower lips (60%)
+- Add 70-90 percent volume increase to BOTH upper (40 percent) and lower lips (60 percent)
 - Create BOLD definition of lip borders with clear edges
-- Enhance cupid's bow DRAMATICALLY and prominently
+- Enhance cupid bow DRAMATICALLY and prominently
 - Make lips noticeably LARGER and more voluminous than original
 - Show enhanced fullness with realistic texture but OBVIOUS size increase
 - Create professional aesthetic treatment look with VISIBLE transformation
@@ -474,21 +474,21 @@ POSITION & TECHNICAL REQUIREMENTS:
 - Natural lip texture and color but ENHANCED size
 - Professional luxury aesthetic treatment appearance
 - Keep all other facial features exactly unchanged
-- CRITICAL: Make the lip enhancement VISIBLY DRAMATIC and obvious
+- CRITICAL: Make the lip enhancement VISIBLY DRAMATIC and obvious"""
 
     else:  # 4ml+: Ultra-high volume - MAXIMUM TRANSFORMATION
         return f"""Perform ULTRA-DRAMATIC lip enhancement with {volume_ml}ml hyaluronic acid injection.
-VOLUME EFFECT: {intensity:.0f}% intensity - MAXIMUM VOLUME TRANSFORMATION
+VOLUME EFFECT: {int(intensity)} percent intensity - MAXIMUM VOLUME TRANSFORMATION
 - EXTREME volume increase with MAXIMUM dramatic fullness
 - Ultra-strong lip projection creating bold, luxury appearance
-- EXTREMELY pronounced cupid's bow definition
+- EXTREMELY pronounced cupid bow definition
 - Celebrity-level, ultra-plump lip enhancement  
 - Result: MAXIMUM fuller, glamorous, ultra-luxury lips
 
 ULTRA-AGGRESSIVE INSTRUCTIONS:
-- Add 90-110% volume increase to BOTH upper (35%) and lower lips (65%)
+- Add 90-110 percent volume increase to BOTH upper (35 percent) and lower lips (65 percent)
 - Create EXTREMELY BOLD definition of lip borders with sharp, clear edges
-- Enhance cupid's bow to MAXIMUM prominence and definition
+- Enhance cupid bow to MAXIMUM prominence and definition
 - Make lips SIGNIFICANTLY LARGER and dramatically more voluminous than original
 - Show ultra-enhanced fullness with realistic texture but EXTREME size increase
 - Create luxury celebrity aesthetic treatment look with MAXIMUM transformation
@@ -506,7 +506,7 @@ POSITION & TECHNICAL REQUIREMENTS:
 - Natural lip texture and color but MAXIMUM enhanced size
 - Ultra-luxury celebrity aesthetic treatment appearance
 - Keep all other facial features exactly unchanged
-- CRITICAL: Make the lip enhancement EXTREMELY DRAMATIC and unmistakable
+- CRITICAL: Make the lip enhancement EXTREMELY DRAMATIC and unmistakable"""
 
 def get_prompt_for_chin(volume_ml: float) -> str:
     """Generate volume-specific prompts for chin correction with hyaluronic acid"""
@@ -516,14 +516,14 @@ def get_prompt_for_chin(volume_ml: float) -> str:
     
     if volume_ml <= 1.0:  # 0-1ml: Minimal correction
         return f"""Perform minimal chin correction with {volume_ml}ml hyaluronic acid.
-CORRECTION EFFECT: {intensity:.0f}% intensity - SUBTLE HARMONIZATION
+CORRECTION EFFECT: {int(intensity)} percent intensity - SUBTLE HARMONIZATION
 - Subtle chin projection improvement for facial harmony
 - Gentle forward positioning of chin profile
 - Minimal asymmetry correction
 - Result: slightly more defined, balanced chin profile
 
 SPECIFIC INSTRUCTIONS FOR CHIN CORRECTION:
-- Create subtle 15-25% forward projection of chin area
+- Create subtle 15-25 percent forward projection of chin area
 - Enhance chin definition without dramatic changes
 - Maintain natural jawline harmony
 - Show realistic skin texture with slight volume increase
@@ -545,14 +545,14 @@ POSITION & TECHNICAL REQUIREMENTS:
 
     elif volume_ml <= 3.0:  # 1-3ml: Standard correction
         return f"""Perform professional chin correction with {volume_ml}ml hyaluronic acid.
-CORRECTION EFFECT: {intensity:.0f}% intensity - BALANCED HARMONIZATION
+CORRECTION EFFECT: {int(intensity)} percent intensity - BALANCED HARMONIZATION
 - Clear chin projection for improved facial balance
 - Noticeable forward positioning creating profile harmony
 - Effective asymmetry correction and volume restoration
 - Result: well-defined, harmonious chin with balanced proportions
 
 SPECIFIC INSTRUCTIONS FOR VISIBLE CORRECTION:
-- Create 30-50% forward projection of chin area
+- Create 30-50 percent forward projection of chin area
 - Enhance chin definition with noticeable improvement
 - Balance facial proportions by strengthening chin presence
 - Show realistic skin texture with clear volume enhancement
@@ -575,14 +575,14 @@ POSITION & TECHNICAL REQUIREMENTS:
 
     else:  # 3ml+: Major correction
         return f"""Perform dramatic chin correction with {volume_ml}ml hyaluronic acid.
-CORRECTION EFFECT: {intensity:.0f}% intensity - STRONG STRUCTURAL ENHANCEMENT
+CORRECTION EFFECT: {int(intensity)} percent intensity - STRONG STRUCTURAL ENHANCEMENT
 - Significant chin projection for dramatic profile improvement  
 - Strong forward positioning creating bold facial harmony
 - Major correction of receding chin and asymmetries
 - Result: prominently defined, strong chin with dramatic impact
 
 SPECIFIC INSTRUCTIONS FOR MAXIMUM CORRECTION:
-- Create 60-80% forward projection of chin area
+- Create 60-80 percent forward projection of chin area
 - Dramatically enhance chin definition and presence
 - Create strong, defined jawline connection
 - Show realistic skin texture with substantial volume enhancement
@@ -612,14 +612,14 @@ def get_prompt_for_cheeks(volume_ml: float) -> str:
     
     if volume_ml <= 1.5:  # 0-1.5ml: Subtle contouring
         return f"""Perform subtle cheek enhancement with {volume_ml}ml hyaluronic acid.
-ENHANCEMENT EFFECT: {intensity:.0f}% intensity - NATURAL CONTOURING
+ENHANCEMENT EFFECT: {int(intensity)} percent intensity - NATURAL CONTOURING
 - Gentle cheek volume restoration for youthful appearance
 - Subtle lifting effect in mid-face area
 - Light contouring of cheekbone area
 - Result: naturally refreshed, slightly more defined cheeks
 
 SPECIFIC INSTRUCTIONS FOR CHEEK CONTOURING:
-- Add 20-30% volume to cheek area for natural lift
+- Add 20-30 percent volume to cheek area for natural lift
 - Enhance cheekbone definition subtly
 - Create gentle mid-face volume restoration
 - Show realistic skin texture with natural fullness
@@ -641,14 +641,14 @@ POSITION & TECHNICAL REQUIREMENTS:
 
     elif volume_ml <= 3.0:  # 1.5-3ml: Standard enhancement
         return f"""Perform professional cheek enhancement with {volume_ml}ml hyaluronic acid.
-ENHANCEMENT EFFECT: {intensity:.0f}% intensity - BALANCED REJUVENATION
+ENHANCEMENT EFFECT: {int(intensity)} percent intensity - BALANCED REJUVENATION
 - Clear cheek volume for youthful mid-face restoration
 - Noticeable lifting effect reducing nasolabial folds
 - Well-defined cheekbone contouring
 - Result: rejuvenated, attractively contoured cheeks with natural beauty
 
 SPECIFIC INSTRUCTIONS FOR VISIBLE ENHANCEMENT:
-- Add 40-60% volume to cheek area for clear lifting effect
+- Add 40-60 percent volume to cheek area for clear lifting effect
 - Enhance cheekbone definition with attractive contouring
 - Create noticeable mid-face volume restoration
 - Show realistic skin texture with enhanced fullness
@@ -671,14 +671,14 @@ POSITION & TECHNICAL REQUIREMENTS:
 
     else:  # 3ml+: Dramatic enhancement
         return f"""Perform dramatic cheek enhancement with {volume_ml}ml hyaluronic acid.
-ENHANCEMENT EFFECT: {intensity:.0f}% intensity - HIGH-IMPACT CONTOURING
+ENHANCEMENT EFFECT: {int(intensity)} percent intensity - HIGH-IMPACT CONTOURING
 - Significant cheek volume for dramatic mid-face transformation
 - Strong lifting effect with major nasolabial fold reduction
 - Bold cheekbone contouring for model-like definition
 - Result: dramatically contoured, high-fashion cheeks with striking impact
 
 SPECIFIC INSTRUCTIONS FOR MAXIMUM ENHANCEMENT:
-- Add 70-90% volume to cheek area for dramatic transformation
+- Add 70-90 percent volume to cheek area for dramatic transformation
 - Create bold cheekbone definition and contouring
 - Achieve significant mid-face lift and rejuvenation
 - Show realistic skin texture with substantial volume enhancement
@@ -709,14 +709,14 @@ def get_prompt_for_botox_forehead(volume_ml: float) -> str:
     
     if volume_ml <= 1.5:  # 0-1.5ml = 0-15 units: Light treatment
         return f"""Perform light Botox forehead treatment with approximately {units} units.
-TREATMENT EFFECT: {intensity:.0f}% intensity - SUBTLE WRINKLE SOFTENING
+TREATMENT EFFECT: {int(intensity)} percent intensity - SUBTLE WRINKLE SOFTENING
 - Gentle reduction of horizontal forehead lines
 - Subtle muscle relaxation for natural movement
 - Light smoothing without frozen appearance
 - Result: softly smoothed forehead with preserved natural expressions
 
 SPECIFIC INSTRUCTIONS FOR LIGHT BOTOX TREATMENT:
-- Reduce horizontal forehead wrinkles by 30-50%
+- Reduce horizontal forehead wrinkles by 30-50 percent
 - Maintain natural facial expressions and eyebrow movement
 - Create subtle smoothing without over-treatment
 - Preserve skin texture and natural forehead mobility
@@ -737,14 +737,14 @@ POSITION & TECHNICAL REQUIREMENTS:
 
     elif volume_ml <= 3.0:  # 1.5-3ml = 15-30 units: Standard treatment
         return f"""Perform professional Botox forehead treatment with approximately {units} units.
-TREATMENT EFFECT: {intensity:.0f}% intensity - BALANCED WRINKLE REDUCTION
+TREATMENT EFFECT: {int(intensity)} percent intensity - BALANCED WRINKLE REDUCTION
 - Clear reduction of horizontal forehead lines
 - Effective muscle relaxation with natural movement preservation
 - Noticeable smoothing with refreshed appearance
 - Result: significantly smoother forehead maintaining natural expressions
 
 SPECIFIC INSTRUCTIONS FOR STANDARD BOTOX TREATMENT:
-- Reduce horizontal forehead wrinkles by 60-80%
+- Reduce horizontal forehead wrinkles by 60-80 percent
 - Create clear smoothing while preserving eyebrow mobility
 - Balance wrinkle reduction with natural facial expressions
 - Show realistic skin texture with enhanced smoothness
@@ -767,14 +767,14 @@ POSITION & TECHNICAL REQUIREMENTS:
 
     else:  # 3ml+ = 30+ units: Intensive treatment
         return f"""Perform intensive Botox forehead treatment with approximately {units} units.
-TREATMENT EFFECT: {intensity:.0f}% intensity - MAXIMUM WRINKLE ELIMINATION
+TREATMENT EFFECT: {int(intensity)} percent intensity - MAXIMUM WRINKLE ELIMINATION
 - Dramatic reduction of all horizontal forehead lines
 - Strong muscle relaxation for smooth, youthful appearance
 - Maximum smoothing with professional results
 - Result: dramatically smoothed forehead with youthful, refreshed look
 
 SPECIFIC INSTRUCTIONS FOR INTENSIVE BOTOX TREATMENT:
-- Reduce horizontal forehead wrinkles by 85-95%
+- Reduce horizontal forehead wrinkles by 85-95 percent
 - Create dramatic smoothing for maximum aesthetic impact
 - Achieve professional-grade wrinkle elimination
 - Show realistic skin texture with exceptional smoothness
@@ -794,7 +794,7 @@ POSITION & TECHNICAL REQUIREMENTS:
 - Natural forehead texture but with maximally reduced wrinkles
 - Professional aesthetic treatment appearance
 - Keep all other facial features exactly unchanged
-- CRITICAL: Make the forehead smoothing DRAMATICALLY VISIBLE and transformative
+- CRITICAL: Make the forehead smoothing DRAMATICALLY VISIBLE and transformative"""
 
 async def _direct_gemini_test_inline(input_image):
     """Inline direct Gemini test to avoid import issues"""
@@ -810,17 +810,17 @@ async def _direct_gemini_test_inline(input_image):
     client = genai.Client(api_key=api_key)
     
     # Fester Test-Prompt für 3.0ml Lip Enhancement mit Position-Lock
-    prompt = """Perform major lip enhancement with 3.0ml hyaluronic acid.
-VOLUME EFFECT: 60% intensity - MAJOR VOLUME TRANSFORMATION
+    prompt = """Perform major lip enhancement with 3ml hyaluronic acid.
+VOLUME EFFECT: 60 percent intensity - MAJOR VOLUME TRANSFORMATION
 - Major volume increase with dramatic fullness
 - Strong lip projection and luxurious appearance  
-- Very pronounced cupid's bow definition
+- Very pronounced cupid bow definition
 - Result: dramatically fuller, luxurious-looking lips
 
 SPECIFIC INSTRUCTIONS:
-- Add 50-65% volume to both upper (45%) and lower lips (55%)
+- Add 50-65 percent volume to both upper (45 percent) and lower lips (55 percent)
 - Create strong definition of lip borders
-- Enhance cupid's bow prominently
+- Enhance cupid bow prominently
 - Show realistic skin texture with enhanced fullness
 - Maintain natural skin tone and lighting
 - NO other facial changes - only lip enhancement
