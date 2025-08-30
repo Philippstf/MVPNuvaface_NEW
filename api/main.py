@@ -328,6 +328,14 @@ async def _direct_gemini_call_working(input_image, volume_ml: float, area: str):
         # Default fallback prompt
         prompt = f"Perform {area} enhancement with {volume_ml}ml treatment. Show natural, photorealistic results with enhanced volume and definition while keeping all other facial features exactly unchanged."
     
+    # ChatGPT's Anti-Cache Enhancement: Add Random Token to prompt
+    import secrets
+    import string
+    random_token = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(8))
+    enhanced_prompt = f"{prompt}\n\nRANDOM_TOKEN: {random_token}"
+    
+    logger.info(f"🎲 ENHANCED ANTI-CACHE: Added random token {random_token}")
+    
     logger.info(f"🔍 DEBUG: Using working direct call for {volume_ml}ml {area}")
     logger.info(f"🔍 DEBUG: Input image size: {input_image.size}")
     
@@ -346,7 +354,7 @@ async def _direct_gemini_call_working(input_image, volume_ml: float, area: str):
         # Content für multimodalen Input (working version)
         content = types.Content(
             parts=[
-                types.Part(text=prompt),
+                types.Part(text=enhanced_prompt),  # Use enhanced prompt with random token
                 types.Part(inline_data=types.Blob(mime_type="image/jpeg", data=img_bytes))
             ]
         )
@@ -355,24 +363,51 @@ async def _direct_gemini_call_working(input_image, volume_ml: float, area: str):
         random_seed = secrets.randbelow(1000000)  # 0-999999
         logger.info(f"🎲 ANTI-CACHE: Using random seed: {random_seed}")
         
-        # Gemini-Call mit Image-Response (working version) - ANTI-CACHE CONFIG
+        # ChatGPT's Parameter Tuning: Optimized for deterministic geometry while maintaining uniqueness
+        # Balance between determinism (for geometric accuracy) and stochasticity (for anti-cache)
+        optimized_temperature = 0.3 if area == "chin" else 0.35  # More deterministic for chin geometry
+        optimized_top_p = 0.85  # Slightly lower for better geometric control
+        
+        # Gemini-Call mit Image-Response (working version) - ENHANCED CONFIG
         response = client.models.generate_content(
             model="gemini-2.5-flash-image-preview", 
             contents=[content],
             config=types.GenerateContentConfig(
                 response_modalities=[types.Modality.TEXT, types.Modality.IMAGE],
-                temperature=0.4,  # Increased from 0.3 for more stochasticity
-                top_p=0.9,  # Add top_p for additional randomness
+                temperature=optimized_temperature,  # ChatGPT's optimized temperature
+                top_p=optimized_top_p,  # Optimized top_p for geometric precision
                 # Note: Gemini doesn't support seeds directly, but we log it for tracking
                 seed=None,  # Explicitly no seed caching
             )
         )
+        
+        logger.info(f"🎛️ OPTIMIZED PARAMETERS: temp={optimized_temperature}, top_p={optimized_top_p}")
         
         logger.info(f"✅ Working Gemini call successful!")
         
         # Response verarbeiten
         if not response.candidates or not response.candidates[0].content:
             raise Exception("No response content from Gemini")
+        
+        # ChatGPT's Text-Response Parsing: Extract text confirmation from Gemini
+        text_response = ""
+        geometry_confirmed = False
+        
+        # Parse text parts for QC confirmation
+        for part in response.candidates[0].content.parts:
+            if hasattr(part, 'text') and part.text:
+                text_response = part.text.strip()
+                logger.info(f"📊 TEXT-RESPONSE: {text_response}")
+                
+                # Look for geometric confirmation (for chin treatments)
+                if area == "chin" and any(keyword in text_response.lower() for keyword in ['mm', 'projection', 'applied', 'enhanced']):
+                    geometry_confirmed = True
+                    logger.info(f"✅ GEOMETRY CONFIRMED: {text_response}")
+                break
+        
+        # Warning if no text confirmation (especially for chin)
+        if area == "chin" and not geometry_confirmed:
+            logger.warning(f"⚠️ NO GEOMETRY CONFIRMATION: Text response missing or incomplete")
         
         # Bild-Part finden
         image_part = None
@@ -525,57 +560,57 @@ POSITION & TECHNICAL REQUIREMENTS:
 - Keep all other facial features exactly unchanged
 - CRITICAL: Make the lip enhancement EXTREMELY DRAMATIC and unmistakable"""
 
+def ml_to_chin_deltas(ml: float):
+    """
+    Convert ml volume to precise geometric parameters for chin enhancement.
+    Based on ChatGPT's medical aesthetic analysis.
+    """
+    t = max(0.0, min(ml, 4.0)) / 4.0  # Normalize to 0-1 range
+    projection_mm = round(6.0 * t, 1)   # Forward projection: 0-6mm
+    vertical_mm = round(3.0 * t, 1)     # Vertical lengthening: 0-3mm  
+    fold_pct = int(round(30.0 * t))     # Labiomental fold smoothing: 0-30%
+    intensity_pct = int(round(100.0 * t))  # Overall intensity: 0-100%
+    return projection_mm, vertical_mm, fold_pct, intensity_pct
+
 def get_prompt_for_chin(volume_ml: float) -> str:
-    """Generate volume-specific prompts for chin correction with hyaluronic acid"""
+    """
+    Generate precise chin augmentation prompts with geometric targets.
+    Uses ChatGPT's enhanced prompt composition system.
+    """
     
-    # Medical chin volume: 1-5ml typical range
-    intensity = min(volume_ml * 20, 100)  # 5ml = 100%
+    # Get precise geometric parameters
+    proj_mm, vert_mm, fold_pct, intensity = ml_to_chin_deltas(volume_ml)
     
-    if volume_ml <= 1.0:  # 0-1ml: Minimal correction
-        return f"""Perform minimal chin correction with {volume_ml}ml hyaluronic acid.
-CORRECTION EFFECT: {int(intensity)} percent intensity - SUBTLE HARMONIZATION
-- Subtle chin projection improvement for facial harmony
-- Gentle forward positioning of chin profile
-- Minimal asymmetry correction
-- Result: slightly more defined, balanced chin profile
+    # Generate unique request ID for anti-cache
+    request_id = str(uuid.uuid4())
+    
+    # Build enhanced prompt with geometric targets
+    return f"""REQUEST_ID: {request_id}
 
-SPECIFIC INSTRUCTIONS FOR CHIN CORRECTION:
-- Create subtle 15-25 percent forward projection of chin area
-- Enhance chin definition without dramatic changes
-- Maintain natural jawline harmony
-- Show realistic skin texture with slight volume increase
-- Keep natural chin shape and proportions
-- Maintain natural skin tone and lighting
-- NO other facial changes - only subtle chin enhancement
+You are performing a chin augmentation simulation with {volume_ml} ml of hyaluronic acid.
+INTENSITY: {intensity}% (ml-scaled)
 
-POSITION & TECHNICAL REQUIREMENTS:
-- CRITICAL: Keep EXACT same face position, angle, and framing as input
-- CRITICAL: Maintain IDENTICAL head position and orientation 
-- CRITICAL: Keep SAME background, lighting, and composition
-- CRITICAL: Do NOT center, crop, or reposition the face
-- CRITICAL: Only chin changes - everything else EXACTLY as original
-- Photorealistic result with subtle before/after difference
-- Same resolution and quality as input
-- Natural chin texture and color but slightly enhanced projection
-- Professional aesthetic treatment appearance
-- Keep all other facial features exactly unchanged"""
+EDIT SCOPE (CRITICAL):
+- Edit ONLY the chin region (soft-tissue around pogonion/menton and the labiomental fold).
+- Keep EVERYTHING ELSE IDENTICAL to the input: head pose, camera angle, framing, background,
+  exposure, color balance, hair, makeup, nose, lips, eyes, teeth, skin pores and texture.
 
-    elif volume_ml <= 3.0:  # 1-3ml: Standard correction
-        return f"""Perform professional chin correction with {volume_ml}ml hyaluronic acid.
-CORRECTION EFFECT: {int(intensity)} percent intensity - BALANCED HARMONIZATION
-- Clear chin projection for improved facial balance
-- Noticeable forward positioning creating profile harmony
-- Effective asymmetry correction and volume restoration
-- Result: well-defined, harmonious chin with balanced proportions
+GEOMETRY TARGETS:
+- Forward projection increase: +{proj_mm} mm
+- Vertical lengthening (inferior direction): +{vert_mm} mm  
+- Labiomental fold smoothing: {fold_pct}% (do not erase the fold completely)
+- Maintain harmonious connection to jawline; no mandible length change.
 
-SPECIFIC INSTRUCTIONS FOR VISIBLE CORRECTION:
-- Create 30-50 percent forward projection of chin area
-- Enhance chin definition with noticeable improvement
-- Balance facial proportions by strengthening chin presence
-- Show realistic skin texture with clear volume enhancement
-- Improve overall facial harmony and profile definition
-- Maintain natural skin tone and lighting
-- NO other facial changes - only chin enhancement with visible results
+AESTHETIC STYLE:
+- Shape preference: natural oval chin
+- Overall style: natural (avoid over-sculpting; maintain photorealistic appearance)
+
+HARD NEGATIVE CONSTRAINTS:
+- Do NOT change head position, FOV, or re-center the face.
+- Do NOT alter nose, lips, teeth, eyes, eyebrows, skin tone, hair, or background.
+- No skin smoothing, no beauty-retouch outside the chin.
+- No artifacts (ghost edges, blur halos, duplicated textures).
+- Preserve input resolution and noise pattern; return photorealistic output.
 
 POSITION & TECHNICAL REQUIREMENTS:
 - CRITICAL: Keep EXACT same face position, angle, and framing as input
@@ -583,43 +618,11 @@ POSITION & TECHNICAL REQUIREMENTS:
 - CRITICAL: Keep SAME background, lighting, and composition
 - CRITICAL: Do NOT center, crop, or reposition the face
 - CRITICAL: Only chin changes - everything else EXACTLY as original
-- Photorealistic result with clear before/after difference
-- Same resolution and quality as input
-- Natural chin texture and color but clearly enhanced projection
-- Professional aesthetic treatment appearance
-- Keep all other facial features exactly unchanged
-- IMPORTANT: Chin enhancement should be clearly visible and harmonious"""
 
-    else:  # 3ml+: Major correction
-        return f"""Perform dramatic chin correction with {volume_ml}ml hyaluronic acid.
-CORRECTION EFFECT: {int(intensity)} percent intensity - STRONG STRUCTURAL ENHANCEMENT
-- Significant chin projection for dramatic profile improvement  
-- Strong forward positioning creating bold facial harmony
-- Major correction of receding chin and asymmetries
-- Result: prominently defined, strong chin with dramatic impact
+OUTPUT:
+- Return the edited image (same resolution as input).
+- Also return a short text note (one sentence) confirming the mm targets were applied."""
 
-SPECIFIC INSTRUCTIONS FOR MAXIMUM CORRECTION:
-- Create 60-80 percent forward projection of chin area
-- Dramatically enhance chin definition and presence
-- Create strong, defined jawline connection
-- Show realistic skin texture with substantial volume enhancement
-- Achieve dramatic facial proportion improvement
-- Transform weak chin into strong, confident appearance
-- Maintain natural skin tone and lighting
-- NO other facial changes - only dramatic chin enhancement
-
-POSITION & TECHNICAL REQUIREMENTS:
-- CRITICAL: Keep EXACT same face position, angle, and framing as input
-- CRITICAL: Maintain IDENTICAL head position and orientation 
-- CRITICAL: Keep SAME background, lighting, and composition
-- CRITICAL: Do NOT center, crop, or reposition the face
-- CRITICAL: Only chin changes - everything else EXACTLY as original
-- Photorealistic result with dramatic before/after difference
-- Same resolution and quality as input
-- Natural chin texture and color but substantially enhanced projection
-- Professional aesthetic treatment appearance
-- Keep all other facial features exactly unchanged
-- CRITICAL: Make the chin correction VISIBLY DRAMATIC and transformative"""
 
 def get_prompt_for_cheeks(volume_ml: float) -> str:
     """Generate volume-specific prompts for cheek enhancement with hyaluronic acid"""
