@@ -11,6 +11,7 @@ from io import BytesIO
 import hashlib
 import secrets
 import uuid
+import base64
 from fastapi import FastAPI, HTTPException, status, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
