@@ -442,7 +442,7 @@ POSITION & TECHNICAL REQUIREMENTS:
 - Natural lip texture and color but clearly enhanced size
 - Professional aesthetic treatment appearance
 - Keep all other facial features exactly unchanged
-- IMPORTANT: Enhancement should be clearly visible and attractive
+- IMPORTANT: Enhancement should be clearly visible and attractive"""
     
     elif volume_ml <= 4.0:  # 2-4ml: Major enhancement - AGGRESSIVE for real portraits
         return f"""Perform DRAMATIC lip enhancement with {volume_ml}ml hyaluronic acid injection.
@@ -602,7 +602,7 @@ POSITION & TECHNICAL REQUIREMENTS:
 - Natural chin texture and color but substantially enhanced projection
 - Professional aesthetic treatment appearance
 - Keep all other facial features exactly unchanged
-- CRITICAL: Make the chin correction VISIBLY DRAMATIC and transformative
+- CRITICAL: Make the chin correction VISIBLY DRAMATIC and transformative"""
 
 def get_prompt_for_cheeks(volume_ml: float) -> str:
     """Generate volume-specific prompts for cheek enhancement with hyaluronic acid"""
@@ -698,7 +698,7 @@ POSITION & TECHNICAL REQUIREMENTS:
 - Natural cheek texture and color but substantially enhanced volume
 - Professional aesthetic treatment appearance
 - Keep all other facial features exactly unchanged
-- CRITICAL: Make the cheek enhancement VISIBLY DRAMATIC and striking
+- CRITICAL: Make the cheek enhancement VISIBLY DRAMATIC and striking"""
 
 def get_prompt_for_botox_forehead(volume_ml: float) -> str:
     """Generate dosage-specific prompts for Botox forehead treatment (volume_ml converted to units)"""
