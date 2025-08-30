@@ -106,9 +106,17 @@ async def health_check():
 async def segment_face(request: SegmentRequest):
     """
     Segment facial area to generate mask for aesthetic editing.
-    This is now primarily for UX purposes.
+    SEGMENTATION POLICY: Only available for lips area.
+    Chin, cheeks, forehead use direct calls without segmentation.
     """
     try:
+        # Only allow segmentation for lips
+        if request.area.value != "lips":
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Segmentation only available for 'lips'. Area '{request.area.value}' uses direct processing without masks."
+            )
+        
         image = load_image(request.image)
         processed_image, preprocess_meta = preprocess_image(image, target_size=768, align_face=False)
         
@@ -181,13 +189,21 @@ async def _simulate_procedure(request: SimulationRequest):
         
         # --- End of New Gemini Call ---
 
-        # Convert images to base64 for the response (no masks in direct mode)
+        # Convert images to base64 for the response
         result_base64 = image_to_base64(result_image)
         original_base64 = image_to_base64(original_image)
-        # Create empty mask for compatibility
+        
+        # SEGMENTATION POLICY: Only lips have segmentation, all others use direct calls
+        # Currently: ALL areas use direct Gemini calls without preprocessing/segmentation
+        # This provides maximum natural results for chin/cheeks/forehead treatments
         from PIL import Image as PILImage
-        empty_mask = PILImage.new('L', original_image.size, 0)  # Empty black mask
+        empty_mask = PILImage.new('L', original_image.size, 0)  # No segmentation masks
         mask_base64 = image_to_base64(empty_mask)
+        
+        # Note: If lip-specific segmentation is needed later, implement here:
+        # if request.area.value == "lips":
+        #     real_mask = segment_lips(original_image)
+        #     mask_base64 = image_to_base64(real_mask)
         
         end_time = time.time()
         
