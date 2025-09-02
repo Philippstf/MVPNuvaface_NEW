@@ -6,6 +6,15 @@
     <title>NuvaFace - Ästhetische Behandlungssimulation</title>
     <link rel="stylesheet" href="styles_new.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Modern Animation Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js"></script>
+    
+    <!-- Three.js for 3D Model Support -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -15,7 +24,6 @@
                 <div class="logo-icon">NF</div>
                 <div class="brand-text">
                     <h1>NuvaFace</h1>
-                    <p class="subtitle">Demo - Nicht für medizinische Beratung</p>
                 </div>
             </div>
         </div>
@@ -24,88 +32,61 @@
     <!-- Main Container -->
     <div class="main-container">
         
-        <!-- Landing Section -->
+        <!-- Landing Section with Split Layout -->
         <section id="landingSection" class="section active">
-            <div class="hero-section">
-                <h2 class="hero-title">Lassen Sie Ihre Behandlung simulieren</h2>
-                <p class="hero-subtitle">Visualisieren Sie das Ergebnis ästhetischer Behandlungen mit modernster KI-Technologie</p>
-            </div>
-
-            <!-- Do's and Don'ts -->
-            <div class="guidelines-section">
-                <h3>Für optimale Ergebnisse</h3>
-                <div class="guidelines-grid">
-                    <!-- Do's -->
-                    <div class="guideline-card do">
-                        <div class="guideline-icon">✓</div>
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Crect width='150' height='150' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23888' font-size='14'%3EHeller Hintergrund%3C/text%3E%3C/svg%3E" alt="Do">
-                        <h4>Heller, einheitlicher Hintergrund</h4>
-                        <p>Neutraler weißer oder grauer Hintergrund, gleichmäßiges Licht</p>
-                    </div>
-                    <div class="guideline-card do">
-                        <div class="guideline-icon">✓</div>
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Crect width='150' height='150' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23888' font-size='14'%3EFrontales Portrait%3C/text%3E%3C/svg%3E" alt="Do">
-                        <h4>Frontales Portrait, scharf</h4>
-                        <p>Bitte direkt in die Kamera, keine starke Neigung oder Drehung</p>
-                    </div>
-                    <!-- Don'ts -->
-                    <div class="guideline-card dont">
-                        <div class="guideline-icon">✗</div>
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Crect width='150' height='150' fill='%23333'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23fff' font-size='14'%3EDunkel%3C/text%3E%3C/svg%3E" alt="Don't">
-                        <h4>Dunkel / Gegenlicht</h4>
-                        <p>Zu wenig Licht führt zu ungenauen Simulationen</p>
-                    </div>
-                    <div class="guideline-card dont">
-                        <div class="guideline-icon">✗</div>
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Crect width='150' height='150' fill='%23666'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23fff' font-size='14'%3ESchatten%3C/text%3E%3C/svg%3E" alt="Don't">
-                        <h4>Starker Schatten / Farbfilter</h4>
-                        <p>Schatten und Filter verfälschen Haut und Konturen</p>
-                    </div>
-                    <div class="guideline-card dont">
-                        <div class="guideline-icon">✗</div>
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Crect width='150' height='150' fill='%23999'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23fff' font-size='14'%3EVerdeckt%3C/text%3E%3C/svg%3E" alt="Don't">
-                        <h4>Haare/Accessoires verdecken das Gesicht</h4>
-                        <p>Bitte Stirn, Wangen, Lippen sichtbar lassen</p>
-                    </div>
-                    <div class="guideline-card dont">
-                        <div class="guideline-icon">✗</div>
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Crect width='150' height='150' fill='%23777'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23fff' font-size='14'%3EMehrere Personen%3C/text%3E%3C/svg%3E" alt="Don't">
-                        <h4>Mehrere Personen im Bild</h4>
-                        <p>Nur eine Person pro Foto</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Interactive Area Selection -->
-            <div class="area-selection-interactive">
-                <h3>Wählen Sie den Behandlungsbereich</h3>
-                <div class="face-selector">
-                    <!-- SVG Face Map Fallback (since 3D model requires more setup) -->
-                    <div class="face-container">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 400'%3E%3Cellipse cx='150' cy='200' rx='100' ry='130' fill='%23fdbcb4' stroke='%23333' stroke-width='2'/%3E%3Cellipse cx='120' cy='180' rx='15' ry='20' fill='white'/%3E%3Cellipse cx='180' cy='180' rx='15' ry='20' fill='white'/%3E%3Ccircle cx='120' cy='180' r='8' fill='%23333'/%3E%3Ccircle cx='180' cy='180' r='8' fill='%23333'/%3E%3Cpath d='M150 200 L150 230' stroke='%23333' stroke-width='2' fill='none'/%3E%3Cpath d='M120 260 Q150 280 180 260' stroke='%23333' stroke-width='2' fill='none'/%3E%3C/svg%3E" alt="Face" class="face-image">
+            <div class="landing-split-layout">
+                <!-- Left Side: Text Content -->
+                <div class="landing-content">
+                    <div class="hero-section">
+                        <h2 class="hero-title">Lassen Sie Ihre Behandlung simulieren</h2>
+                        <p class="hero-subtitle">Visualisieren Sie das Ergebnis ästhetischer Behandlungen mit modernster KI-Technologie</p>
                         
-                        <!-- Hotspot Areas -->
-                        <button class="hotspot forehead-spot" data-area="forehead" title="Stirn (Botox)">
-                            <span class="hotspot-label">Stirn</span>
+                        <div class="treatment-areas">
+                            <h3>Wählen Sie den Behandlungsbereich:</h3>
+                            <div class="area-buttons">
+                                <button class="area-select-btn" data-area="lips">
+                                    <i class="fas fa-kiss-wink-heart"></i> 
+                                    <span class="area-name">Lippen</span>
+                                    <span class="area-subtitle">Filler 0.5-4ml</span>
+                                </button>
+                                <button class="area-select-btn" data-area="cheeks">
+                                    <i class="fas fa-smile"></i> 
+                                    <span class="area-name">Wangen</span>
+                                    <span class="area-subtitle">Filler 1-4ml</span>
+                                </button>
+                                <button class="area-select-btn" data-area="chin">
+                                    <i class="fas fa-user"></i> 
+                                    <span class="area-name">Kinn</span>
+                                    <span class="area-subtitle">Filler 1-4ml</span>
+                                </button>
+                                <button class="area-select-btn" data-area="forehead">
+                                    <i class="fas fa-head-side-virus"></i> 
+                                    <span class="area-name">Stirn</span>
+                                    <span class="area-subtitle">Botox 10-40 Units</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button class="primary-btn proceed-cta" id="proceedToUpload" disabled>
+                            <i class="fas fa-arrow-right"></i> Weiter zum Bildupload
                         </button>
-                        <button class="hotspot cheeks-spot" data-area="cheeks" title="Wangen (Filler)">
-                            <span class="hotspot-label">Wangen</span>
-                        </button>
-                        <button class="hotspot lips-spot" data-area="lips" title="Lippen (Filler)">
-                            <span class="hotspot-label">Lippen</span>
-                        </button>
-                        <button class="hotspot chin-spot" data-area="chin" title="Kinn (Filler)">
-                            <span class="hotspot-label">Kinn</span>
-                        </button>
-                    </div>
-                    <div class="area-info" id="areaInfo">
-                        <p>Bewegen Sie die Maus über einen Bereich, um mehr zu erfahren</p>
                     </div>
                 </div>
-
-                <button class="primary-btn" id="proceedToUpload" disabled>
-                    <i class="fas fa-arrow-right"></i> Weiter zum Bildupload
-                </button>
+                
+                <!-- Right Side: 3D Model -->
+                <div class="landing-3d">
+                    <div id="face3DContainer" class="face-3d-container-large">
+                        <!-- 3D model will be loaded here -->
+                        <div class="loading-3d">
+                            <div class="loading-spinner"></div>
+                            <p>3D Modell wird geladen...</p>
+                        </div>
+                    </div>
+                    <div class="model-controls">
+                        <p><i class="fas fa-mouse"></i> Klicken & Ziehen zum Drehen</p>
+                        <p><i class="fas fa-search-plus"></i> Scroll zum Zoomen</p>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -123,6 +104,14 @@
                 <strong id="selectedAreaDisplay">-</strong>
             </div>
 
+            <!-- Area-specific Do's and Don'ts -->
+            <div class="guidelines-section area-specific" id="areaGuidelines">
+                <h3>Optimale Ergebnisse für <span id="areaTypeDisplay">diesen Bereich</span></h3>
+                <div class="guidelines-grid" id="guidelinesGrid">
+                    <!-- Will be populated dynamically based on selected area -->
+                </div>
+            </div>
+
             <div class="upload-container">
                 <div class="upload-area" id="uploadArea">
                     <i class="fas fa-cloud-upload-alt upload-icon"></i>
@@ -132,9 +121,14 @@
                 </div>
                 <div class="upload-preview" id="uploadPreview" style="display: none;">
                     <img id="previewImage" alt="Preview">
-                    <button class="change-image-btn" onclick="app.changeImage()">
-                        <i class="fas fa-exchange-alt"></i> Bild ändern
-                    </button>
+                    <div class="image-actions">
+                        <button class="change-image-btn" onclick="app.changeImage()">
+                            <i class="fas fa-exchange-alt"></i> Bild ändern
+                        </button>
+                        <button class="remove-image-btn" onclick="app.removeImage()">
+                            <i class="fas fa-trash-alt"></i> Entfernen
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -142,20 +136,49 @@
         <!-- Lips Segmentation (Simplified) -->
         <section id="segmentSection" class="section">
             <div class="section-header">
+                <button class="back-btn" onclick="app.showSection('uploadSection')">
+                    <i class="fas fa-arrow-left"></i> Zurück
+                </button>
                 <h2>Erkannte Lippenpartie</h2>
             </div>
 
             <div class="segment-preview">
+                <div class="segment-status" id="segmentStatus">
+                    <div class="status-loading" id="statusLoading">
+                        <div class="mini-spinner"></div>
+                        <span>Lippen werden erkannt...</span>
+                    </div>
+                    <div class="status-success" id="statusSuccess" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Lippenregion erfolgreich erkannt</span>
+                    </div>
+                    <div class="status-warning" id="statusWarning" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Erkennung unvollständig, trotzdem fortfahren</span>
+                    </div>
+                </div>
+                
                 <div class="segment-container">
                     <canvas id="segmentCanvas"></canvas>
                     <canvas id="segmentOverlay"></canvas>
                 </div>
-                <p class="segment-info">Die erkannte Lippenregion wird rot markiert</p>
+                
+                <div class="segment-info">
+                    <div class="info-card">
+                        <i class="fas fa-info-circle"></i>
+                        <div>
+                            <h4>Automatische Erkennung</h4>
+                            <p>Die markierte Region wird für die Simulation verwendet. Diese Vorschau dient nur zur Überprüfung.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <button class="primary-btn" onclick="app.proceedToResult()">
-                <i class="fas fa-arrow-right"></i> Weiter
-            </button>
+            <div class="segment-actions">
+                <button class="primary-btn" id="continueToResult" onclick="app.proceedToResult()" disabled>
+                    <i class="fas fa-arrow-right"></i> Weiter zur Simulation
+                </button>
+            </div>
         </section>
 
         <!-- Result Section -->
@@ -171,7 +194,7 @@
             <div class="volume-control">
                 <label>Volumen</label>
                 <div class="slider-container">
-                    <input type="range" id="volumeSlider" min="0" max="4" step="0.1" value="2">
+                    <input type="range" id="volumeSlider" min="0" max="5" step="0.1" value="2">
                     <span class="volume-value" id="volumeValue">2.0 ml</span>
                 </div>
             </div>
@@ -186,29 +209,68 @@
                     
                     <div class="generate-control">
                         <button class="generate-btn" id="generateBtn" onclick="app.generateSimulation()">
-                            <i class="fas fa-magic"></i>
-                            <span>Generieren</span>
+                            <div class="btn-content" id="btnContent">
+                                <i class="fas fa-magic"></i>
+                                <span>Generieren</span>
+                            </div>
                         </button>
-                        <div class="loader" id="loader" style="display: none;">
-                            <div class="spinner"></div>
+                        
+                        <div class="progress-indicator" id="progressIndicator">
+                            <span id="progressText">KI verarbeitet Ihr Bild</span>
+                            <div class="progress-dots">
+                                <div class="progress-dot"></div>
+                                <div class="progress-dot"></div>
+                                <div class="progress-dot"></div>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="image-panel after">
                         <h3>Nachher</h3>
                         <img id="afterImage" alt="Nachher">
-                        <button class="download-btn" id="downloadBtn" onclick="app.downloadResult()" style="display: none;">
-                            <i class="fas fa-download"></i>
-                        </button>
                     </div>
                 </div>
             </div>
 
+            <!-- View Mode Toggle -->
+            <div class="view-toggle" id="viewToggle" style="display: none;">
+                <button class="view-btn active" data-view="before" onclick="app.switchView(event)">Vorher</button>
+                <button class="view-btn" data-view="after" onclick="app.switchView(event)">Nachher</button>
+                <button class="view-btn" data-view="split" onclick="app.switchView(event)">Geteilte Ansicht</button>
+            </div>
+            
+            <!-- Image Container with Split View -->
+            <div class="image-container" id="imageContainer">
+                <img id="beforeImageSplit" class="result-image" alt="Vorher">
+                <img id="afterImageSplit" class="result-image" alt="Nachher" style="display: none;">
+                <div id="splitView" class="split-view" style="display: none;">
+                    <div class="split-labels">
+                        <span class="split-label-before">Vorher</span>
+                        <span class="split-label-after">Nachher</span>
+                    </div>
+                    <div class="split-container">
+                        <div class="split-before"></div>
+                        <div class="split-after"></div>
+                        <div class="split-divider">
+                            <div class="split-handle">
+                                <i class="fas fa-chevron-left"></i>
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Generation History -->
             <div class="generations-section" id="generationsSection" style="display: none;">
                 <h3>Letzte Generierungen</h3>
                 <div class="generations-carousel" id="generationsCarousel">
                     <!-- Thumbnails will be added here dynamically -->
+                </div>
+                <div class="download-section">
+                    <button class="download-btn" id="downloadBtn" onclick="app.downloadResult()" style="display: none;">
+                        <i class="fas fa-download"></i> Ergebnis herunterladen
+                    </button>
                 </div>
             </div>
         </section>
@@ -216,6 +278,72 @@
     </div>
 
     <!-- Scripts -->
-    <script src="app_new.js"></script>
+    <script src="area-picker-3d.js?t=1725316000"></script>
+    <script src="app_new.js?t=1725316000"></script>
+    <script>
+        // Override setupEventListeners to handle new area buttons
+        document.addEventListener('DOMContentLoaded', () => {
+            // Wait for app to initialize
+            setTimeout(() => {
+                // Setup area button listeners
+                document.querySelectorAll('.area-select-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const area = e.currentTarget.dataset.area;
+                        const isCurrentlySelected = e.currentTarget.classList.contains('selected');
+                        
+                        if (isCurrentlySelected) {
+                            // Deselect if clicking on already selected button
+                            e.currentTarget.classList.remove('selected');
+                            
+                            // Clear 3D highlighting
+                            if (window.app && window.app.areaPicker3D) {
+                                console.log(`🗑️ Deselecting area: ${area}`);
+                                window.app.areaPicker3D.clearButtonSelection();
+                            }
+                            
+                            // Disable proceed button
+                            const proceedBtn = document.getElementById('proceedToUpload');
+                            if (proceedBtn) {
+                                proceedBtn.disabled = true;
+                            }
+                            
+                            // Clear app selection
+                            if (window.app) {
+                                window.app.selectedArea = null;
+                            }
+                            
+                        } else {
+                            // Select new area
+                            // Update visual selection
+                            document.querySelectorAll('.area-select-btn').forEach(b => {
+                                b.classList.remove('selected');
+                            });
+                            e.currentTarget.classList.add('selected');
+                            
+                            // Set selected area in app
+                            if (window.app) {
+                                window.app.selectedArea = area;
+                                
+                                // Enable proceed button
+                                const proceedBtn = document.getElementById('proceedToUpload');
+                                if (proceedBtn) {
+                                    proceedBtn.disabled = false;
+                                }
+                                
+                                // Highlight area on 3D model if picker exists
+                                if (window.app.areaPicker3D) {
+                                    console.log(`🎯 Button selected for area: ${area}`);
+                                    window.app.areaPicker3D.selectAreaFromButton(area);
+                                    window.app.areaPicker3D.highlightAreaFromButton(area);
+                                } else {
+                                    console.warn('❌ areaPicker3D not available');
+                                }
+                            }
+                        }
+                    });
+                });
+            }, 1000);
+        });
+    </script>
 </body>
 </html>

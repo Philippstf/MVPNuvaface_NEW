@@ -3,6 +3,12 @@ FastAPI main application for NuvaFace aesthetic simulation API.
 Implements endpoints for face segmentation and Gemini-powered aesthetic simulation.
 """
 
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
 import time
 import random
 import logging
