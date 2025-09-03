@@ -22,8 +22,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
-# Copy knowledge base
-COPY ../assets/knowledge ./assets/knowledge
+# Note: Knowledge base will be loaded from memory if assets not available
 
 # Expose port
 EXPOSE 8000
