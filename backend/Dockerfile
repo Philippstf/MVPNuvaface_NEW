@@ -24,8 +24,9 @@ COPY . .
 
 # Note: Knowledge base will be loaded from memory if assets not available
 
-# Expose port
-EXPOSE 8000
+# Expose port (Cloud Run uses PORT env var, defaults to 8080)
+EXPOSE 8080
+ENV PORT=8080
 
 # Set Python path
 ENV PYTHONPATH=/app
