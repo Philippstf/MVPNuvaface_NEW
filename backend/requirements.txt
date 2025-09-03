@@ -9,12 +9,12 @@ python-multipart==0.0.6
 pydantic==2.5.0
 pydantic-settings==2.1.0
 
-# Computer Vision and Image Processing
-opencv-python==4.8.1.78
+# Lightweight alternatives for Cloud Run
+opencv-python-headless==4.8.1.78  # Headless version for containers
 Pillow==10.1.0
 numpy==1.25.2
 
-# Face Landmark Detection
+# Face Landmark Detection - specific version for Cloud Run
 mediapipe==0.10.8
 
 # YAML Processing
