@@ -318,9 +318,10 @@ class MedicalAssistantIntegration {
     handleSectionChange(sectionId) {
         console.log('📄 Section changed to:', sectionId);
         
-        // Show widget only in result section
+        // STRICT: Show widget ONLY in result section
         if (this.assistantWidget) {
             if (sectionId === 'resultSection') {
+                console.log('🏥 Medical Assistant: Showing on result section');
                 this.assistantWidget.show();
                 
                 // Reinitialize overlay renderer for result section
@@ -329,6 +330,7 @@ class MedicalAssistantIntegration {
                     this.setupIntegrations();
                 }, 100);
             } else {
+                console.log('🏥 Medical Assistant: Hiding - not result section');
                 this.assistantWidget.hide();
             }
         }

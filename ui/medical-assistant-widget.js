@@ -25,8 +25,9 @@ class MedicalAssistantWidget {
         
         this.createWidget();
         this.attachEventListeners();
+        this.hide(); // Start hidden
         
-        console.log('🏥 Medical AI Assistant Widget initialized');
+        console.log('🏥 Medical AI Assistant Widget initialized (hidden initially)');
     }
     
     createWidget() {
