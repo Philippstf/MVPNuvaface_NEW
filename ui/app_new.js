@@ -10,7 +10,7 @@ class NuvaFaceApp {
             this.apiBaseUrl = 'http://localhost:8080';
         } else {
             // Production: Use Cloud Run URL
-            this.apiBaseUrl = 'https://rmgpgab-nuvaface-api-europe-west1-philippstf-mvpn-hapllrcw7a-uc.a.run.app';
+            this.apiBaseUrl = 'https://nuvaface-gemini-api-212268956806.us-central1.run.app';
         }
         
         // State management
@@ -62,31 +62,42 @@ class NuvaFaceApp {
                 
                 // Set up callbacks for area interaction
                 this.areaPicker3D.setAreaHoverCallback((area) => {
+                    // Make corresponding button light up (mobile-responsive)
+                    this.highlightAreaButton(area, true);
                     this.showAreaInfo({ currentTarget: { dataset: { area } } });
                 });
                 
                 this.areaPicker3D.setAreaLeaveCallback(() => {
+                    // Remove button highlights
+                    this.highlightAreaButton(null, false);
                     this.hideAreaInfo();
                 });
                 
                 this.areaPicker3D.setAreaSelectCallback((area) => {
-                    this.selectedArea = area;
-                    
-                    // Update UI to show selection
-                    document.querySelectorAll('.hotspot').forEach(spot => {
-                        spot.classList.remove('selected');
+                    // Update button selection state
+                    document.querySelectorAll('.area-select-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                        if (btn.dataset.area === area) {
+                            btn.classList.add('selected');
+                            gsap.fromTo(btn, { scale: 1 }, { scale: 1.05, duration: 0.3, ease: "back.out(2)" });
+                        }
                     });
                     
-                    const hotspot = document.querySelector(`[data-area="${area}"]`);
-                    if (hotspot) {
-                        hotspot.classList.add('selected');
+                    // Legacy hotspot support
+                    document.querySelectorAll('.hotspot').forEach(spot => {
+                        spot.classList.remove('selected');
+                        if (spot.dataset.area === area) {
+                            spot.classList.add('selected');
+                        }
+                    });
+                    
+                    // Mobile haptic feedback
+                    if (navigator.vibrate) {
+                        navigator.vibrate(50);
                     }
                     
-                    // Enable proceed button
-                    const proceedBtn = document.getElementById('proceedToUpload');
-                    if (proceedBtn) {
-                        proceedBtn.disabled = false;
-                    }
+                    // Use centralized method
+                    this.setSelectedArea(area);
                     
                     // Show area info
                     this.showAreaInfo({ currentTarget: { dataset: { area } } });
@@ -138,7 +149,15 @@ class NuvaFaceApp {
     }
 
     setupEventListeners() {
-        // Area selection hotspots
+        // Mobile-first: Area selection buttons (primary)
+        document.querySelectorAll('.area-select-btn').forEach(btn => {
+            btn.addEventListener('click', this.selectAreaFromButton.bind(this));
+            // Touch support for mobile
+            btn.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: true });
+            btn.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: true });
+        });
+        
+        // Legacy hotspot support (for compatibility)
         document.querySelectorAll('.hotspot').forEach(spot => {
             spot.addEventListener('click', this.selectArea.bind(this));
             spot.addEventListener('mouseenter', this.showAreaInfo.bind(this));
@@ -168,13 +187,12 @@ class NuvaFaceApp {
             proceedBtn.addEventListener('click', () => this.showSection('uploadSection'));
         }
         
-        // Area selection buttons (Kacheln)
-        document.querySelectorAll('.area-select-btn').forEach(btn => {
-            btn.addEventListener('click', this.handleAreaButtonClick.bind(this));
-        });
-        
         // Initialize split view drag functionality
         this.setupSplitViewDrag();
+        
+        // Mobile orientation change handling
+        window.addEventListener('orientationchange', this.handleOrientationChange.bind(this));
+        window.addEventListener('resize', this.handleResize.bind(this));
     }
 
     // Enhanced Section Navigation with GSAP
@@ -258,7 +276,49 @@ class NuvaFaceApp {
         this.showAreaSpecificGuidelines(this.selectedArea);
     }
 
-    // Enhanced Area Selection with Animations
+    // Area Selection from Button (Mobile & Desktop)
+    selectAreaFromButton(e) {
+        const area = e.currentTarget.dataset.area;
+        const button = e.currentTarget;
+        
+        // Update visual selection for buttons
+        document.querySelectorAll('.area-select-btn').forEach(btn => {
+            btn.classList.remove('selected');
+            if (btn !== button) {
+                gsap.to(btn, { scale: 1, duration: 0.2 });
+            }
+        });
+        
+        // Select current button with animation
+        button.classList.add('selected');
+        gsap.fromTo(button,
+            { scale: 1 },
+            { 
+                scale: 1.05,
+                duration: 0.3,
+                ease: "back.out(2)",
+                yoyo: false
+            }
+        );
+        
+        // Sync with 3D model if available
+        if (this.areaPicker3D) {
+            this.areaPicker3D.selectArea(area);
+        }
+        
+        // Mobile haptic feedback
+        if (navigator.vibrate) {
+            navigator.vibrate(50);
+        }
+        
+        // Use centralized method
+        this.setSelectedArea(area);
+        
+        // Update info display
+        this.showAreaInfo(e);
+    }
+    
+    // Legacy Area Selection (for hotspots)
     selectArea(e) {
         const area = e.currentTarget.dataset.area;
         const hotspot = e.currentTarget;
@@ -286,11 +346,63 @@ class NuvaFaceApp {
             }
         );
         
+        // Sync with buttons
+        document.querySelectorAll('.area-select-btn').forEach(btn => {
+            btn.classList.remove('selected');
+            if (btn.dataset.area === area) {
+                btn.classList.add('selected');
+            }
+        });
+        
         // Use centralized method
         this.setSelectedArea(area);
         
-        // Update info with slide animation
-        this.animateAreaInfo(e);
+        // Update info display
+        this.showAreaInfo(e);
+    }
+    
+    // Touch Event Handlers for Mobile
+    handleTouchStart(e) {
+        e.currentTarget.classList.add('touching');
+        gsap.to(e.currentTarget, { scale: 0.95, duration: 0.1 });
+    }
+    
+    handleTouchEnd(e) {
+        e.currentTarget.classList.remove('touching');
+        gsap.to(e.currentTarget, { scale: 1, duration: 0.1 });
+    }
+    
+    // Centralized area selection logic
+    setSelectedArea(area) {
+        this.selectedArea = area;
+        
+        // Enable proceed button with animation
+        const proceedBtn = document.getElementById('proceedToUpload');
+        if (proceedBtn) {
+            proceedBtn.disabled = false;
+            proceedBtn.classList.add('animate__animated', 'animate__pulse');
+            gsap.fromTo(proceedBtn, 
+                { scale: 1, opacity: 0.7 },
+                { scale: 1.02, opacity: 1, duration: 0.3 }
+            );
+            setTimeout(() => {
+                proceedBtn.classList.remove('animate__animated', 'animate__pulse');
+            }, 1000);
+        }
+    }
+    
+    // Mobile orientation and resize handling
+    handleOrientationChange() {
+        setTimeout(() => {
+            this.handleResize();
+        }, 100);
+    }
+    
+    handleResize() {
+        // Re-initialize 3D model if needed
+        if (this.areaPicker3D && window.innerWidth <= 768) {
+            this.areaPicker3D.handleResize();
+        }
     }
     
     animateAreaInfo(e) {
@@ -321,6 +433,21 @@ class NuvaFaceApp {
         });
     }
 
+    // Area Button Highlighting (Mobile-responsive)
+    highlightAreaButton(area, highlight) {
+        document.querySelectorAll('.area-select-btn').forEach(btn => {
+            if (highlight && btn.dataset.area === area && !btn.classList.contains('selected')) {
+                btn.classList.add('hover-from-3d');
+                gsap.to(btn, { scale: 1.02, duration: 0.2 });
+            } else {
+                btn.classList.remove('hover-from-3d');
+                if (!btn.classList.contains('selected')) {
+                    gsap.to(btn, { scale: 1, duration: 0.2 });
+                }
+            }
+        });
+    }
+    
     showAreaInfo(e) {
         const area = e.currentTarget.dataset.area;
         const infoBox = document.getElementById('areaInfo');
@@ -334,12 +461,31 @@ class NuvaFaceApp {
             };
             infoBox.innerHTML = `<strong>${descriptions[area] || area}</strong>`;
         }
+        
+        // Mobile: Show area info in dedicated area if needed
+        const mobileAreaInfo = document.querySelector('.mobile-area-info');
+        if (mobileAreaInfo) {
+            const areaNames = {
+                'lips': 'Lippen',
+                'chin': 'Kinn',
+                'cheeks': 'Wangen', 
+                'forehead': 'Stirn'
+            };
+            mobileAreaInfo.textContent = areaNames[area] || area;
+            mobileAreaInfo.style.display = 'block';
+        }
     }
 
     hideAreaInfo() {
         const infoBox = document.getElementById('areaInfo');
         if (infoBox && !this.selectedArea) {
             infoBox.innerHTML = '<p>Bewegen Sie die Maus über einen Bereich, um mehr zu erfahren</p>';
+        }
+        
+        // Mobile: Hide mobile area info
+        const mobileAreaInfo = document.querySelector('.mobile-area-info');
+        if (mobileAreaInfo) {
+            mobileAreaInfo.style.display = 'none';
         }
     }
 
@@ -566,16 +712,30 @@ class NuvaFaceApp {
     }
 
     setupResultView() {
-        // Display the original image
+        // Display the original image in base elements
         const beforeImage = document.getElementById('beforeImage');
         if (beforeImage && this.currentImageBase64) {
             beforeImage.src = this.currentImageBase64;
         }
         
+        // Also set in side-by-side view
+        const beforeImageSideBySide = document.getElementById('beforeImageSideBySide');
+        if (beforeImageSideBySide && this.currentImageBase64) {
+            beforeImageSideBySide.src = this.currentImageBase64;
+        }
+        
         // Clear after image
         const afterImage = document.getElementById('afterImage');
+        const placeholderSvg = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect width="400" height="400" fill="%23f0f0f0"/%3E%3Ctext x="50%25" y="45%25" text-anchor="middle" dy=".3em" fill="%23999" font-size="16"%3EKlicken Sie auf%3C/text%3E%3Ctext x="50%25" y="55%25" text-anchor="middle" dy=".3em" fill="%23667eea" font-size="18" font-weight="bold"%3EGenerieren%3C/text%3E%3C/svg%3E';
+        
         if (afterImage) {
-            afterImage.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect width="400" height="400" fill="%23f0f0f0"/%3E%3Ctext x="50%25" y="45%25" text-anchor="middle" dy=".3em" fill="%23999" font-size="16"%3EKlicken Sie auf%3C/text%3E%3Ctext x="50%25" y="55%25" text-anchor="middle" dy=".3em" fill="%23667eea" font-size="18" font-weight="bold"%3EGenerieren%3C/text%3E%3C/svg%3E';
+            afterImage.src = placeholderSvg;
+        }
+        
+        // Also clear in side-by-side view
+        const afterImageSideBySide = document.getElementById('afterImageSideBySide');
+        if (afterImageSideBySide) {
+            afterImageSideBySide.src = placeholderSvg;
         }
         
         // Hide download button initially
@@ -615,8 +775,6 @@ class NuvaFaceApp {
     // Enhanced Generate Simulation with Animated Loading
     async generateSimulation() {
         const generateBtn = document.getElementById('generateBtn');
-        const progressIndicator = document.getElementById('progressIndicator');
-        const progressText = document.getElementById('progressText');
         const volumeSlider = document.getElementById('volumeSlider');
         const afterImage = document.getElementById('afterImage');
         
@@ -625,30 +783,14 @@ class NuvaFaceApp {
             return;
         }
         
-        // Show enhanced loading state
+        // Show enhanced loading overlay
+        this.showEnhancedLoading();
+        
+        // Disable generate button during processing
         if (generateBtn) {
             generateBtn.classList.add('loading');
             generateBtn.disabled = true;
         }
-        if (progressIndicator) {
-            progressIndicator.classList.add('active');
-        }
-        
-        // Progress messages
-        const progressMessages = [
-            'KI analysiert Ihr Gesicht...',
-            'Behandlungsbereich wird erkannt...',
-            'Simulation wird generiert...',
-            'Ergebnis wird optimiert...'
-        ];
-        
-        let progressIndex = 0;
-        const progressInterval = setInterval(() => {
-            if (progressText && progressIndex < progressMessages.length) {
-                progressText.textContent = progressMessages[progressIndex];
-                progressIndex++;
-            }
-        }, 1500);
         
         try {
             const volume = parseFloat(volumeSlider.value);
@@ -680,30 +822,47 @@ class NuvaFaceApp {
 
             const result = await response.json();
             
-            // Final progress message
-            if (progressText) {
-                progressText.textContent = 'Ergebnis wird geladen...';
-            }
+            // Update progress to completion
+            this.updateEnhancedLoading('Ergebnis wird geladen...', 90);
             
             // Display result with smooth transition
             if (afterImage && result.result_png) {
+                const resultImageData = 'data:image/png;base64,' + result.result_png;
+                
                 afterImage.style.opacity = '0';
-                afterImage.src = 'data:image/png;base64,' + result.result_png;
+                afterImage.src = resultImageData;
+                
+                // Also set in side-by-side view
+                const afterImageSideBySide = document.getElementById('afterImageSideBySide');
+                if (afterImageSideBySide) {
+                    afterImageSideBySide.style.opacity = '0';
+                    afterImageSideBySide.src = resultImageData;
+                }
                 
                 afterImage.onload = () => {
                     afterImage.style.transition = 'opacity 0.5s ease';
                     afterImage.style.opacity = '1';
                     
-                    // Success feedback
-                    if (progressText) {
-                        progressText.textContent = '✨ Simulation erfolgreich!';
+                    // Animate side-by-side view too
+                    if (afterImageSideBySide) {
+                        afterImageSideBySide.style.transition = 'opacity 0.5s ease';
+                        afterImageSideBySide.style.opacity = '1';
                     }
                     
+                    // Show unified view toggle and container
+                    this.showUnifiedViewSystem();
+                    
+                    // Update split view if currently active
+                    if (this.currentViewMode === 'split') {
+                        this.setupSplitView();
+                    }
+                    
+                    // Complete progress and hide loading overlay
+                    this.updateEnhancedLoading('✨ Simulation erfolgreich!', 100);
+                    
                     setTimeout(() => {
-                        if (progressIndicator) {
-                            progressIndicator.classList.remove('active');
-                        }
-                    }, 2000);
+                        this.hideEnhancedLoading();
+                    }, 1500);
                 };
                 
                 this.lastResult = result.result_png;
@@ -728,15 +887,6 @@ class NuvaFaceApp {
                     );
                 }
                 
-                // Store result for split view
-                this.lastResult = {
-                    original_png: beforeImage.src.split(',')[1],
-                    result_png: result.result_png
-                };
-                
-                // Initialize in before view mode
-                this.currentViewMode = 'before';
-                
                 // Add to history
                 this.addToHistory({
                     id: requestId,
@@ -749,19 +899,15 @@ class NuvaFaceApp {
             
         } catch (error) {
             console.error('Generation error:', error);
-            if (progressText) {
-                progressText.textContent = '❌ Generierung fehlgeschlagen';
-            }
-            setTimeout(() => {
-                this.showError('Generierung fehlgeschlagen. Bitte versuchen Sie es erneut.');
-                if (progressIndicator) {
-                    progressIndicator.classList.remove('active');
-                }
-            }, 1500);
-        } finally {
-            // Clear progress interval
-            clearInterval(progressInterval);
             
+            // Show error state in loading overlay
+            this.updateEnhancedLoading('❌ Generierung fehlgeschlagen', 0);
+            
+            setTimeout(() => {
+                this.hideEnhancedLoading();
+                this.showError('Generierung fehlgeschlagen. Bitte versuchen Sie es erneut.');
+            }, 2000);
+        } finally {
             // Reset loading state
             if (generateBtn) {
                 generateBtn.classList.remove('loading');
@@ -1039,19 +1185,34 @@ class NuvaFaceApp {
     }
 
     setupSplitView() {
-        if (!this.lastResult) return;
-
         const splitBefore = document.querySelector('.split-before');
         const splitAfter = document.querySelector('.split-after');
+        const splitDivider = document.querySelector('.split-divider');
 
         if (splitBefore && splitAfter) {
             // Use the before image and after image
             const beforeImg = document.getElementById('beforeImage');
             const afterImg = document.getElementById('afterImage');
             
-            if (beforeImg.src && afterImg.src) {
+            if (beforeImg && beforeImg.src && afterImg && afterImg.src) {
+                // Set background images
                 splitBefore.style.backgroundImage = `url(${beforeImg.src})`;
+                splitBefore.style.backgroundSize = 'cover';
+                splitBefore.style.backgroundPosition = 'center';
+                
                 splitAfter.style.backgroundImage = `url(${afterImg.src})`;
+                splitAfter.style.backgroundSize = 'cover';
+                splitAfter.style.backgroundPosition = 'center';
+                
+                // Initialize split position to center
+                this.splitPosition = 0.5;
+                
+                // Set initial divider position
+                if (splitDivider) {
+                    splitDivider.style.left = '50%';
+                }
+                
+                // Update the split view
                 this.updateSplitView();
             }
         }
@@ -1214,6 +1375,49 @@ class NuvaFaceApp {
         });
     }
 
+    // Unified View System
+    switchUnifiedView(event) {
+        const viewType = event.currentTarget.dataset.view;
+        
+        // Update button states
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.currentTarget.classList.add('active');
+        
+        // Switch views
+        const sidebysidesView = document.getElementById('sidebysidesView');
+        const splitView = document.getElementById('splitView');
+        
+        if (viewType === 'sidebyside') {
+            sidebysidesView.style.display = 'grid';
+            splitView.style.display = 'none';
+            this.currentViewMode = 'sidebyside';
+        } else if (viewType === 'split') {
+            sidebysidesView.style.display = 'none';
+            splitView.style.display = 'block';
+            this.currentViewMode = 'split';
+            // Initialize split view with proper images
+            this.setupSplitView();
+            this.setupSplitViewDrag();
+        }
+    }
+    
+    updateSplitViewImages(beforeImage, afterImage) {
+        const splitBefore = document.querySelector('.split-before');
+        const splitAfter = document.querySelector('.split-after');
+        
+        if (splitBefore && splitAfter) {
+            splitBefore.style.backgroundImage = `url(${beforeImage})`;
+            splitBefore.style.backgroundSize = 'cover';
+            splitBefore.style.backgroundPosition = 'center';
+            
+            splitAfter.style.backgroundImage = `url(${afterImage})`;
+            splitAfter.style.backgroundSize = 'cover';
+            splitAfter.style.backgroundPosition = 'center';
+        }
+    }
+    
     startOver() {
         // Reset state
         this.currentImage = null;
@@ -1233,6 +1437,12 @@ class NuvaFaceApp {
         // Reset UI
         const proceedBtn = document.getElementById('proceedToUpload');
         if (proceedBtn) proceedBtn.disabled = true;
+        
+        // Hide unified view toggle
+        const unifiedViewToggle = document.getElementById('unifiedViewToggle');
+        if (unifiedViewToggle) {
+            unifiedViewToggle.style.display = 'none';
+        }
         
         // Go to landing
         this.showSection('landingSection');
@@ -1334,6 +1544,150 @@ class NuvaFaceApp {
         if (areaDisplay) {
             areaDisplay.textContent = '-';
         }
+    }
+
+    // Enhanced Loading Animation System
+    showEnhancedLoading() {
+        const overlay = document.getElementById('enhancedLoadingOverlay');
+        const progressBar = document.getElementById('progressBar');
+        
+        if (overlay) {
+            overlay.style.display = 'flex';
+            
+            // Reset progress bar
+            if (progressBar) {
+                progressBar.style.width = '0%';
+            }
+            
+            // Start progressive loading animation
+            this.startProgressAnimation();
+            
+            // Animate overlay entrance
+            gsap.fromTo(overlay, 
+                { opacity: 0 }, 
+                { opacity: 1, duration: 0.3 }
+            );
+        }
+    }
+
+    updateEnhancedLoading(message, progress = null) {
+        const loadingMessage = document.getElementById('loadingMessage');
+        const loadingTitle = document.getElementById('loadingTitle');
+        const progressBar = document.getElementById('progressBar');
+        
+        if (loadingMessage) {
+            loadingMessage.textContent = message;
+        }
+        
+        if (progress !== null && progressBar) {
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        // Update title for error states
+        if (message.includes('❌') && loadingTitle) {
+            loadingTitle.textContent = 'Fehler aufgetreten';
+        } else if (message.includes('✨') && loadingTitle) {
+            loadingTitle.textContent = 'Simulation abgeschlossen!';
+        }
+    }
+
+    hideEnhancedLoading() {
+        const overlay = document.getElementById('enhancedLoadingOverlay');
+        
+        if (overlay) {
+            // Animate overlay exit
+            gsap.to(overlay, {
+                opacity: 0,
+                duration: 0.3,
+                onComplete: () => {
+                    overlay.style.display = 'none';
+                    this.resetLoadingState();
+                }
+            });
+        }
+    }
+
+    startProgressAnimation() {
+        const progressBar = document.getElementById('progressBar');
+        const loadingMessage = document.getElementById('loadingMessage');
+        
+        if (!progressBar) return;
+        
+        // Progressive loading messages
+        const progressStages = [
+            { progress: 20, message: 'KI analysiert Ihr Gesicht...', delay: 1000 },
+            { progress: 40, message: 'Behandlungsbereich wird erkannt...', delay: 2500 },
+            { progress: 60, message: 'Simulation wird generiert...', delay: 4000 },
+            { progress: 80, message: 'Ergebnis wird optimiert...', delay: 6000 }
+        ];
+        
+        progressStages.forEach(stage => {
+            setTimeout(() => {
+                if (progressBar.style.width !== '100%' && progressBar.style.width !== '0%') {
+                    progressBar.style.width = `${stage.progress}%`;
+                    if (loadingMessage) {
+                        loadingMessage.textContent = stage.message;
+                    }
+                }
+            }, stage.delay);
+        });
+    }
+
+    resetLoadingState() {
+        const loadingTitle = document.getElementById('loadingTitle');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const progressBar = document.getElementById('progressBar');
+        
+        if (loadingTitle) {
+            loadingTitle.textContent = 'KI generiert Simulation...';
+        }
+        if (loadingMessage) {
+            loadingMessage.textContent = 'Ihr Behandlungsergebnis wird berechnet';
+        }
+        if (progressBar) {
+            progressBar.style.width = '0%';
+        }
+    }
+
+    // Show unified view system after successful generation
+    showUnifiedViewSystem() {
+        const unifiedViewToggle = document.getElementById('unifiedViewToggle');
+        const unifiedViewContainer = document.getElementById('unifiedViewContainer');
+        const downloadBtn = document.getElementById('downloadBtn');
+        
+        if (unifiedViewToggle) {
+            unifiedViewToggle.style.display = 'flex';
+            gsap.fromTo(unifiedViewToggle,
+                { opacity: 0, y: 20 },
+                { opacity: 1, y: 0, duration: 0.5, delay: 0.3 }
+            );
+        }
+        
+        if (unifiedViewContainer) {
+            unifiedViewContainer.style.display = 'block';
+            gsap.fromTo(unifiedViewContainer,
+                { opacity: 0, y: 20 },
+                { opacity: 1, y: 0, duration: 0.5, delay: 0.5 }
+            );
+        }
+        
+        if (downloadBtn) {
+            downloadBtn.style.display = 'flex';
+            gsap.fromTo(downloadBtn,
+                { opacity: 0, scale: 0.8 },
+                { opacity: 1, scale: 1, duration: 0.3, delay: 0.7 }
+            );
+        }
+        
+        // Show Medical AI Assistant after successful generation
+        setTimeout(() => {
+            if (window.medicalAssistant && window.medicalAssistant.assistantWidget) {
+                window.medicalAssistant.assistantWidget.show();
+                console.log('🏥 Medical Assistant widget shown after generation');
+            } else {
+                console.log('⚠️ Medical Assistant not available to show');
+            }
+        }, 1000);
     }
 }
 

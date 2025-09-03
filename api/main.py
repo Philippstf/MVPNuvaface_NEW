@@ -40,7 +40,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from engine.utils import load_image, image_to_base64, preprocess_image
 from engine.parsing import segment_area, validate_area
-from engine.edit_gemini import generate_gemini_simulation # New Gemini Engine
+# from engine.edit_gemini import generate_gemini_simulation # Not needed - using inline implementation
 from models import get_device, get_cache_info
 
 # Direct Gemini Test (inline to avoid import issues)

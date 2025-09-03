@@ -393,6 +393,15 @@ class MedicalAssistantIntegration {
         }
     }
     
+    setCurrentImage(imageData) {
+        console.log('🖼️ Setting current image data');
+        this.currentImage = imageData;
+        
+        if (this.assistantWidget) {
+            this.assistantWidget.setCurrentImage(imageData);
+        }
+    }
+    
     async triggerAnalysis(modes = null) {
         if (!this.assistantWidget) return;
         

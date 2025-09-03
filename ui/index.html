@@ -190,71 +190,56 @@
                 <h2>Simulationsergebnis</h2>
             </div>
 
-            <!-- Compact Volume Control -->
+            <!-- Compact Volume Control with Generate Button -->
             <div class="volume-control-compact">
-                <div class="volume-header">
-                    <label>Behandlungsvolumen</label>
-                    <span class="volume-value" id="volumeValue">2.0 ml</span>
-                </div>
-                <input type="range" id="volumeSlider" min="0" max="5" step="0.1" value="2" class="volume-slider-compact">
-            </div>
-
-            <!-- New 2-Column Layout -->
-            <div class="simulation-layout">
-                <!-- Left Column: Before + Medical Analysis -->
-                <div class="column-before">
-                    <div class="image-card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-camera"></i> Original</h3>
-                        </div>
-                        <div class="image-container-before">
-                            <img id="beforeImage" alt="Vorher">
-                            <!-- Medical overlays will be added here -->
-                        </div>
+                <div class="volume-section">
+                    <div class="volume-header">
+                        <label>Behandlungsvolumen</label>
+                        <span class="volume-value" id="volumeValue">2.0 ml</span>
                     </div>
+                    <input type="range" id="volumeSlider" min="0" max="5" step="0.1" value="2" class="volume-slider-compact">
                 </div>
-
-                <!-- Right Column: After + Controls -->
-                <div class="column-after">
-                    <div class="image-card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-magic"></i> Simulation</h3>
-                            <div class="card-actions">
-                                <button class="generate-btn-prominent" id="generateBtn" onclick="app.generateSimulation()">
-                                    <div class="btn-content" id="btnContent">
-                                        <i class="fas fa-sync-alt"></i>
-                                        <span>Neu Generieren</span>
-                                    </div>
-                                </button>
-                            </div>
+                <div class="generate-section">
+                    <button class="generate-btn-prominent" id="generateBtn" onclick="app.generateSimulation()">
+                        <div class="btn-content" id="btnContent">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Neu Generieren</span>
                         </div>
-                        <div class="image-container-after">
-                            <div class="result-frame" id="resultFrame">
-                                <img id="afterImage" alt="Nachher">
-                                <div class="generation-overlay" id="generationOverlay">
-                                    <div class="progress-indicator" id="progressIndicator">
-                                        <div class="progress-spinner"></div>
-                                        <span id="progressText">KI generiert Simulation...</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </button>
                 </div>
             </div>
 
-            <!-- View Mode Toggle -->
-            <div class="view-toggle" id="viewToggle" style="display: none;">
-                <button class="view-btn active" data-view="before" onclick="app.switchView(event)">Vorher</button>
-                <button class="view-btn" data-view="after" onclick="app.switchView(event)">Nachher</button>
-                <button class="view-btn" data-view="split" onclick="app.switchView(event)">Geteilte Ansicht</button>
+
+            <!-- Hidden base images for JavaScript processing -->
+            <img id="beforeImage" style="display: none;" alt="Before image for processing">
+            <img id="afterImage" style="display: none;" alt="After image for processing">
+            
+            <!-- Unified View Toggle -->
+            <div class="unified-view-toggle" id="unifiedViewToggle" style="display: none;">
+                <button class="view-btn active" data-view="sidebyside" onclick="app.switchUnifiedView(event)">
+                    <i class="fas fa-columns"></i> Vorher / Nachher
+                </button>
+                <button class="view-btn" data-view="split" onclick="app.switchUnifiedView(event)">
+                    <i class="fas fa-adjust"></i> Split View
+                </button>
             </div>
             
-            <!-- Image Container with Split View -->
-            <div class="image-container" id="imageContainer">
-                <img id="beforeImageSplit" class="result-image" alt="Vorher">
-                <img id="afterImageSplit" class="result-image" alt="Nachher" style="display: none;">
-                <div id="splitView" class="split-view" style="display: none;">
+            <!-- Unified View Container -->
+            <div class="unified-view-container" id="unifiedViewContainer" style="display: none;">
+                <!-- Side by Side View -->
+                <div class="sidebyside-view" id="sidebysidesView">
+                    <div class="sidebyside-panel">
+                        <h4><i class="fas fa-image"></i> Original</h4>
+                        <img id="beforeImageSideBySide" class="comparison-image" alt="Vorher">
+                    </div>
+                    <div class="sidebyside-panel">
+                        <h4><i class="fas fa-magic"></i> Simulation</h4>
+                        <img id="afterImageSideBySide" class="comparison-image" alt="Nachher">
+                    </div>
+                </div>
+                
+                <!-- Split View -->
+                <div class="split-view" id="splitView" style="display: none;">
                     <div class="split-labels">
                         <span class="split-label-before">Vorher</span>
                         <span class="split-label-after">Nachher</span>
@@ -268,6 +253,41 @@
                                 <i class="fas fa-chevron-right"></i>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Generation Placeholder -->  
+            <div class="generation-placeholder" id="generationPlaceholder">
+                <div class="placeholder-content">
+                    <i class="fas fa-magic"></i>
+                    <p>Klicken Sie auf</p>
+                    <button class="generate-cta">Generieren</button>
+                    <p>um Ihre Simulation zu starten</p>
+                </div>
+            </div>
+            
+            <!-- Enhanced Loading Overlay -->
+            <div class="enhanced-loading-overlay" id="enhancedLoadingOverlay" style="display: none;">
+                <div class="loading-content">
+                    <div class="loading-animation">
+                        <div class="loading-circle">
+                            <div class="loading-inner"></div>
+                        </div>
+                        <div class="loading-sparkles">
+                            <div class="sparkle sparkle-1"></div>
+                            <div class="sparkle sparkle-2"></div>
+                            <div class="sparkle sparkle-3"></div>
+                            <div class="sparkle sparkle-4"></div>
+                        </div>
+                    </div>
+                    <div class="loading-text">
+                        <h3 id="loadingTitle">KI generiert Simulation...</h3>
+                        <p id="loadingMessage">Ihr Behandlungsergebnis wird berechnet</p>
+                        <div class="loading-progress">
+                            <div class="progress-bar" id="progressBar"></div>
+                        </div>
+                        <span class="loading-time" id="loadingTime">Geschätzte Dauer: 15-30 Sekunden</span>
                     </div>
                 </div>
             </div>
@@ -298,20 +318,77 @@
     <script src="medical-tooltip-system.js"></script>
     <script src="medical-assistant-integration.js"></script>
     <script>
-        // Medical AI Assistant integration - minimal hook
+        // Medical AI Assistant integration - enhanced hook
         document.addEventListener('DOMContentLoaded', () => {
             console.log('🏥 Medical AI Assistant DOM ready');
             
-            // Simple integration - just hook into selectedArea changes
+            // Initialize Medical Assistant Integration
+            if (typeof MedicalAssistantIntegration !== 'undefined') {
+                window.medicalAssistantIntegration = new MedicalAssistantIntegration();
+            }
+            
+            // Medical Assistant initialization flag
+            let medicalAssistantInitialized = false;
+            
+            // Monitor for result section activation and force Medical Assistant initialization
+            const observer = new MutationObserver(() => {
+                const resultSection = document.getElementById('resultSection');
+                const unifiedViewToggle = document.getElementById('unifiedViewToggle');
+                
+                if ((resultSection?.classList.contains('active') || 
+                    (unifiedViewToggle?.style.display === 'flex')) && 
+                    !medicalAssistantInitialized) {
+                    
+                    console.log('🏥 Results detected - initializing Medical Assistant (once)');
+                    medicalAssistantInitialized = true;
+                    
+                    // Force Medical Assistant initialization
+                    setTimeout(() => {
+                        if (!window.medicalAssistant && window.MedicalAssistantIntegration) {
+                            console.log('🏥 Creating new Medical Assistant instance');
+                            window.medicalAssistant = new MedicalAssistantIntegration();
+                            
+                            // Show the widget
+                            if (window.medicalAssistant.assistantWidget) {
+                                window.medicalAssistant.assistantWidget.show();
+                                console.log('👁️ Medical Assistant widget made visible');
+                            }
+                        }
+                        
+                        // Update with current app state if available
+                        if (window.app && window.medicalAssistant) {
+                            if (window.app.selectedArea) {
+                                console.log(`🎯 Medical Assistant: Setting area to ${window.app.selectedArea}`);
+                                window.medicalAssistant.setCurrentArea(window.app.selectedArea);
+                            }
+                            if (window.app.currentImageBase64) {
+                                console.log('🖼️ Medical Assistant: Setting current image');
+                                window.medicalAssistant.setCurrentImage(window.app.currentImageBase64);
+                            }
+                        }
+                    }, 500);
+                }
+            });
+            
+            // Start observing
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ['class', 'style']
+            });
+            
+            // Simple integration - monitor selectedArea changes
             setTimeout(() => {
-                if (window.app && window.medicalAssistant) {
-                    // Monitor selectedArea changes  
+                if (window.app) {
                     let lastArea = null;
                     setInterval(() => {
                         if (window.app.selectedArea !== lastArea) {
                             lastArea = window.app.selectedArea;
                             console.log(`🎯 Medical Assistant: Area changed to ${lastArea}`);
-                            window.medicalAssistant.setCurrentArea(lastArea);
+                            if (window.medicalAssistant) {
+                                window.medicalAssistant.setCurrentArea(lastArea);
+                            }
                         }
                     }, 500);
                     console.log('✅ Medical AI Assistant integration active');

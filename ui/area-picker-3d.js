@@ -13,6 +13,8 @@ class AreaPicker3D {
         this.mouse = new THREE.Vector2();
         this.selectedArea = null;
         this.hoveredArea = null;
+        this.isMobile = window.innerWidth <= 768;
+        this.isTouch = 'ontouchstart' in window;
         
         // Initialize submesh system
         this.submeshes = {};
@@ -76,7 +78,13 @@ class AreaPicker3D {
     setupCamera() {
         const aspect = this.container.clientWidth / this.container.clientHeight;
         this.camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
-        this.camera.position.set(0, 0.5, 3); // Position for better view
+        
+        // Mobile-optimized camera position
+        if (this.isMobile) {
+            this.camera.position.set(0, 0.3, 2.5); // Closer for mobile
+        } else {
+            this.camera.position.set(0, 0.5, 3); // Position for desktop
+        }
         this.camera.lookAt(0, 0, 0);
     }
     
@@ -95,16 +103,28 @@ class AreaPicker3D {
     }
     
     setupControls() {
-        // Add OrbitControls for mouse interaction
+        // Add OrbitControls for mouse/touch interaction
         this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.05;
-        this.controls.rotateSpeed = 0.8;
-        this.controls.zoomSpeed = 1.2;
+        
+        // Mobile-optimized controls
+        if (this.isMobile) {
+            this.controls.rotateSpeed = 0.6;  // Slower rotation for better control on mobile
+            this.controls.zoomSpeed = 0.8;    // Slower zoom for mobile
+            this.controls.minDistance = 1.2;  // Closer minimum distance
+            this.controls.maxDistance = 4;    // Closer maximum distance
+            this.controls.enableZoom = true;  // Enable pinch zoom on mobile
+            this.controls.enableRotate = true; // Enable touch rotation
+        } else {
+            this.controls.rotateSpeed = 0.8;
+            this.controls.zoomSpeed = 1.2;
+            this.controls.minDistance = 1.5;
+            this.controls.maxDistance = 5;
+        }
+        
         this.controls.panSpeed = 0.8;
-        this.controls.minDistance = 1.5;
-        this.controls.maxDistance = 5;
-        this.controls.enablePan = false; // Disable panning
+        this.controls.enablePan = false; // Disable panning for both
         this.controls.target.set(0, 0, 0);
         this.controls.update();
     }
@@ -351,16 +371,64 @@ class AreaPicker3D {
     
     
     setupEventListeners() {
-        // Mouse events
+        // Mobile-first event handling
+        if (this.isTouch) {
+            // Touch events for mobile
+            this.container.addEventListener('touchstart', this.onTouchStart.bind(this), { passive: false });
+            this.container.addEventListener('touchmove', this.onTouchMove.bind(this), { passive: false });
+            this.container.addEventListener('touchend', this.onTouchEnd.bind(this), { passive: false });
+        }
+        
+        // Mouse events for desktop (always available as fallback)
         this.container.addEventListener('mousemove', this.onMouseMove.bind(this));
         this.container.addEventListener('click', this.onMouseClick.bind(this));
         
-        // Resize handler
-        window.addEventListener('resize', this.onWindowResize.bind(this));
+        // Resize handler (mobile-responsive)
+        window.addEventListener('resize', this.handleResize.bind(this));
+    }
+    
+    // Mobile-responsive resize handler
+    handleResize() {
+        if (!this.camera || !this.renderer) return;
         
-        // Touch events for mobile
-        this.container.addEventListener('touchstart', this.onTouchStart.bind(this));
-        this.container.addEventListener('touchmove', this.onTouchMove.bind(this));
+        const width = this.container.clientWidth;
+        const height = this.container.clientHeight;
+        
+        // Update camera aspect ratio
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
+        
+        // Update renderer size
+        this.renderer.setSize(width, height);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        
+        // Update mobile state
+        this.isMobile = window.innerWidth <= 768;
+        
+        // Adjust camera position for mobile
+        if (this.isMobile) {
+            this.camera.position.setLength(2.5);
+        } else {
+            this.camera.position.setLength(3);
+        }
+        
+        // Update controls for mobile
+        if (this.controls) {
+            if (this.isMobile) {
+                this.controls.rotateSpeed = 0.6;
+                this.controls.zoomSpeed = 0.8;
+                this.controls.minDistance = 1.2;
+                this.controls.maxDistance = 4;
+            } else {
+                this.controls.rotateSpeed = 0.8;
+                this.controls.zoomSpeed = 1.2;
+                this.controls.minDistance = 1.5;
+                this.controls.maxDistance = 5;
+            }
+        }
+        
+        // Legacy support
+        this.onWindowResize && this.onWindowResize();
     }
     
     onMouseMove(event) {
@@ -393,7 +461,15 @@ class AreaPicker3D {
         this.mouse.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
         this.mouse.y = -((touch.clientY - rect.top) / rect.height) * 2 + 1;
         
-        this.selectArea();
+        // Store start position for tap detection
+        this.touchStartPos = {
+            x: this.mouse.x,
+            y: this.mouse.y,
+            time: Date.now()
+        };
+        
+        // Check for hover effect on touch start (immediate feedback)
+        this.checkIntersections();
     }
     
     onTouchMove(event) {
@@ -403,7 +479,44 @@ class AreaPicker3D {
         this.mouse.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
         this.mouse.y = -((touch.clientY - rect.top) / rect.height) * 2 + 1;
         
-        this.checkIntersections();
+        // Check if this is rotation (OrbitControls handles this) or area selection
+        if (this.touchStartPos) {
+            const moveDistance = Math.abs(this.mouse.x - this.touchStartPos.x) + 
+                                 Math.abs(this.mouse.y - this.touchStartPos.y);
+            
+            // Only check intersections if not rotating (small movement)
+            if (moveDistance < 0.08) {
+                this.checkIntersections();
+            }
+        }
+    }
+    
+    onTouchEnd(event) {
+        event.preventDefault();
+        
+        // Check if this was a tap (not a drag/rotation)
+        if (this.touchStartPos) {
+            const currentTime = Date.now();
+            const timeDiff = currentTime - this.touchStartPos.time;
+            const moveDistance = Math.abs(this.mouse.x - this.touchStartPos.x) + 
+                                Math.abs(this.mouse.y - this.touchStartPos.y);
+            
+            // Consider it a tap if quick and small movement (mobile-optimized thresholds)
+            if (timeDiff < 500 && moveDistance < 0.08) {
+                this.selectArea();
+            }
+        }
+        
+        this.touchStartPos = null;
+        
+        // Clear any hover states on touch end
+        if (this.hoveredArea) {
+            this.clearAreaHover(this.hoveredArea);
+            this.hoveredArea = null;
+            if (this.areaLeaveCallback) {
+                this.areaLeaveCallback();
+            }
+        }
     }
     
     checkIntersections() {
