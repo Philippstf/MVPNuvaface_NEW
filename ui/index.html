@@ -298,49 +298,25 @@
     <script src="medical-tooltip-system.js"></script>
     <script src="medical-assistant-integration.js"></script>
     <script>
-        // Medical AI Assistant integration - preserve existing functionality
+        // Medical AI Assistant integration - minimal hook
         document.addEventListener('DOMContentLoaded', () => {
             console.log('🏥 Medical AI Assistant DOM ready');
             
-            // Wait for existing app to initialize first
+            // Simple integration - just hook into selectedArea changes
             setTimeout(() => {
-                // Don't override existing event listeners, just enhance them
-                console.log('🔗 Medical AI Assistant integration ready');
-                
-                // Hook into existing app area selection
-                if (window.app) {
-                    // Store original selectedArea setter if it exists
-                    const originalSelectedAreaProperty = Object.getOwnPropertyDescriptor(window.app, 'selectedArea');
-                    
-                    // Enhance the selectedArea property to notify Medical Assistant
-                    let _selectedArea = window.app.selectedArea;
-                    Object.defineProperty(window.app, 'selectedArea', {
-                        get() {
-                            return _selectedArea;
-                        },
-                        set(value) {
-                            _selectedArea = value;
-                            console.log(`🎯 Area selection changed to: ${value}`);
-                            
-                            // Notify Medical Assistant
-                            if (window.medicalAssistant) {
-                                window.medicalAssistant.setCurrentArea(value);
-                            }
-                            
-                            // Call original setter if it existed
-                            if (originalSelectedAreaProperty && originalSelectedAreaProperty.set) {
-                                originalSelectedAreaProperty.set.call(this, value);
-                            }
-                        },
-                        configurable: true,
-                        enumerable: true
-                    });
-                    
-                    console.log('✅ Medical AI Assistant integration hooked into app');
-                } else {
-                    console.warn('⚠️ window.app not available for Medical AI Assistant integration');
+                if (window.app && window.medicalAssistant) {
+                    // Monitor selectedArea changes  
+                    let lastArea = null;
+                    setInterval(() => {
+                        if (window.app.selectedArea !== lastArea) {
+                            lastArea = window.app.selectedArea;
+                            console.log(`🎯 Medical Assistant: Area changed to ${lastArea}`);
+                            window.medicalAssistant.setCurrentArea(lastArea);
+                        }
+                    }, 500);
+                    console.log('✅ Medical AI Assistant integration active');
                 }
-            }, 2000); // Wait longer for app initialization
+            }, 2000);
         });
     </script>
 </body>

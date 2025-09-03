@@ -282,11 +282,16 @@ class MedicalAssistantIntegration {
             this.triggerAnalysis();
         }
         
-        // Show/hide widget based on image presence
+        // Show/hide widget based on image presence AND current section
         if (this.assistantWidget) {
-            if (this.currentImage) {
+            const currentSection = document.querySelector('.section.active');
+            const isResultSection = currentSection && currentSection.id === 'resultSection';
+            
+            if (this.currentImage && isResultSection) {
+                console.log('🏥 Medical Assistant: Showing on result section with image');
                 this.assistantWidget.show();
             } else {
+                console.log('🏥 Medical Assistant: Hiding (not result section or no image)');
                 this.assistantWidget.hide();
             }
         }

@@ -168,6 +168,11 @@ class NuvaFaceApp {
             proceedBtn.addEventListener('click', () => this.showSection('uploadSection'));
         }
         
+        // Area selection buttons (Kacheln)
+        document.querySelectorAll('.area-select-btn').forEach(btn => {
+            btn.addEventListener('click', this.handleAreaButtonClick.bind(this));
+        });
+        
         // Initialize split view drag functionality
         this.setupSplitViewDrag();
     }
@@ -281,17 +286,8 @@ class NuvaFaceApp {
             }
         );
         
-        this.selectedArea = area;
-        
-        // Animate proceed button
-        const proceedBtn = document.getElementById('proceedToUpload');
-        if (proceedBtn) {
-            proceedBtn.disabled = false;
-            gsap.fromTo(proceedBtn,
-                { scale: 0.9, opacity: 0.5 },
-                { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(2)" }
-            );
-        }
+        // Use centralized method
+        this.setSelectedArea(area);
         
         // Update info with slide animation
         this.animateAreaInfo(e);
@@ -1230,6 +1226,9 @@ class NuvaFaceApp {
         document.querySelectorAll('.hotspot').forEach(spot => {
             spot.classList.remove('selected');
         });
+        document.querySelectorAll('.area-select-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
         
         // Reset UI
         const proceedBtn = document.getElementById('proceedToUpload');
@@ -1237,6 +1236,104 @@ class NuvaFaceApp {
         
         // Go to landing
         this.showSection('landingSection');
+    }
+    
+    // NEW: Handle area button clicks (Kacheln)
+    handleAreaButtonClick(e) {
+        const area = e.currentTarget.dataset.area;
+        const isCurrentlySelected = e.currentTarget.classList.contains('selected');
+        
+        if (isCurrentlySelected) {
+            // Deselect current area
+            this.deselectCurrentArea();
+        } else {
+            // Select new area
+            this.setSelectedArea(area);
+            
+            // Highlight corresponding 3D area
+            if (this.areaPicker3D) {
+                console.log(`🎯 Button click: highlighting ${area} on 3D model`);
+                this.areaPicker3D.selectAreaFromButton(area);
+                this.areaPicker3D.highlightAreaFromButton(area);
+            }
+        }
+    }
+    
+    // NEW: Update area button selection to match 3D model
+    updateAreaButtonSelection(area) {
+        console.log(`🔄 Updating area button selection to: ${area}`);
+        
+        // Clear all button selections
+        document.querySelectorAll('.area-select-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        
+        // Highlight matching button
+        if (area) {
+            const matchingBtn = document.querySelector(`[data-area="${area}"]`);
+            if (matchingBtn) {
+                matchingBtn.classList.add('selected');
+                console.log(`✅ Area button ${area} selected`);
+            }
+        }
+    }
+    
+    // NEW: Set selected area and update all related UI
+    setSelectedArea(area) {
+        this.selectedArea = area;
+        console.log(`🎯 Area selected: ${area}`);
+        
+        // Update area buttons
+        this.updateAreaButtonSelection(area);
+        
+        // Enable proceed button
+        const proceedBtn = document.getElementById('proceedToUpload');
+        if (proceedBtn) {
+            proceedBtn.disabled = false;
+        }
+        
+        // Update area display
+        const areaDisplay = document.getElementById('selectedAreaDisplay');
+        if (areaDisplay) {
+            const areaNames = {
+                'lips': 'Lippen',
+                'cheeks': 'Wangen', 
+                'chin': 'Kinn',
+                'forehead': 'Stirn'
+            };
+            areaDisplay.textContent = areaNames[area] || area;
+        }
+    }
+    
+    // NEW: Deselect current area
+    deselectCurrentArea() {
+        this.selectedArea = null;
+        console.log('🗑️ Area deselected');
+        
+        // Clear all selections
+        document.querySelectorAll('.area-select-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        document.querySelectorAll('.hotspot').forEach(spot => {
+            spot.classList.remove('selected');
+        });
+        
+        // Clear 3D highlighting
+        if (this.areaPicker3D) {
+            this.areaPicker3D.clearButtonSelection();
+        }
+        
+        // Disable proceed button
+        const proceedBtn = document.getElementById('proceedToUpload');
+        if (proceedBtn) {
+            proceedBtn.disabled = true;
+        }
+        
+        // Clear area display
+        const areaDisplay = document.getElementById('selectedAreaDisplay');
+        if (areaDisplay) {
+            areaDisplay.textContent = '-';
+        }
     }
 }
 
