@@ -44,7 +44,9 @@
       "Read(c:\\Users\\phlpp\\Downloads/**)",
       "Read(c:\\Users\\phlpp\\Downloads/**)",
       "Read(c:\\Users\\phlpp\\Downloads/**)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)"
     ],
     "deny": [],
     "ask": []
