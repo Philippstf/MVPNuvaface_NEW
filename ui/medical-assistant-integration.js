@@ -39,7 +39,17 @@ class MedicalAssistantIntegration {
                 });
             }
             
-            // Initialize components
+            // Check if we're on result section - if not, don't initialize
+            const resultSection = document.getElementById('resultSection');
+            const isResultPageActive = resultSection && resultSection.classList.contains('active');
+            
+            if (!isResultPageActive) {
+                console.log('🏥 Not on result page - deferring Medical Assistant initialization');
+                this.setupLazyInit();
+                return;
+            }
+            
+            // Initialize components only if on result page
             await this.initializeComponents();
             
             // Setup integrations
@@ -53,6 +63,42 @@ class MedicalAssistantIntegration {
             
         } catch (error) {
             console.error('❌ Medical AI Assistant initialization failed:', error);
+            this.handleInitializationError(error);
+        }
+    }
+    
+    setupLazyInit() {
+        // Watch for result section to become active
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    const element = mutation.target;
+                    if (element.id === 'resultSection' && element.classList.contains('active')) {
+                        console.log('🏥 Result section activated - initializing Medical Assistant');
+                        observer.disconnect();
+                        this.initializeDeferred();
+                    }
+                }
+            });
+        });
+        
+        const resultSection = document.getElementById('resultSection');
+        if (resultSection) {
+            observer.observe(resultSection, { attributes: true, attributeFilter: ['class'] });
+        }
+    }
+    
+    async initializeDeferred() {
+        if (this.isInitialized) return;
+        
+        try {
+            await this.initializeComponents();
+            this.setupIntegrations();
+            this.integrateWithNuvaFace();
+            this.isInitialized = true;
+            console.log('✅ Medical AI Assistant Integration initialized (deferred)');
+        } catch (error) {
+            console.error('❌ Deferred Medical AI Assistant initialization failed:', error);
             this.handleInitializationError(error);
         }
     }
