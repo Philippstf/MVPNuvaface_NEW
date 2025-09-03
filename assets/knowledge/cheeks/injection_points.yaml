@@ -1,0 +1,223 @@
+# Cheek Injection Points - MD Codes and Volumetric Guidelines
+area: cheeks
+
+points:
+  - id: CK1_left_high
+    label: "Left High Malar Point"
+    md_code: "CK1"
+    technique: "bolus injection"
+    depth: "supraperiosteal"
+    volume_recommendation: "0.3-0.5 ml"
+    tool: "25G cannula preferred"
+    notes: "Primary cheek projection point, zygomatic prominence"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["left_eye_outer", "left_mouth_corner"]
+      anchor_weights: [0.4, 0.6]
+      offset_percent: { x: -0.02, y: 0.05 }
+      clamp_to_mask: "cheek_area"
+    warnings:
+      - "Deep injection to bone level"
+      - "Avoid superficial placement"
+      - "Check for facial artery proximity"
+      - "Monitor for asymmetry"
+
+  - id: CK1_right_high
+    label: "Right High Malar Point"
+    md_code: "CK1"
+    technique: "bolus injection"
+    depth: "supraperiosteal"
+    volume_recommendation: "0.3-0.5 ml"
+    tool: "25G cannula preferred"
+    notes: "Primary cheek projection point, zygomatic prominence"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["right_eye_outer", "right_mouth_corner"]
+      anchor_weights: [0.4, 0.6]
+      offset_percent: { x: 0.02, y: 0.05 }
+      clamp_to_mask: "cheek_area"
+    warnings:
+      - "Deep injection to bone level"
+      - "Avoid superficial placement"
+      - "Check for facial artery proximity"
+      - "Monitor for asymmetry"
+
+  - id: CK2_left_mid
+    label: "Left Mid-Cheek Volume Point"
+    md_code: "CK2"
+    technique: "threading"
+    depth: "subcutaneous"
+    volume_recommendation: "0.2-0.4 ml"
+    tool: "27G cannula"
+    notes: "Mid-cheek volume restoration, apple of cheek"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["left_eye_outer", "left_mouth_corner"]
+      anchor_weights: [0.5, 0.5]
+      offset_percent: { x: -0.015, y: 0.02 }
+      clamp_to_mask: "mid_cheek"
+    warnings:
+      - "Moderate risk - infraorbital vessels nearby"
+      - "Threading technique reduces vascular risk"
+      - "Avoid bolus injections in this area"
+      - "Monitor for bruising"
+
+  - id: CK2_right_mid
+    label: "Right Mid-Cheek Volume Point"
+    md_code: "CK2"
+    technique: "threading"
+    depth: "subcutaneous"
+    volume_recommendation: "0.2-0.4 ml"
+    tool: "27G cannula"
+    notes: "Mid-cheek volume restoration, apple of cheek"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["right_eye_outer", "right_mouth_corner"]
+      anchor_weights: [0.5, 0.5]
+      offset_percent: { x: 0.015, y: 0.02 }
+      clamp_to_mask: "mid_cheek"
+    warnings:
+      - "Moderate risk - infraorbital vessels nearby"
+      - "Threading technique reduces vascular risk"
+      - "Avoid bolus injections in this area"
+      - "Monitor for bruising"
+
+  - id: CK3_left_lateral
+    label: "Left Lateral Cheek Support"
+    md_code: "CK3"
+    technique: "linear threading"
+    depth: "supraperiosteal"
+    volume_recommendation: "0.2-0.3 ml"
+    tool: "25G cannula"
+    notes: "Lateral cheek lift and support, zygomatic arch region"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["left_eye_outer"]
+      offset_percent: { x: -0.08, y: -0.01 }
+      clamp_to_mask: "lateral_cheek"
+    warnings:
+      - "Deep injection along zygomatic arch"
+      - "Avoid temporal artery area"
+      - "Check for adequate skin thickness"
+      - "May cause temporary swelling"
+
+  - id: CK3_right_lateral
+    label: "Right Lateral Cheek Support"
+    md_code: "CK3"
+    technique: "linear threading"
+    depth: "supraperiosteal"
+    volume_recommendation: "0.2-0.3 ml"
+    tool: "25G cannula"
+    notes: "Lateral cheek lift and support, zygomatic arch region"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["right_eye_outer"]
+      offset_percent: { x: 0.08, y: -0.01 }
+      clamp_to_mask: "lateral_cheek"
+    warnings:
+      - "Deep injection along zygomatic arch"
+      - "Avoid temporal artery area"
+      - "Check for adequate skin thickness"
+      - "May cause temporary swelling"
+
+  - id: CK4_left_submalar
+    label: "Left Submalar Hollowing Support"
+    md_code: "CK4"
+    technique: "fanning"
+    depth: "subcutaneous"
+    volume_recommendation: "0.1-0.2 ml"
+    tool: "27G cannula"
+    notes: "Address submalar hollowing, lower cheek support"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["left_eye_outer", "left_mouth_corner"]
+      anchor_weights: [0.3, 0.7]
+      offset_percent: { x: -0.01, y: 0.08 }
+      clamp_to_mask: "submalar"
+    warnings:
+      - "Moderate risk area - multiple vessels"
+      - "Small volumes to avoid overcorrection"
+      - "Fanning technique distributes product safely"
+      - "Avoid nasolabial fold area"
+
+  - id: CK4_right_submalar
+    label: "Right Submalar Hollowing Support"
+    md_code: "CK4"
+    technique: "fanning"
+    depth: "subcutaneous"
+    volume_recommendation: "0.1-0.2 ml"
+    tool: "27G cannula"
+    notes: "Address submalar hollowing, lower cheek support"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["right_eye_outer", "right_mouth_corner"]
+      anchor_weights: [0.3, 0.7]
+      offset_percent: { x: 0.01, y: 0.08 }
+      clamp_to_mask: "submalar"
+    warnings:
+      - "Moderate risk area - multiple vessels"
+      - "Small volumes to avoid overcorrection"
+      - "Fanning technique distributes product safely"
+      - "Avoid nasolabial fold area"
+
+treatment_protocols:
+  injection_sequence:
+    recommended_order:
+      1. "CK1 - High malar points (foundation)"
+      2. "CK3 - Lateral support (structural)"
+      3. "CK2 - Mid-cheek volume (blending)"
+      4. "CK4 - Submalar support (refinement)"
+      
+  volume_guidelines:
+    conservative_approach:
+      total_per_side: "0.8-1.2 ml maximum"
+      primary_points: "60% of total volume"
+      secondary_points: "40% of total volume"
+      
+    aggressive_approach:
+      total_per_side: "1.5-2.0 ml maximum"
+      staged_treatment: "Recommended over 2-3 sessions"
+      
+  anatomical_landmarks:
+    malar_eminence:
+      location: "Highest point of cheekbone"
+      palpation: "Firm bony prominence"
+      injection_angle: "90 degrees to bone surface"
+      
+    submalar_triangle:
+      boundaries: "Zygomatic arch, nasolabial fold, infraorbital rim"
+      risk_level: "Moderate - vascular structures present"
+      technique_preference: "Threading or fanning"
+
+age_related_considerations:
+  young_patients_20_35:
+    primary_goals: "Enhancement and contouring"
+    preferred_points: "CK1, CK3 (structural)"
+    volume_approach: "Conservative, maintain natural proportions"
+    
+  middle_aged_35_55:
+    primary_goals: "Volume restoration and lift"
+    preferred_points: "CK1, CK2, CK4 (comprehensive)"
+    volume_approach: "Moderate restoration"
+    
+  mature_patients_55plus:
+    primary_goals: "Volume replacement and support"
+    preferred_points: "All CK points as needed"
+    volume_approach: "Staged treatment over multiple sessions"
+
+post_treatment_expectations:
+  immediate_effects:
+    - "Visible projection increase"
+    - "Mild to moderate swelling"
+    - "Possible bruising at injection sites"
+    - "Temporary asymmetry during swelling phase"
+    
+  settling_period:
+    week_1: "Peak swelling, assess for complications"
+    week_2: "Swelling reduction, early result visible"
+    week_4: "Final result assessment, touch-up if needed"
+    
+  longevity:
+    duration: "12-18 months typical"
+    factors: "Patient age, metabolism, injection depth"
+    maintenance: "Annual touch-ups recommended"

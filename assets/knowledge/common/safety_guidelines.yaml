@@ -1,0 +1,127 @@
+# Medical Safety Guidelines for Aesthetic Injections
+# Conservative recommendations for all treatment areas
+
+general_contraindications:
+  absolute:
+    - "Active infection at injection site"
+    - "Known hypersensitivity to filler/botox"
+    - "Pregnancy and breastfeeding"
+    - "Autoimmune connective tissue disorders"
+    - "Body dysmorphic disorder"
+    
+  relative:
+    - "History of severe allergies"
+    - "Immunocompromised patients"
+    - "Previous adverse reactions"
+    - "Unrealistic patient expectations"
+    - "Recent facial surgery (< 6 months)"
+
+injection_safety_rules:
+  universal_precautions:
+    - "Sterile technique mandatory"
+    - "New needle for each injection"
+    - "Appropriate lighting"
+    - "Have emergency kit available"
+    - "Patient in supine position"
+    
+  risk_mitigation:
+    - "Aspirate before injection"
+    - "Slow injection speed (< 0.1ml/sec)"
+    - "Inject in small aliquots"
+    - "Monitor for blanching"
+    - "Stop immediately if resistance felt"
+
+emergency_protocols:
+  vascular_occlusion:
+    immediate_actions:
+      - "Stop injection immediately"
+      - "Apply warm compress"
+      - "Massage injection site"
+      - "Consider hyaluronidase injection"
+      - "Emergency medical consultation"
+    warning_signs:
+      - "Immediate blanching"
+      - "Severe pain during injection"
+      - "Mottled skin appearance"
+      - "Visual changes"
+
+  allergic_reaction:
+    mild_reaction:
+      - "Discontinue treatment"
+      - "Cool compress"
+      - "Antihistamine"
+      - "Monitor closely"
+    severe_reaction:
+      - "Call emergency services"
+      - "Epinephrine if available"
+      - "IV access"
+      - "Airway management"
+
+volume_guidelines:
+  conservative_approach:
+    principle: "Start low, go slow"
+    initial_treatment: "50% of desired volume"
+    follow_up: "2-4 weeks for assessment"
+    maximum_per_session:
+      lips: "2ml total"
+      cheeks: "4ml total" 
+      chin: "2ml total"
+      forehead: "40 units botox maximum"
+
+anatomical_danger_zones:
+  high_risk:
+    glabella:
+      vessels: "Supratrochlear/supraorbital arteries"
+      risk: "Blindness from retrograde embolization"
+      safety: "Avoid central glabella, superficial injections only"
+    
+    temple:
+      vessels: "Superficial temporal artery"
+      risk: "Stroke, blindness, necrosis"
+      safety: "Deep injection only, avoid superficial layers"
+    
+    nasolabial_fold:
+      vessels: "Facial artery, angular artery"
+      risk: "Necrosis, blindness"
+      safety: "Linear threading, avoid bolus injections"
+
+  moderate_risk:
+    perioral:
+      vessels: "Labial arteries"
+      risk: "Necrosis, asymmetry"
+      safety: "Small volumes, superficial placement"
+    
+    infraorbital:
+      vessels: "Infraorbital artery"
+      risk: "Bruising, swelling"
+      safety: "Avoid direct vessel area"
+
+patient_selection:
+  ideal_candidate:
+    - "Realistic expectations"
+    - "Good general health"
+    - "Understanding of risks"
+    - "No active skin conditions"
+    - "Appropriate age (18+ years)"
+    
+  poor_candidate:
+    - "Body dysmorphic disorder"
+    - "Unrealistic expectations"
+    - "Multiple previous complications"
+    - "Psychiatric instability"
+    - "Poor compliance history"
+
+documentation_requirements:
+  mandatory_records:
+    - "Informed consent"
+    - "Pre-treatment photos"
+    - "Product details (lot number, expiry)"
+    - "Injection sites and volumes"
+    - "Post-treatment instructions"
+    - "Follow-up plan"
+    
+  photo_documentation:
+    - "Standard views (front, oblique, profile)"
+    - "Good lighting conditions"
+    - "Neutral expression"
+    - "Before and after comparison"

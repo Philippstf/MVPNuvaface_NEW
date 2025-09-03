@@ -1,0 +1,214 @@
+# Cheek Risk Zones - Vascular and Neural Danger Areas
+area: cheeks
+
+zones:
+  - name: "Facial Artery Danger Zone"
+    severity: "high"
+    color: "#FF0000"
+    opacity: 0.3
+    rationale: "Main facial artery course - highest embolism risk in face"
+    rule:
+      type: "polyline_buffer_from_landmarks"
+      anchors: ["left_alae", "left_mouth_corner"] 
+      buffer_px: 10
+      style: "hatched"
+      shape: "curved_path"
+    tooltip: "Facial artery main trunk - EXTREME CAUTION required"
+    medical_reference: "External carotid artery branch - major facial vessel"
+    safety_recommendations:
+      - "NEVER inject directly into this zone"
+      - "Use cannula technique only if treatment needed nearby"
+      - "Deep supraperiosteal plane if injection required"
+      - "Have hyaluronidase immediately available"
+      - "Consider postponing treatment if anatomy unclear"
+    consequences:
+      - "Facial artery occlusion"
+      - "Extensive facial necrosis"
+      - "Possible stroke risk"
+      - "Permanent disfigurement"
+
+  - name: "Angular Artery Zone"
+    severity: "high"
+    color: "#FF4D4D"
+    opacity: 0.3
+    rationale: "Terminal facial artery branch - blindness risk from retrograde flow"
+    rule:
+      type: "circle_around_landmark"
+      anchors: ["left_eye_inner", "right_eye_inner"]
+      offset_percent: { x: -0.02, y: 0.04 }
+      radius_px: 12
+      style: "dashed"
+    tooltip: "Angular artery - BLINDNESS RISK from retrograde embolization"
+    medical_reference: "Facial artery terminal branch near medial canthus"
+    safety_recommendations:
+      - "Avoid injections in medial cheek area"
+      - "If treatment essential, use deep supraperiosteal plane"
+      - "Aspirate extensively before injection" 
+      - "Inject minimal volumes with extreme care"
+      - "Monitor for immediate visual changes"
+    consequences:
+      - "Sudden onset blindness"
+      - "Central retinal artery occlusion"
+      - "Ophthalmic artery compromise"
+      - "IRREVERSIBLE visual loss"
+
+  - name: "Infraorbital Artery Area"
+    severity: "moderate"
+    color: "#FFA500"
+    opacity: 0.25
+    rationale: "Infraorbital neurovascular bundle - bleeding and numbness risk"
+    rule:
+      type: "circle_around_landmark"
+      anchors: ["left_eye_outer", "right_eye_outer"]
+      offset_percent: { x: 0.0, y: 0.06 }
+      radius_px: 8
+      style: "dotted"
+    tooltip: "Infraorbital vessels - moderate risk for hematoma and nerve injury"
+    medical_reference: "Infraorbital foramen neurovascular bundle"
+    safety_recommendations:
+      - "Avoid deep injections near infraorbital rim"
+      - "Use threading technique to minimize trauma"
+      - "Small volumes to reduce pressure effects"
+      - "Monitor for numbness or excessive bruising"
+    consequences:
+      - "Significant hematoma formation"
+      - "Infraorbital nerve numbness"
+      - "Prolonged bruising and swelling"
+      - "Potential nerve damage"
+
+  - name: "Temporal Artery Danger Zone"
+    severity: "high"
+    color: "#FF6666"
+    opacity: 0.28
+    rationale: "Superficial temporal artery - stroke and necrosis risk"
+    rule:
+      type: "polyline_buffer_from_landmarks"
+      anchors: ["left_eye_outer", "temporal_hairline_left"]
+      buffer_px: 15
+      style: "diagonal_lines"
+    tooltip: "Superficial temporal artery - stroke risk from retrograde embolization"
+    medical_reference: "External carotid artery branch in temporal region"
+    safety_recommendations:
+      - "Avoid all superficial injections in temple"
+      - "Deep subfascial or supraperiosteal only if essential"
+      - "Never inject if vessel pulsation palpable"
+      - "Emergency protocols must be available"
+    consequences:
+      - "Stroke from retrograde embolization"
+      - "Temporal region necrosis"
+      - "Cerebral vascular accident"
+      - "Death (rare but reported)"
+
+  - name: "Nasolabial Fold Vascular Zone"
+    severity: "moderate"
+    color: "#FFAA00"
+    opacity: 0.2
+    rationale: "Nasolabial artery and facial artery convergence"
+    rule:
+      type: "polyline_buffer_from_landmarks"
+      anchors: ["left_alae", "left_mouth_corner"]
+      buffer_px: 6
+      style: "solid"
+      shape: "natural_fold_line"
+    tooltip: "Nasolabial fold vessels - use threading technique only"
+    medical_reference: "Facial artery branches in nasolabial region"
+    safety_recommendations:
+      - "Linear threading technique mandatory"
+      - "Avoid bolus injections completely"
+      - "Small volumes (0.1ml or less per pass)"
+      - "Multiple shallow passes preferred"
+    consequences:
+      - "Localized tissue necrosis"
+      - "Nasolabial fold irregularity"
+      - "Asymmetric smile animation"
+      - "Scarring in visible area"
+
+  - name: "Zygomatic Arch Safe Zone"
+    severity: "low"
+    color: "#90EE90"
+    opacity: 0.15
+    rationale: "Relatively safe area over bony prominence"
+    rule:
+      type: "polyline_buffer_from_landmarks"
+      anchors: ["left_eye_outer"]
+      offset_percent: { x: -0.06, y: -0.02 }
+      buffer_px: 12
+      style: "dotted"
+    tooltip: "Zygomatic arch - relatively safe zone for structural injections"
+    medical_reference: "Bony prominence with minimal vascular structures"
+    safety_recommendations:
+      - "Deep supraperiosteal injection preferred"
+      - "Suitable for structural volume placement"
+      - "Good area for CK1 and CK3 points"
+      - "Monitor for overcorrection"
+    advantages:
+      - "Minimal vascular risk"
+      - "Good structural support"
+      - "Predictable results"
+      - "Low complication rate"
+
+multi_zone_interactions:
+  high_risk_combinations:
+    - zones: ["Facial Artery Danger Zone", "Angular Artery Zone"]
+      warning: "Double arterial compromise risk - may cause extensive necrosis"
+      management: "Avoid treating both areas in same session"
+      
+    - zones: ["Temporal Artery Danger Zone", "Angular Artery Zone"] 
+      warning: "Multiple routes to cerebral circulation"
+      management: "Extreme caution, consider referral to specialist"
+
+vessel_mapping_guidelines:
+  pre_treatment_assessment:
+    - "Palpate for arterial pulsations"
+    - "Mark visible vessels with washable ink"
+    - "Use transillumination if available"
+    - "Document vessel patterns photographically"
+    - "Note any previous surgical history"
+    
+  high_risk_indicators:
+    - "Strong pulsations palpable"
+    - "Visible vessel distension" 
+    - "Previous filler complications"
+    - "Unusual vessel anatomy"
+    - "Skin translucency/thinness"
+
+emergency_preparedness:
+  essential_supplies:
+    - "Hyaluronidase 150-300 units per vial"
+    - "2% nitroglycerin paste"
+    - "Aspirin 325mg"
+    - "Emergency contact numbers"
+    - "Ophthalmologic referral contacts"
+    
+  immediate_response_protocol:
+    signs_of_occlusion:
+      - "Immediate skin blanching"
+      - "Severe pain during injection"
+      - "Livedo reticularis pattern"
+      - "Patient reports vision changes"
+      
+    action_steps:
+      1. "Stop injection immediately"
+      2. "Apply warm compresses"
+      3. "Massage affected area"
+      4. "Inject hyaluronidase if filler-related"
+      5. "Apply nitroglycerin paste"
+      6. "Give aspirin if no contraindications"
+      7. "Emergency ophthalmology if vision affected"
+      8. "Document everything thoroughly"
+
+prevention_strategies:
+  technique_modifications:
+    - "Use cannula instead of needle when possible"
+    - "Inject slowly with low pressure"
+    - "Aspirate before injection"
+    - "Use threading instead of bolus"
+    - "Stay in deep planes near vessels"
+    
+  patient_factors:
+    higher_risk_patients:
+      - "Previous facial surgery"
+      - "Connective tissue disorders"
+      - "Anticoagulant therapy"
+      - "History of poor healing"
+      - "Smoking history"

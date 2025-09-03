@@ -1,0 +1,260 @@
+# Chin Injection Points - Structural Enhancement Guidelines
+area: chin
+
+points:
+  - id: CH1_pogonion
+    label: "Pogonion - Central Chin Projection"
+    md_code: "CH1"
+    technique: "bolus injection"
+    depth: "supraperiosteal"
+    volume_recommendation: "0.3-0.8 ml"
+    tool: "25G needle or 27G cannula"
+    notes: "Primary chin projection point, most anterior point of chin"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["lower_lip_center"]
+      offset_percent: { x: 0.0, y: 0.12 }
+      clamp_to_mask: "chin_prominence"
+    warnings:
+      - "Deep injection to bone contact"
+      - "Avoid mental nerve area"
+      - "Check for adequate tissue thickness"
+      - "May cause temporary numbness"
+
+  - id: CH2_left_mental
+    label: "Left Mental Protuberance"
+    md_code: "CH2"
+    technique: "linear threading"
+    depth: "subcutaneous to supraperiosteal"
+    volume_recommendation: "0.2-0.4 ml"
+    tool: "27G cannula preferred"
+    notes: "Left lower chin definition and support"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["lower_lip_center"]
+      offset_percent: { x: -0.06, y: 0.08 }
+      clamp_to_mask: "mental_region"
+    warnings:
+      - "MODERATE RISK - Mental nerve proximity"
+      - "Avoid deep injections lateral to midline"
+      - "Monitor for numbness or paresthesia"
+      - "Use cannula to reduce nerve trauma"
+
+  - id: CH2_right_mental
+    label: "Right Mental Protuberance"
+    md_code: "CH2"
+    technique: "linear threading"
+    depth: "subcutaneous to supraperiosteal"
+    volume_recommendation: "0.2-0.4 ml"
+    tool: "27G cannula preferred"
+    notes: "Right lower chin definition and support"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["lower_lip_center"]
+      offset_percent: { x: 0.06, y: 0.08 }
+      clamp_to_mask: "mental_region"
+    warnings:
+      - "MODERATE RISK - Mental nerve proximity"
+      - "Avoid deep injections lateral to midline"
+      - "Monitor for numbness or paresthesia"
+      - "Use cannula to reduce nerve trauma"
+
+  - id: CH3_left_lateral
+    label: "Left Lateral Chin Support"
+    md_code: "CH3"
+    technique: "small bolus"
+    depth: "subcutaneous"
+    volume_recommendation: "0.1-0.2 ml"
+    tool: "30G needle"
+    notes: "Lateral chin contour and jawline definition"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["lower_lip_center", "left_mouth_corner"]
+      anchor_weights: [0.3, 0.7]
+      offset_percent: { x: -0.08, y: 0.06 }
+      clamp_to_mask: "lateral_chin"
+    warnings:
+      - "Conservative volumes only"
+      - "Avoid overcorrection"
+      - "Monitor for asymmetry"
+      - "May affect smile dynamics"
+
+  - id: CH3_right_lateral
+    label: "Right Lateral Chin Support"
+    md_code: "CH3"
+    technique: "small bolus"
+    depth: "subcutaneous"
+    volume_recommendation: "0.1-0.2 ml"
+    tool: "30G needle"
+    notes: "Lateral chin contour and jawline definition"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["lower_lip_center", "right_mouth_corner"]
+      anchor_weights: [0.3, 0.7]
+      offset_percent: { x: 0.08, y: 0.06 }
+      clamp_to_mask: "lateral_chin"
+    warnings:
+      - "Conservative volumes only"
+      - "Avoid overcorrection"
+      - "Monitor for asymmetry"
+      - "May affect smile dynamics"
+
+  - id: CH4_prejowl_left
+    label: "Left Pre-jowl Support"
+    md_code: "CH4"
+    technique: "threading"
+    depth: "subcutaneous"
+    volume_recommendation: "0.1-0.3 ml"
+    tool: "27G cannula"
+    notes: "Address prejowl sulcus and jawline continuity"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["left_mouth_corner"]
+      offset_percent: { x: -0.04, y: 0.10 }
+      clamp_to_mask: "prejowl_area"
+    warnings:
+      - "Advanced technique - experience required"
+      - "Risk of creating unnatural contour"
+      - "Monitor for product migration"
+      - "Consider patient's natural jawline"
+
+  - id: CH4_prejowl_right
+    label: "Right Pre-jowl Support"
+    md_code: "CH4"
+    technique: "threading"
+    depth: "subcutaneous"
+    volume_recommendation: "0.1-0.3 ml"
+    tool: "27G cannula"
+    notes: "Address prejowl sulcus and jawline continuity"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["right_mouth_corner"]
+      offset_percent: { x: 0.04, y: 0.10 }
+      clamp_to_mask: "prejowl_area"
+    warnings:
+      - "Advanced technique - experience required"
+      - "Risk of creating unnatural contour"
+      - "Monitor for product migration"
+      - "Consider patient's natural jawline"
+
+anatomical_considerations:
+  bone_landmarks:
+    pogonion:
+      definition: "Most anterior point of chin on sagittal plane"
+      palpation: "Firm bony prominence at chin tip"
+      injection_depth: "Contact with bone surface"
+      
+    mental_protuberance:
+      definition: "Bony prominence forming lower border of chin"
+      anatomical_variation: "Can be very prominent or flat"
+      injection_considerations: "Adjust volume based on existing prominence"
+      
+    mental_foramen:
+      location: "Typically below second premolar"
+      nerve_exit: "Mental nerve and vessels"
+      danger_zone: "2-3cm lateral to midline"
+
+  soft_tissue_anatomy:
+    mentalis_muscle:
+      function: "Chin elevation and lower lip protrusion"
+      injection_relationship: "Inject deep to muscle"
+      complications: "Muscle weakness if injected superficially"
+      
+    depressor_labii_inferioris:
+      function: "Lower lip depression"
+      anatomical_position: "Lateral to mentalis"
+      injection_caution: "Avoid lateral injections affecting function"
+
+treatment_planning:
+  aesthetic_goals:
+    projection_enhancement:
+      indication: "Weak or receding chin"
+      primary_point: "CH1 (Pogonion)"
+      volume_range: "0.5-1.5ml total"
+      
+    definition_improvement:
+      indication: "Loss of chin-neck angle definition"
+      primary_points: "CH2 bilateral"
+      technique: "Linear threading"
+      
+    jawline_contouring:
+      indication: "Weak lateral chin, prejowl sulcus"
+      primary_points: "CH3, CH4 bilateral"
+      advanced_technique: "Requires experience"
+
+  volume_distribution:
+    conservative_approach:
+      total_volume: "1.0-1.5ml maximum"
+      primary_projection: "60% (CH1)"
+      lateral_support: "40% (CH2, CH3)"
+      
+    aggressive_approach:
+      total_volume: "2.0-3.0ml maximum"
+      staged_treatment: "Recommended over 2 sessions"
+      includes_prejowl: "CH4 points if indicated"
+
+gender_considerations:
+  male_patients:
+    aesthetic_goals: "Strong, square, masculine profile"
+    volume_approach: "Higher volumes acceptable"
+    preferred_points: "All CH points for full definition"
+    projection_ratio: "More projection relative to width"
+    
+  female_patients:
+    aesthetic_goals: "Defined but feminine contour"
+    volume_approach: "Conservative, natural enhancement"
+    preferred_points: "CH1, CH2 primarily"
+    projection_ratio: "Balanced projection and width"
+
+injection_techniques:
+  supraperiosteal_bolus:
+    indications: "Primary projection (CH1)"
+    technique: "Perpendicular to bone surface"
+    advantage: "Maximum projection effect"
+    risks: "Potential bruising, temporary numbness"
+    
+  subcutaneous_threading:
+    indications: "Lateral support (CH2, CH3)"
+    technique: "Linear passes in tissue plane"
+    advantage: "Smooth contour, reduced vascular risk"
+    risks: "Product migration if too superficial"
+
+post_treatment_management:
+  immediate_care:
+    - "Ice application for 15-20 minutes"
+    - "Avoid excessive jaw movement for 2 hours"
+    - "Monitor for numbness or paresthesia"
+    - "Check for symmetry and projection"
+    
+  follow_up_protocol:
+    24_hours: "Check for complications, swelling assessment"
+    1_week: "Swelling reduction, early result evaluation"
+    2_weeks: "Assessment for touch-up needs"
+    4_weeks: "Final result documentation"
+    
+  complications_monitoring:
+    early_signs:
+      - "Prolonged numbness (>24 hours)"
+      - "Asymmetric swelling"
+      - "Difficulty with speech or eating"
+      - "Excessive bruising"
+      
+    management_strategies:
+      - "Massage for product migration"
+      - "Warm compresses for circulation"
+      - "Hyaluronidase if overcorrection"
+      - "Neurological assessment if numbness persists"
+
+longevity_expectations:
+  duration: "12-24 months (longer than other areas)"
+  factors_affecting:
+    - "Injection depth (deeper lasts longer)"
+    - "Patient's metabolic rate"
+    - "Jaw movement and muscle activity"
+    - "Product viscosity and cross-linking"
+    
+  maintenance_recommendations:
+    - "Annual assessment for touch-up needs"
+    - "Consider staged approach for large volumes"
+    - "Monitor for gradual volume loss"
+    - "Adjust technique based on tissue response"

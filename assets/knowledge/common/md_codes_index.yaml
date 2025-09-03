@@ -1,0 +1,147 @@
+# MD Codes Index - Standardized Injection Point Classification
+# Based on established medical literature and anatomical landmarks
+
+md_codes_overview:
+  purpose: "Standardized nomenclature for facial injection points"
+  benefits:
+    - "Reproducible treatment plans"
+    - "Consistent documentation"
+    - "International communication standard"
+    - "Training and education tool"
+  
+  classification_system:
+    area_prefixes:
+      LP: "Lip codes"
+      CK: "Cheek codes"  
+      CH: "Chin codes"
+      FH: "Forehead codes"
+      GL: "Glabella codes"
+      TE: "Temple codes"
+
+lip_md_codes:
+  LP1:
+    name: "Cupid's Bow Points"
+    location: "Peak points of upper lip"
+    technique: "Linear threading or small bolus"
+    depth: "Dermal to shallow subcutaneous"
+    indication: "Cupid's bow definition"
+    
+  LP2:
+    name: "Vermillion Border"
+    location: "Upper and lower lip border"
+    technique: "Linear threading"
+    depth: "Dermal"
+    indication: "Lip border definition"
+    
+  LP3:
+    name: "Lip Body Volume"
+    location: "Central lip body"
+    technique: "Linear threading or serial puncture"
+    depth: "Subcutaneous"
+    indication: "Lip volume enhancement"
+    
+  LP4:
+    name: "Oral Commissures"
+    location: "Corner of mouth"
+    technique: "Small bolus or threading"
+    depth: "Subcutaneous"
+    indication: "Corner lift and support"
+
+cheek_md_codes:
+  CK1:
+    name: "Zygomatic Prominence"
+    location: "High cheek point"
+    technique: "Bolus injection"
+    depth: "Supraperiosteal"
+    indication: "Cheek projection and lift"
+    
+  CK2:
+    name: "Mid-Cheek Volume"
+    location: "Central cheek area"
+    technique: "Threading or serial puncture"
+    depth: "Subcutaneous"
+    indication: "Cheek volume restoration"
+    
+  CK3:
+    name: "Zygomatic Arch"
+    location: "Lateral cheek projection"
+    technique: "Linear threading"
+    depth: "Supraperiosteal"
+    indication: "Lateral cheek support"
+
+chin_md_codes:
+  CH1:
+    name: "Pogonion"
+    location: "Central chin prominence"
+    technique: "Bolus injection"
+    depth: "Supraperiosteal"
+    indication: "Chin projection"
+    
+  CH2:
+    name: "Mental Protuberance"
+    location: "Lower chin area"
+    technique: "Linear threading"
+    depth: "Subcutaneous to supraperiosteal"
+    indication: "Chin definition and support"
+    
+  CH3:
+    name: "Lateral Chin Support"
+    location: "Lateral chin margins"
+    technique: "Small bolus"
+    depth: "Subcutaneous"
+    indication: "Jaw line definition"
+
+forehead_md_codes:
+  FH1:
+    name: "Frontalis Superior"
+    location: "Upper forehead"
+    technique: "Multiple small injections"
+    indication: "Horizontal forehead lines"
+    units: "2-4 units per point"
+    
+  FH2:
+    name: "Frontalis Medial"
+    location: "Central forehead"
+    technique: "Linear injection pattern"
+    indication: "Central forehead wrinkles"
+    units: "3-5 units per point"
+    
+  GL1:
+    name: "Glabella Complex"
+    location: "Between eyebrows"
+    technique: "Multiple injection points"
+    indication: "Glabellar lines"
+    units: "4-8 units per point"
+    caution: "HIGH RISK AREA - vascular danger zone"
+
+injection_principles_by_code:
+  volume_recommendations:
+    LP_codes: "0.1-0.3ml per point"
+    CK_codes: "0.2-0.5ml per point"
+    CH_codes: "0.3-0.8ml per point"
+    FH_codes: "2-8 units per point"
+    
+  safety_considerations:
+    high_risk_codes:
+      - "GL1 - Glabella (blindness risk)"
+      - "CK1 - Near facial artery"
+      - "LP4 - Oral commissure vessels"
+    
+    moderate_risk_codes:
+      - "LP2 - Labial artery proximity"
+      - "CK2 - Infraorbital vessels"
+      - "CH1 - Mental nerve area"
+
+documentation_standards:
+  required_fields:
+    - "MD Code identifier"
+    - "Anatomical location"
+    - "Product used"
+    - "Volume/units injected"
+    - "Needle/cannula type"
+    - "Depth of injection"
+    - "Patient response"
+    
+  standardized_notation:
+    format: "MD_CODE: Volume/Units @ Depth (Technique)"
+    example: "LP1: 0.1ml @ dermal (linear threading)"

@@ -1,0 +1,171 @@
+# Lip Risk Zones - Anatomical Danger Areas
+area: lips
+
+zones:
+  - name: "Superior Labial Artery Zone"
+    severity: "high"
+    color: "#FF4D4D"
+    opacity: 0.25
+    rationale: "Superior labial artery course - high embolism risk"
+    rule:
+      type: "polyline_buffer_from_landmarks"
+      anchors: ["left_mouth_corner", "upper_lip_center", "right_mouth_corner"]
+      buffer_px: 6
+      style: "dashed"
+      shape: "curved_polyline"
+    tooltip: "Superior labial artery - avoid bolus injections, use threading technique"
+    medical_reference: "Facial arterial anatomy - branch of facial artery"
+    safety_recommendations:
+      - "Use linear threading technique only"
+      - "Avoid bolus injections in this zone" 
+      - "Aspirate before injection"
+      - "Consider cannula over needle"
+    consequences:
+      - "Vascular occlusion"
+      - "Tissue necrosis"
+      - "Lip asymmetry"
+      - "Scarring"
+
+  - name: "Inferior Labial Artery Zone"
+    severity: "high" 
+    color: "#FF4D4D"
+    opacity: 0.25
+    rationale: "Inferior labial artery course - embolism and necrosis risk"
+    rule:
+      type: "polyline_buffer_from_landmarks"
+      anchors: ["left_mouth_corner", "lower_lip_center", "right_mouth_corner"]
+      buffer_px: 6
+      style: "dashed"
+      shape: "curved_polyline"
+    tooltip: "Inferior labial artery - high risk for vascular complications"
+    medical_reference: "Lower lip arterial supply - facial artery branch"
+    safety_recommendations:
+      - "Threading technique mandatory"
+      - "Small volumes only"
+      - "Slow injection speed"
+      - "Monitor for blanching"
+    consequences:
+      - "Lower lip necrosis"
+      - "Vascular compromise"
+      - "Permanent scarring"
+
+  - name: "Commissure Vascular Zone"
+    severity: "moderate"
+    color: "#FFA500"
+    opacity: 0.2
+    rationale: "Oral commissure arterial convergence - facial artery branches"
+    rule:
+      type: "circle_around_landmark"
+      anchors: ["left_mouth_corner", "right_mouth_corner"]
+      radius_px: 8
+      style: "dotted"
+    tooltip: "Commissure vessels - moderate risk area, use conservative volumes"
+    medical_reference: "Commissure arterial anastomosis"
+    safety_recommendations:
+      - "Conservative volumes (< 0.1ml per side)"
+      - "Aspirate before injection"
+      - "Monitor immediately post-injection"
+      - "Avoid deep injections"
+    consequences:
+      - "Asymmetric smile"
+      - "Commissure necrosis"
+      - "Functional impairment"
+
+  - name: "Philtral Column Preservation Zone"
+    severity: "low"
+    color: "#FFFF99"
+    opacity: 0.15
+    rationale: "Anatomical landmark preservation - maintain natural architecture"
+    rule:
+      type: "polyline_buffer_from_landmarks"
+      anchors: ["nose_tip", "upper_lip_center"]
+      buffer_px: 4
+      style: "solid"
+      shape: "straight_line"
+    tooltip: "Preserve natural philtral columns - avoid overfilling"
+    medical_reference: "Facial aesthetic units - philtral complex"
+    safety_recommendations:
+      - "Minimal product in this zone"
+      - "Maintain natural contour"
+      - "Avoid obliterating philtral definition"
+      - "Consider patient's natural anatomy"
+    consequences:
+      - "Loss of natural lip architecture"
+      - "Unnatural appearance"
+      - "Loss of lip definition"
+
+  - name: "Mental Nerve Area"
+    severity: "moderate"
+    color: "#FFA500" 
+    opacity: 0.2
+    rationale: "Mental nerve emergence - risk of numbness and dysesthesia"
+    rule:
+      type: "circle_around_landmark"
+      anchors: ["lower_lip_center"]
+      offset_percent: { x: 0.0, y: 0.08 }
+      radius_px: 10
+      style: "hatched"
+    tooltip: "Mental nerve area - risk of numbness if injected too deeply"
+    medical_reference: "Mental foramen - trigeminal nerve branch"
+    safety_recommendations:
+      - "Stay superficial (dermal/shallow subcutaneous)"
+      - "Avoid deep injections near chin"
+      - "Small volumes in lower lip body"
+      - "Monitor for numbness post-treatment"
+    consequences:
+      - "Lower lip numbness"
+      - "Dysesthesia (abnormal sensation)"
+      - "Temporary or permanent nerve damage"
+
+danger_zone_interactions:
+  high_risk_combinations:
+    - zone1: "Superior Labial Artery Zone"
+      zone2: "Inferior Labial Artery Zone"
+      warning: "Complete perioral vascular compromise risk"
+      management: "Stage treatments, single lip per session"
+      
+    - zone1: "Commissure Vascular Zone"
+      zone2: "Superior Labial Artery Zone"
+      warning: "Corner and upper lip simultaneous compromise"
+      management: "Conservative volumes, extensive aspiration"
+
+emergency_management:
+  vascular_occlusion_protocol:
+    immediate_steps:
+      1. "Stop injection immediately"
+      2. "Apply warm compress"
+      3. "Massage injection site gently"
+      4. "Monitor for color changes"
+      5. "Prepare hyaluronidase if available"
+      
+    escalation_criteria:
+      - "Blanching persists > 5 minutes"
+      - "Blue/purple discoloration"
+      - "Patient reports severe pain"
+      - "Mottled skin pattern develops"
+      
+    treatment_options:
+      - "Hyaluronidase injection (150-300 units)"
+      - "Topical nitroglycerin paste"
+      - "Hyperbaric oxygen therapy"
+      - "Emergency consultation"
+
+prevention_strategies:
+  pre_treatment:
+    - "Detailed anatomical assessment"
+    - "Patient medical history review"
+    - "Photographic documentation"
+    - "Informed consent discussion"
+    
+  during_treatment:
+    - "Proper lighting and positioning"
+    - "Aspiration before each injection"
+    - "Slow injection technique"
+    - "Constant visual monitoring"
+    - "Patient communication"
+    
+  post_treatment:
+    - "Immediate assessment"
+    - "Written aftercare instructions"
+    - "24-48 hour follow-up"
+    - "Emergency contact information"

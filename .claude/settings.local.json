@@ -34,7 +34,9 @@
       "Bash(git rm:*)",
       "Bash(git add:*)",
       "Bash(git push:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(gcloud:*)",
+      "Bash(docker:*)"
     ],
     "deny": [],
     "ask": []

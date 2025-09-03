@@ -1,0 +1,255 @@
+# Chin Risk Zones - Neural and Vascular Considerations
+area: chin
+
+zones:
+  - name: "Mental Nerve Danger Zone"
+    severity: "high"
+    color: "#FF4D4D"
+    opacity: 0.3
+    rationale: "Mental foramen and nerve distribution - numbness risk"
+    rule:
+      type: "circle_around_landmark"
+      anchors: ["lower_lip_center"]
+      offset_percent: { x: -0.08, y: 0.06, x_right: 0.08 }
+      radius_px: 15
+      style: "hatched"
+      bilateral: true
+    tooltip: "Mental nerve area - risk of permanent numbness"
+    medical_reference: "Trigeminal nerve (CN V) mandibular division"
+    safety_recommendations:
+      - "Avoid deep injections lateral to midline"
+      - "Stay medial to imaginary vertical line from oral commissure"
+      - "Use cannula instead of needle when possible"
+      - "Inject slowly and superficially in this zone"
+      - "Monitor patient for immediate numbness"
+    consequences:
+      - "Lower lip and chin numbness"
+      - "Altered sensation (paresthesia)"
+      - "Difficulty with eating and speaking"
+      - "Potential permanent nerve damage"
+
+  - name: "Mental Artery Zone"
+    severity: "moderate"
+    color: "#FFA500"
+    opacity: 0.25
+    rationale: "Mental artery branches - bleeding and hematoma risk"
+    rule:
+      type: "circle_around_landmark"
+      anchors: ["lower_lip_center"]
+      offset_percent: { x: -0.06, y: 0.05, x_right: 0.06 }
+      radius_px: 10
+      style: "dashed"
+      bilateral: true
+    tooltip: "Mental artery branches - moderate bleeding risk"
+    medical_reference: "Facial artery branch through mental foramen"
+    safety_recommendations:
+      - "Aspirate before injection"
+      - "Use slow injection technique"
+      - "Apply pressure after injection"
+      - "Have hemostatic measures ready"
+    consequences:
+      - "Significant hematoma formation"
+      - "Prolonged bruising and swelling"
+      - "Possible vessel damage"
+      - "Aesthetic irregularity from bleeding"
+
+  - name: "Mentalis Muscle Functional Zone"
+    severity: "moderate"
+    color: "#FFAA00"
+    opacity: 0.2
+    rationale: "Mentalis muscle insertion - functional impairment risk"
+    rule:
+      type: "ellipse_around_landmark"
+      anchors: ["lower_lip_center"]
+      offset_percent: { x: 0.0, y: 0.08 }
+      radius_x: 8
+      radius_y: 12
+      style: "dotted"
+    tooltip: "Mentalis muscle - risk of chin animation impairment"
+    medical_reference: "Mentalis muscle - chin elevation function"
+    safety_recommendations:
+      - "Inject deep to muscle (supraperiosteal)"
+      - "Avoid intramuscular injection"
+      - "Test muscle function post-injection"
+      - "Conservative volumes in this area"
+    consequences:
+      - "Impaired chin elevation"
+      - "Altered facial expression"
+      - "Difficulty with lower lip function"
+      - "Asymmetric chin movement"
+
+  - name: "Marginal Mandibular Nerve Area"
+    severity: "moderate"
+    color: "#FF8C00"
+    opacity: 0.22
+    rationale: "Marginal mandibular nerve course - facial asymmetry risk"
+    rule:
+      type: "polyline_buffer_from_landmarks"
+      anchors: ["left_mouth_corner", "lower_lip_center", "right_mouth_corner"]
+      offset_percent: { y: 0.04 }
+      buffer_px: 8
+      style: "diagonal_lines"
+    tooltip: "Marginal mandibular nerve - facial nerve branch"
+    medical_reference: "Facial nerve (CN VII) motor branch"
+    safety_recommendations:
+      - "Avoid superficial injections along jaw margin"
+      - "Stay deep (subcutaneous to supraperiosteal)"
+      - "Use cannula technique for lateral areas"
+      - "Monitor facial symmetry post-treatment"
+    consequences:
+      - "Lower lip weakness or paralysis"
+      - "Asymmetric smile"
+      - "Drooling or speech difficulties"
+      - "Facial nerve damage"
+
+  - name: "Submental Artery Region"
+    severity: "low"
+    color: "#FFFF99"
+    opacity: 0.15
+    rationale: "Submental artery course under chin"
+    rule:
+      type: "polyline_buffer_from_landmarks"
+      anchors: ["lower_lip_center"]
+      offset_percent: { x: 0.0, y: 0.15 }
+      buffer_px: 12
+      style: "solid"
+    tooltip: "Submental vessels - low risk but potential for bruising"
+    medical_reference: "Facial artery branch in submental region"
+    safety_recommendations:
+      - "Standard precautions sufficient"
+      - "Aspirate before injection"
+      - "Apply post-injection pressure"
+      - "Monitor for hematoma formation"
+    consequences:
+      - "Mild to moderate bruising"
+      - "Temporary swelling"
+      - "Rarely significant complications"
+
+danger_zone_mapping:
+  high_risk_areas:
+    bilateral_mental_foramen:
+      location: "2-3cm lateral to chin midline"
+      depth: "Variable, typically 5-8mm from surface"
+      identification: "Palpable depression below second premolar"
+      avoidance_strategy: "Stay medial to vertical line from mouth corner"
+      
+    nerve_distribution_pattern:
+      lower_lip: "Sensory innervation from mental nerve"
+      chin_skin: "Mental nerve distribution"
+      gingiva: "Incisive nerve branch"
+      
+  anatomical_variations:
+    high_risk_variants:
+      - "Superficial mental nerve course"
+      - "Accessory mental foramina"
+      - "Large mental nerve distribution"
+      - "Previous surgical trauma"
+      
+    identification_methods:
+      - "Careful palpation for foraminal depression"
+      - "Patient history of dental procedures"
+      - "Previous aesthetic treatments in area"
+      - "Anatomical imaging if available"
+
+injection_safety_protocols:
+  pre_injection_assessment:
+    anatomical_mapping:
+      - "Palpate for mental foramen bilaterally"
+      - "Mark danger zones with washable pen"
+      - "Assess mentalis muscle prominence"
+      - "Evaluate chin projection and symmetry"
+      
+    patient_factors:
+      - "History of dental work or oral surgery"
+      - "Previous aesthetic treatments"
+      - "Medications affecting bleeding/healing"
+      - "Patient expectations and concerns"
+      
+  injection_technique_modifications:
+    danger_zone_proximity:
+      - "Use cannula instead of needle"
+      - "Inject in deeper planes"
+      - "Smaller volumes with multiple entry points"
+      - "Avoid lateral-medial injection vectors"
+      
+    safety_measures:
+      - "Aspirate thoroughly before injection"
+      - "Inject slowly with low pressure"
+      - "Monitor patient responses continuously"
+      - "Have reversal agents available"
+
+emergency_management:
+  nerve_injury_protocol:
+    immediate_recognition:
+      - "Patient reports numbness during injection"
+      - "Loss of sensation in distribution area"
+      - "Altered speech or lip function"
+      - "Asymmetric facial movement"
+      
+    immediate_management:
+      - "Stop injection immediately"
+      - "Document extent of numbness"
+      - "Apply warm compress to increase circulation"
+      - "Consider hyaluronidase if filler-related"
+      - "Refer for neurological evaluation"
+      
+  vascular_complications:
+    hematoma_management:
+      - "Apply direct pressure for 15-20 minutes"
+      - "Ice application to reduce swelling"
+      - "Monitor for expanding hematoma"
+      - "Consider drainage if large/expanding"
+      
+    vessel_injury_signs:
+      - "Immediate swelling and bruising"
+      - "Pulsatile bleeding"
+      - "Expanding hematoma"
+      - "Signs of vessel damage"
+
+prevention_strategies:
+  anatomical_respect:
+    danger_zone_avoidance:
+      - "Use anatomical landmarks consistently"
+      - "Mark danger zones before treatment"
+      - "Respect individual anatomical variations"
+      - "When in doubt, stay medial and deep"
+      
+  technique_optimization:
+    preferred_approaches:
+      - "Supraperiosteal injections for projection"
+      - "Cannula technique for lateral areas"
+      - "Multiple small volumes vs single bolus"
+      - "Slow injection with frequent aspiration"
+      
+  patient_selection:
+    ideal_candidates:
+      - "Normal chin anatomy"
+      - "No history of nerve injury"
+      - "Realistic expectations"
+      - "Good medical history"
+      
+    higher_risk_patients:
+      - "Previous chin surgery or trauma"
+      - "Dental implants or extensive dental work"
+      - "History of nerve sensitivity"
+      - "Connective tissue disorders"
+
+long_term_considerations:
+  nerve_recovery_timeline:
+    immediate: "0-24 hours - temporary numbness expected"
+    short_term: "1-4 weeks - gradual sensation return"
+    medium_term: "1-3 months - most recovery occurs"
+    long_term: "6+ months - permanent if no improvement"
+    
+  monitoring_protocols:
+    follow_up_schedule:
+      - "24-48 hours: Assess for complications"
+      - "1 week: Swelling and numbness evaluation"
+      - "1 month: Nerve function assessment"
+      - "3 months: Long-term outcome evaluation"
+      
+    documentation_requirements:
+      - "Pre-treatment sensation mapping"
+      - "Injection sites and volumes"
+      - "Post-treatment neurological status"
+      - "Patient symptoms and recovery"

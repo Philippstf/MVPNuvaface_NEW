@@ -1,0 +1,181 @@
+# Lip Injection Points - MD Codes and Anatomical Guidelines
+area: lips
+
+points:
+  - id: LP1_left
+    label: "Left Cupid's Bow Peak"
+    md_code: "LP1"
+    technique: "linear threading"
+    depth: "dermal"
+    volume_recommendation: "0.05-0.1 ml"
+    tool: "30G needle"
+    notes: "Enhance natural cupid's bow definition, maintain symmetry"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["upper_lip_center", "left_mouth_corner"]
+      anchor_weights: [0.7, 0.3]
+      offset_percent: { x: -0.08, y: -0.02 }
+      clamp_to_mask: "upper_lip"
+    warnings:
+      - "Avoid overfilling - maintain natural contour"
+      - "Check for lip asymmetry before injection"
+      - "Aspirate to avoid labial artery"
+    
+  - id: LP1_right
+    label: "Right Cupid's Bow Peak"
+    md_code: "LP1"
+    technique: "linear threading"
+    depth: "dermal"
+    volume_recommendation: "0.05-0.1 ml"
+    tool: "30G needle"
+    notes: "Enhance natural cupid's bow definition, maintain symmetry"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["upper_lip_center", "right_mouth_corner"]
+      anchor_weights: [0.7, 0.3]
+      offset_percent: { x: 0.08, y: -0.02 }
+      clamp_to_mask: "upper_lip"
+    warnings:
+      - "Avoid overfilling - maintain natural contour"
+      - "Check for lip asymmetry before injection"
+      - "Aspirate to avoid labial artery"
+
+  - id: LP2_upper
+    label: "Upper Vermillion Border"
+    md_code: "LP2"
+    technique: "linear threading"
+    depth: "dermal"
+    volume_recommendation: "0.1-0.2 ml total"
+    tool: "30G needle"
+    notes: "Define upper lip border, improve lip definition"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["upper_lip_center"]
+      offset_percent: { x: 0.0, y: -0.01 }
+      clamp_to_mask: "upper_lip_border"
+    warnings:
+      - "Stay superficial to avoid vascular structures"
+      - "Thread along vermillion border only"
+      - "Avoid excessive volume causing unnatural appearance"
+
+  - id: LP2_lower
+    label: "Lower Vermillion Border"
+    md_code: "LP2"
+    technique: "linear threading"
+    depth: "dermal"
+    volume_recommendation: "0.1-0.2 ml total"
+    tool: "30G needle"
+    notes: "Define lower lip border, balance upper lip enhancement"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["lower_lip_center"]
+      offset_percent: { x: 0.0, y: 0.01 }
+      clamp_to_mask: "lower_lip_border"
+    warnings:
+      - "Use less volume than upper lip typically"
+      - "Maintain natural lip proportions"
+      - "Avoid mental nerve area"
+
+  - id: LP3_upper_body
+    label: "Upper Lip Body Volume"
+    md_code: "LP3"
+    technique: "serial puncture"
+    depth: "subcutaneous"
+    volume_recommendation: "0.2-0.4 ml"
+    tool: "27G cannula preferred"
+    notes: "Central lip volume, hydration, and plumpness"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["upper_lip_center"]
+      offset_percent: { x: 0.0, y: 0.015 }
+      clamp_to_mask: "upper_lip_body"
+    warnings:
+      - "Inject slowly to assess volume distribution"
+      - "Stop if excessive swelling occurs"
+      - "Cannula preferred to reduce vascular risk"
+
+  - id: LP3_lower_body
+    label: "Lower Lip Body Volume"
+    md_code: "LP3"
+    technique: "serial puncture"
+    depth: "subcutaneous"
+    volume_recommendation: "0.3-0.6 ml"
+    tool: "27G cannula preferred"
+    notes: "Lower lip volume, natural ratio 1:1.5 upper:lower"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["lower_lip_center"]
+      offset_percent: { x: 0.0, y: -0.01 }
+      clamp_to_mask: "lower_lip_body"
+    warnings:
+      - "Lower lip typically takes more volume than upper"
+      - "Maintain golden ratio proportions"
+      - "Avoid over-projection"
+
+  - id: LP4_left_commissure
+    label: "Left Oral Commissure"
+    md_code: "LP4"
+    technique: "small bolus"
+    depth: "subcutaneous"
+    volume_recommendation: "0.05-0.1 ml"
+    tool: "30G needle"
+    notes: "Corner lift and support, improve downturned mouth"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["left_mouth_corner"]
+      offset_percent: { x: -0.01, y: -0.005 }
+      clamp_to_mask: "perioral"
+    warnings:
+      - "MODERATE RISK - facial artery proximity"
+      - "Aspirate carefully before injection"
+      - "Small volumes only to avoid overcorrection"
+      - "Monitor for vascular compromise"
+
+  - id: LP4_right_commissure
+    label: "Right Oral Commissure"
+    md_code: "LP4"
+    technique: "small bolus"
+    depth: "subcutaneous"
+    volume_recommendation: "0.05-0.1 ml"
+    tool: "30G needle"
+    notes: "Corner lift and support, improve downturned mouth"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["right_mouth_corner"]
+      offset_percent: { x: 0.01, y: -0.005 }
+      clamp_to_mask: "perioral"
+    warnings:
+      - "MODERATE RISK - facial artery proximity"
+      - "Aspirate carefully before injection"
+      - "Small volumes only to avoid overcorrection"
+      - "Monitor for vascular compromise"
+
+treatment_guidelines:
+  session_limits:
+    maximum_volume: "2.0 ml total per session"
+    minimum_interval: "2-4 weeks between treatments"
+    
+  technique_preferences:
+    preferred_order:
+      1. "Vermillion border definition (LP2)"
+      2. "Cupid's bow enhancement (LP1)" 
+      3. "Body volume (LP3)"
+      4. "Commissure support (LP4)"
+      
+  anatomical_considerations:
+    lip_proportions:
+      upper_to_lower_ratio: "1:1.6 (golden ratio)"
+      cupids_bow_angle: "120-140 degrees"
+      philtral_columns: "Maintain natural prominence"
+      
+  post_treatment:
+    immediate_care:
+      - "Ice application for 10-15 minutes"
+      - "Avoid excessive talking/eating for 2 hours"
+      - "Gentle lip massage if needed"
+      - "Monitor for adverse reactions"
+      
+    follow_up:
+      - "24-48 hour check-in"
+      - "2-week assessment"
+      - "Touch-up if needed at 4 weeks"

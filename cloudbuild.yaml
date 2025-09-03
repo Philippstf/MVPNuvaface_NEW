@@ -1,19 +1,21 @@
 steps:
-  # Build and deploy to Cloud Run in us-central1
+  # Build and deploy Medical AI Assistant Backend to Cloud Run
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'run'
       - 'deploy'
-      - 'rmgpgab-nuvaface-api-europe-west1-philippstf-mvpnuvaface-newiem'
-      - '--source=.'
+      - 'nuvaface-medical-ai-assistant'
+      - '--source=./backend'
       - '--region=us-central1'
       - '--platform=managed'
       - '--allow-unauthenticated'
-      - '--memory=2Gi'
+      - '--memory=4Gi'
       - '--cpu=2'
-      - '--timeout=300'
+      - '--timeout=600'
       - '--max-instances=10'
-      - '--set-env-vars=GOOGLE_API_KEY=${_GOOGLE_API_KEY}'
+      - '--min-instances=0'
+      - '--concurrency=80'
+      - '--set-env-vars=PYTHONPATH=/app'
 
 # Substitution variables (set in trigger)
 substitutions:

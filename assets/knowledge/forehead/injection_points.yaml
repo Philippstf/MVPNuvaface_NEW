@@ -1,0 +1,301 @@
+# Forehead Injection Points - Botox Treatment Guidelines
+area: forehead
+
+points:
+  - id: FH1_left_superior
+    label: "Left Superior Frontalis"
+    md_code: "FH1"
+    technique: "intramuscular injection"
+    depth: "muscle belly"
+    units_recommendation: "3-5 units"
+    tool: "30-32G needle"
+    notes: "Upper forehead horizontal lines, lateral frontalis"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["left_eyebrow_peak"]
+      offset_percent: { x: -0.02, y: -0.08 }
+      clamp_to_mask: "frontalis_muscle"
+    warnings:
+      - "Avoid injection too close to hairline"
+      - "Risk of eyebrow ptosis if too low"
+      - "Monitor for asymmetric eyebrow position"
+      - "Conservative dosing for first treatment"
+
+  - id: FH1_right_superior
+    label: "Right Superior Frontalis"
+    md_code: "FH1"
+    technique: "intramuscular injection"
+    depth: "muscle belly"
+    units_recommendation: "3-5 units"
+    tool: "30-32G needle"
+    notes: "Upper forehead horizontal lines, lateral frontalis"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["right_eyebrow_peak"]
+      offset_percent: { x: 0.02, y: -0.08 }
+      clamp_to_mask: "frontalis_muscle"
+    warnings:
+      - "Avoid injection too close to hairline"
+      - "Risk of eyebrow ptosis if too low"
+      - "Monitor for asymmetric eyebrow position"
+      - "Conservative dosing for first treatment"
+
+  - id: FH2_left_medial
+    label: "Left Medial Frontalis"
+    md_code: "FH2"
+    technique: "intramuscular injection"
+    depth: "muscle belly"
+    units_recommendation: "4-6 units"
+    tool: "30-32G needle"
+    notes: "Central-lateral forehead lines"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["left_eyebrow_center"]
+      offset_percent: { x: 0.0, y: -0.06 }
+      clamp_to_mask: "frontalis_muscle"
+    warnings:
+      - "Key injection point for horizontal lines"
+      - "Affects eyebrow position significantly"
+      - "Dose adjustment based on muscle strength"
+      - "Monitor for frontalis compensation patterns"
+
+  - id: FH2_right_medial
+    label: "Right Medial Frontalis"
+    md_code: "FH2"
+    technique: "intramuscular injection"
+    depth: "muscle belly"
+    units_recommendation: "4-6 units"
+    tool: "30-32G needle"
+    notes: "Central-lateral forehead lines"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["right_eyebrow_center"]
+      offset_percent: { x: 0.0, y: -0.06 }
+      clamp_to_mask: "frontalis_muscle"
+    warnings:
+      - "Key injection point for horizontal lines"
+      - "Affects eyebrow position significantly"
+      - "Dose adjustment based on muscle strength"
+      - "Monitor for frontalis compensation patterns"
+
+  - id: FH3_central
+    label: "Central Frontalis"
+    md_code: "FH3"
+    technique: "intramuscular injection"
+    depth: "muscle belly"
+    units_recommendation: "2-4 units"
+    tool: "30-32G needle"
+    notes: "Central forehead horizontal lines"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["eyebrow_center_midpoint"]
+      offset_percent: { x: 0.0, y: -0.05 }
+      clamp_to_mask: "central_frontalis"
+    warnings:
+      - "Conservative dosing - affects entire forehead"
+      - "Risk of heavy eyebrow appearance"
+      - "May be omitted in some patients"
+      - "Consider patient's natural eyebrow position"
+
+  - id: GL1_procerus
+    label: "Procerus Muscle"
+    md_code: "GL1"
+    technique: "intramuscular injection"
+    depth: "muscle belly"
+    units_recommendation: "2-4 units"
+    tool: "32G needle"
+    notes: "Horizontal nasal root lines, procerus muscle"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["nose_bridge_high"]
+      offset_percent: { x: 0.0, y: 0.01 }
+      clamp_to_mask: "procerus_muscle"
+    warnings:
+      - "MODERATE RISK - near glabella danger zone"
+      - "Conservative dosing essential"
+      - "Monitor for overcorrection"
+      - "Avoid injection too superior"
+
+  - id: GL2_left_corrugator
+    label: "Left Corrugator Supercilii"
+    md_code: "GL2"
+    technique: "intramuscular injection"
+    depth: "muscle belly"
+    units_recommendation: "3-6 units"
+    tool: "30-32G needle"
+    notes: "Vertical glabellar lines, frown lines"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["left_eyebrow_inner"]
+      offset_percent: { x: 0.01, y: -0.02 }
+      clamp_to_mask: "corrugator_muscle"
+    warnings:
+      - "HIGH RISK AREA - vascular danger zone"
+      - "Stay lateral to supratrochlear vessels"
+      - "Avoid central glabella injections"
+      - "Have emergency protocols ready"
+
+  - id: GL2_right_corrugator
+    label: "Right Corrugator Supercilii"
+    md_code: "GL2"
+    technique: "intramuscular injection"
+    depth: "muscle belly"
+    units_recommendation: "3-6 units"
+    tool: "30-32G needle"
+    notes: "Vertical glabellar lines, frown lines"
+    rule:
+      type: "landmark_vector_offset"
+      anchors: ["right_eyebrow_inner"]
+      offset_percent: { x: -0.01, y: -0.02 }
+      clamp_to_mask: "corrugator_muscle"
+    warnings:
+      - "HIGH RISK AREA - vascular danger zone"
+      - "Stay lateral to supratrochlear vessels"
+      - "Avoid central glabella injections"
+      - "Have emergency protocols ready"
+
+muscle_anatomy:
+  frontalis_muscle:
+    function: "Eyebrow elevation, forehead wrinkling"
+    fiber_direction: "Vertical fibers"
+    insertion: "Eyebrow skin and orbicularis oculi"
+    innervation: "Facial nerve temporal branch"
+    
+  procerus_muscle:
+    function: "Nasal root wrinkling, medial eyebrow depression"
+    location: "Over nasal bone and upper nasal cartilage"
+    action: "Pulls medial eyebrow down"
+    
+  corrugator_supercilii:
+    function: "Vertical glabellar line formation"
+    location: "Deep to frontalis, above eyebrow"
+    action: "Pulls eyebrow medially and inferiorly"
+    danger: "Near supratrochlear vessels"
+
+treatment_protocols:
+  dosing_guidelines:
+    conservative_approach:
+      total_units: "15-25 units maximum"
+      distribution: "Majority in lateral points"
+      glabella_limit: "15 units maximum"
+      
+    standard_approach:
+      total_units: "20-35 units"
+      frontalis: "12-20 units"
+      glabella: "15-20 units"
+      
+    aggressive_approach:
+      total_units: "30-50 units"
+      experienced_injector_only: true
+      staged_treatment_preferred: true
+
+  injection_sequence:
+    recommended_order:
+      1. "GL2 - Corrugator muscles (establish safety)"
+      2. "GL1 - Procerus (if indicated)"
+      3. "FH2 - Medial frontalis (primary effect)"
+      4. "FH1 - Superior frontalis (refinement)"
+      5. "FH3 - Central frontalis (optional)"
+
+  technique_considerations:
+    needle_insertion:
+      angle: "90 degrees to skin surface"
+      depth: "Into muscle belly, not through to bone"
+      aspiration: "Not typically required for botox"
+      injection_speed: "Slow and controlled"
+      
+    muscle_targeting:
+      palpation: "Have patient contract muscles first"
+      injection_timing: "Muscle at rest during injection"
+      distribution: "Multiple small aliquots preferred"
+
+age_related_modifications:
+  younger_patients_25_35:
+    primary_concern: "Dynamic wrinkles only"
+    conservative_dosing: "Lower end of range"
+    focus_areas: "Glabella primarily"
+    maintenance: "3-4 month intervals"
+    
+  middle_aged_35_50:
+    primary_concern: "Mixed dynamic and static lines"
+    standard_dosing: "Full range as needed"
+    comprehensive_treatment: "Frontalis and glabella"
+    maintenance: "3-4 month intervals"
+    
+  mature_patients_50plus:
+    primary_concern: "Established static lines"
+    consideration: "May need higher doses"
+    realistic_expectations: "Improvement not elimination"
+    combination_therapy: "May need additional treatments"
+
+gender_considerations:
+  male_patients:
+    anatomical_differences: "Stronger muscles, thicker skin"
+    dosing_adjustments: "Typically require higher doses"
+    aesthetic_goals: "Maintain some masculine furrow"
+    treatment_patterns: "Less frequent touch-ups often acceptable"
+    
+  female_patients:
+    aesthetic_goals: "Smooth forehead, maintained animation"
+    eyebrow_position: "Critical to preserve/enhance arch"
+    dosing_precision: "More sensitive to asymmetries"
+    maintenance_expectations: "Regular touch-ups expected"
+
+contraindications_and_cautions:
+  absolute_contraindications:
+    - "Neuromuscular disorders (myasthenia gravis)"
+    - "Lambert-Eaton syndrome"
+    - "ALS (amyotrophic lateral sclerosis)"
+    - "Pregnancy and breastfeeding"
+    - "Active infection at injection sites"
+    
+  relative_contraindications:
+    - "Previous allergic reactions to botox"
+    - "Concurrent use of aminoglycosides"
+    - "Marked facial asymmetry"
+    - "Unrealistic patient expectations"
+
+post_treatment_management:
+  immediate_care:
+    - "Remain upright for 4 hours"
+    - "Avoid lying down or exercise"
+    - "No facial massage for 24 hours"
+    - "Avoid heat exposure (saunas, etc.)"
+    
+  activity_restrictions:
+    first_24_hours:
+      - "No strenuous exercise"
+      - "Avoid alcohol consumption"
+      - "No facial treatments"
+      - "Gentle skincare routine only"
+      
+  onset_expectations:
+    initial_effect: "3-5 days"
+    peak_effect: "10-14 days"
+    duration: "3-4 months average"
+    individual_variation: "2-6 months possible"
+
+complications_and_management:
+  common_side_effects:
+    bruising:
+      incidence: "10-15% of patients"
+      management: "Ice application, arnica"
+      duration: "5-10 days typically"
+      
+    headache:
+      incidence: "5-10% of patients"
+      management: "Standard analgesics"
+      duration: "24-48 hours typically"
+      
+  serious_complications:
+    eyebrow_ptosis:
+      cause: "Injection too close to eyebrow"
+      onset: "1-2 weeks post-treatment"
+      management: "Alpha-agonist eye drops"
+      recovery: "6-8 weeks"
+      
+    eyelid_ptosis:
+      cause: "Migration to levator palpebrae"
+      incidence: "Very rare with proper technique"
+      management: "Apraclonidine eye drops"
+      recovery: "6-12 weeks"

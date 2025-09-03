@@ -1,0 +1,98 @@
+# Common Facial Anatomy References
+# Base anatomical knowledge for all treatment areas
+
+facial_proportions:
+  # Standard anthropometric proportions for face mapping
+  eye_separation_ratio: 0.3  # Inter-pupillary distance as fraction of face width
+  face_thirds:
+    upper: 0.33   # Hairline to eyebrow
+    middle: 0.33  # Eyebrow to nose base
+    lower: 0.33   # Nose base to chin
+  golden_ratios:
+    lip_width_to_nose: 1.618
+    nose_width_to_eye: 1.0
+    chin_projection: 0.618
+
+landmark_groups:
+  # Key landmark groups used across all areas
+  eye_landmarks:
+    - name: "left_eye_inner"
+      mediapipe_id: 133
+      description: "Left inner eye corner"
+    - name: "left_eye_outer" 
+      mediapipe_id: 33
+      description: "Left outer eye corner"
+    - name: "right_eye_inner"
+      mediapipe_id: 362
+      description: "Right inner eye corner"
+    - name: "right_eye_outer"
+      mediapipe_id: 263
+      description: "Right outer eye corner"
+
+  nose_landmarks:
+    - name: "nose_tip"
+      mediapipe_id: 1
+      description: "Nasal tip point"
+    - name: "left_alae"
+      mediapipe_id: 31
+      description: "Left nostril base"
+    - name: "right_alae"
+      mediapipe_id: 261
+      description: "Right nostril base"
+
+  mouth_landmarks:
+    - name: "upper_lip_center"
+      mediapipe_id: 13
+      description: "Upper lip center point"
+    - name: "lower_lip_center"
+      mediapipe_id: 14
+      description: "Lower lip center point"
+    - name: "left_mouth_corner"
+      mediapipe_id: 61
+      description: "Left commissure"
+    - name: "right_mouth_corner"
+      mediapipe_id: 291
+      description: "Right commissure"
+
+vascular_anatomy:
+  # Major facial vessels - danger zones
+  facial_artery:
+    course: "From mandibular margin → nasal alae → angular artery"
+    danger_zones:
+      - "nasolabial fold area"
+      - "lateral nose region" 
+      - "infraorbital area"
+    safety_distance: "8-12mm minimum"
+
+  angular_artery:
+    course: "Terminal branch of facial artery near medial canthus"
+    danger_zones:
+      - "medial cheek"
+      - "lateral nose"
+    risk: "Blindness from retrograde embolization"
+
+  supratrochlear_artery:
+    course: "Medial forehead, crosses eyebrow"
+    danger_zones:
+      - "glabella region"
+      - "medial eyebrow area"
+    risk: "Blindness risk - highest danger area"
+
+safety_principles:
+  general_rules:
+    - "Always aspirate before injection"
+    - "Use lowest effective volume"
+    - "Inject slowly with low pressure"
+    - "Prefer threading over bolus in vascular areas"
+    - "Know anatomy before treating"
+    
+  depth_guidelines:
+    dermal: "1-2mm depth, for fine lines and contour"
+    subcutaneous: "3-5mm depth, for volume restoration"
+    supraperiosteal: "Deep plane, for structural support"
+    
+  injection_techniques:
+    linear_threading: "Single entry, threading along treatment line"
+    serial_puncture: "Multiple small boluses along treatment area"
+    fanning: "Single entry, multiple directions"
+    cross_hatching: "Grid pattern for uniform distribution"

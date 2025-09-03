@@ -1,0 +1,267 @@
+# Forehead Risk Zones - Critical Vascular Danger Areas
+area: forehead
+
+zones:
+  - name: "Supratrochlear Artery Danger Zone"
+    severity: "critical"
+    color: "#DC143C"
+    opacity: 0.4
+    rationale: "HIGHEST RISK - Direct route to ophthalmic artery, blindness risk"
+    rule:
+      type: "circle_around_landmark"
+      anchors: ["left_eyebrow_inner", "right_eyebrow_inner"]
+      radius_px: 12
+      style: "double_border"
+      bilateral: true
+    tooltip: "CRITICAL DANGER: Supratrochlear artery - BLINDNESS RISK"
+    medical_reference: "Ophthalmic artery branch - direct cerebral circulation connection"
+    safety_recommendations:
+      - "NEVER inject in central glabella area"
+      - "Stay lateral to imaginary vertical line from inner canthus"
+      - "If injection essential, stay superficial (intradermal only)"
+      - "Have emergency hyaluronidase and ophthalmology contact"
+      - "Consider postponing treatment if anatomy unclear"
+    consequences:
+      - "IMMEDIATE IRREVERSIBLE BLINDNESS"
+      - "Central retinal artery occlusion"
+      - "Ophthalmic artery embolization"
+      - "Possible stroke from retrograde flow"
+      - "Death (extremely rare but reported)"
+
+  - name: "Supraorbital Artery Zone"
+    severity: "high"
+    color: "#FF0000"
+    opacity: 0.35
+    rationale: "Supraorbital artery course - secondary blindness risk"
+    rule:
+      type: "circle_around_landmark"
+      anchors: ["left_eyebrow_peak", "right_eyebrow_peak"]
+      radius_px: 10
+      style: "hatched"
+      bilateral: true
+    tooltip: "Supraorbital artery - high risk for vascular complications"
+    medical_reference: "Ophthalmic artery branch through supraorbital notch"
+    safety_recommendations:
+      - "Avoid injections directly over supraorbital notch"
+      - "Palpate for notch/foramen before treatment"
+      - "Use lateral approach if treatment needed"
+      - "Conservative volumes only"
+      - "Deep injection contraindicated"
+    consequences:
+      - "Risk of blindness (lower than supratrochlear)"
+      - "Forehead necrosis"
+      - "Sensory nerve damage"
+      - "Permanent scarring"
+
+  - name: "Central Glabella No-Go Zone"
+    severity: "critical"
+    color: "#8B0000"
+    opacity: 0.5
+    rationale: "Intersection of multiple high-risk vessels"
+    rule:
+      type: "polygon_from_landmarks"
+      anchors: ["left_eyebrow_inner", "right_eyebrow_inner", "nose_bridge_high"]
+      buffer_px: 8
+      style: "solid_red"
+    tooltip: "ABSOLUTE NO-GO ZONE - Multiple vessel convergence"
+    medical_reference: "Supratrochlear, supraorbital, and angular artery convergence"
+    safety_recommendations:
+      - "COMPLETE INJECTION AVOIDANCE in this zone"
+      - "No botox or filler injections"
+      - "Mark clearly during treatment planning"
+      - "Educate all staff on this zone"
+      - "Document avoidance in treatment notes"
+    consequences:
+      - "Highest risk of catastrophic complications"
+      - "Multiple vessel system involvement"
+      - "Bilateral complications possible"
+      - "Legal liability considerations"
+
+  - name: "Temporal Artery Extension"
+    severity: "high"
+    color: "#FF4500"
+    opacity: 0.3
+    rationale: "Superficial temporal artery branches"
+    rule:
+      type: "polyline_buffer_from_landmarks"
+      anchors: ["left_eyebrow_peak", "left_temple_point"]
+      buffer_px: 15
+      style: "diagonal_lines"
+      bilateral: true
+    tooltip: "Temporal artery area - stroke risk from retrograde flow"
+    medical_reference: "Superficial temporal artery branches"
+    safety_recommendations:
+      - "Avoid lateral forehead injections near hairline"
+      - "Palpate for arterial pulsation"
+      - "Deep injection only if essential"
+      - "Never inject if pulsation felt"
+    consequences:
+      - "Stroke risk from retrograde embolization"
+      - "Temporal region necrosis"
+      - "Hair loss in temporal area"
+      - "Cerebrovascular accident"
+
+  - name: "Frontal Nerve Sensory Zone"
+    severity: "moderate"
+    color: "#FFA500"
+    opacity: 0.2
+    rationale: "Frontal nerve distribution - sensory loss risk"
+    rule:
+      type: "ellipse_around_landmarks"
+      anchors: ["forehead_center"]
+      width: 40
+      height: 25
+      style: "dotted"
+    tooltip: "Frontal nerve area - risk of forehead numbness"
+    medical_reference: "Trigeminal nerve frontal branch distribution"
+    safety_recommendations:
+      - "Conservative volumes for botox treatment"
+      - "Monitor for sensory changes"
+      - "Avoid deep needle insertion"
+      - "Document baseline sensation"
+    consequences:
+      - "Forehead numbness or tingling"
+      - "Altered sensation (paresthesia)"
+      - "Rarely permanent nerve damage"
+      - "Functional impairment"
+
+vascular_anatomy_details:
+  supratrochlear_artery:
+    origin: "Ophthalmic artery (terminal branch)"
+    course: "Exits supratrochlear notch → ascends forehead"
+    danger_level: "CRITICAL - direct retinal circulation"
+    anatomical_variations:
+      - "May be absent (10% of population)"
+      - "Can have accessory branches"
+      - "Variable exit point from notch"
+    
+  supraorbital_artery:
+    origin: "Ophthalmic artery branch"
+    course: "Through supraorbital notch → forehead"
+    danger_level: "HIGH - secondary retinal risk"
+    palpation_landmarks: "Supraorbital notch/foramen"
+    
+  angular_artery:
+    origin: "Terminal facial artery"
+    course: "Medial canthus → glabella region"
+    danger_level: "HIGH - retinal circulation connection"
+    intersection: "Crosses with supratrochlear territory"
+
+emergency_protocols:
+  immediate_recognition:
+    vascular_occlusion_signs:
+      - "Immediate blanching during injection"
+      - "Severe pain disproportionate to injection"
+      - "Mottled skin pattern (livedo reticularis)"
+      - "Patient reports visual changes"
+      - "Skin color changes (white → blue → purple)"
+      
+    visual_emergency_signs:
+      - "Patient reports vision loss/changes"
+      - "Eye pain or pressure"
+      - "Diplopia (double vision)"
+      - "Visual field defects"
+      - "Pupil changes"
+
+  immediate_response_protocol:
+    step_1_stop: "IMMEDIATELY stop injection"
+    step_2_position: "Elevate head of treatment table"
+    step_3_warmth: "Apply warm compresses to increase circulation"
+    step_4_massage: "Gentle massage of affected area"
+    step_5_hyaluronidase: "Inject hyaluronidase if filler-related (300-600 units)"
+    step_6_nitrates: "Apply 2% nitroglycerin paste if available"
+    step_7_aspirin: "Give aspirin 325mg if no contraindications"
+    step_8_emergency: "Call emergency services if visual symptoms"
+    step_9_ophthalmology: "URGENT ophthalmology consultation"
+    step_10_document: "Document everything thoroughly"
+
+  emergency_supplies_required:
+    mandatory_items:
+      - "Hyaluronidase 150-300 units per vial (minimum 2 vials)"
+      - "2% nitroglycerin paste"
+      - "Aspirin 325mg tablets"
+      - "Emergency contact numbers"
+      - "Ophthalmologist contact information"
+      - "Emergency medical services contact"
+      
+    enhanced_safety_kit:
+      - "Pulse oximeter"
+      - "Blood pressure monitor"
+      - "Emergency medications list"
+      - "Patient medical history access"
+      - "Emergency protocol laminated cards"
+
+prevention_strategies:
+  pre_treatment_assessment:
+    anatomical_evaluation:
+      - "Palpate supraorbital and supratrochlear notches"
+      - "Check for arterial pulsations"
+      - "Assess skin thickness and quality"
+      - "Document anatomical variations"
+      - "Photograph treatment area"
+      
+    patient_risk_factors:
+      higher_risk_patients:
+        - "Previous forehead surgery or trauma"
+        - "Connective tissue disorders"
+        - "History of vascular complications"
+        - "Anticoagulant medications"
+        - "Smoking history"
+        
+  injection_technique_modifications:
+    high_risk_area_approach:
+      - "Stay lateral to danger zones"
+      - "Use intradermal depth only in risky areas"
+      - "Inject slowly with constant aspiration"
+      - "Multiple small volumes vs single bolus"
+      - "Avoid perpendicular insertion near vessels"
+      
+    botox_specific_safety:
+      - "Standard technique generally safe for botox"
+      - "Danger zones primarily for filler injections"
+      - "Still maintain anatomical awareness"
+      - "Document injection sites clearly"
+
+treatment_modifications:
+  filler_restrictions:
+    absolute_contraindications:
+      - "Central glabella filler injections"
+      - "Direct supratrochlear artery area"
+      - "Areas with visible vessel pulsation"
+      
+    relative_contraindications:
+      - "Lateral forehead near temporal vessels"
+      - "Areas with previous complications"
+      - "Patients with high vascular risk"
+      
+  botox_considerations:
+    generally_safer_profile:
+      - "Botox rarely causes vascular occlusion"
+      - "Standard forehead botox technique usually safe"
+      - "Still respect anatomical danger zones"
+      - "Monitor for unusual reactions"
+
+legal_and_ethical_considerations:
+  informed_consent_requirements:
+    mandatory_discussions:
+      - "Risk of blindness with forehead fillers"
+      - "Permanent nature of potential complications"
+      - "Alternative treatment options"
+      - "Practitioner experience and training"
+      - "Emergency management capabilities"
+      
+  documentation_standards:
+    required_records:
+      - "Detailed anatomical assessment"
+      - "Risk zone identification and avoidance"
+      - "Patient acknowledgment of risks"
+      - "Injection technique and locations"
+      - "Post-treatment monitoring results"
+      
+  professional_responsibility:
+    practitioner_requirements:
+      - "Adequate training in facial anatomy"
+      - "Emergency management competency"
+      - "Appropriate insurance coverage"
+      - "Continuing education in safety protocols"
+      - "Regular review of complication cases"
