@@ -18,11 +18,11 @@ class MedicalAssistantIntegration {
         
         // Configuration
         this.config = {
-            apiEndpoint: '/api/risk-map/analyze',
+            apiEndpoint: 'https://nuvaface-medical-assistant-212268956806.us-central1.run.app/api/risk-map/analyze',
             enableTooltips: true,
             enableWidget: true,
             autoAnalyzeOnImageChange: true,
-            debugMode: false
+            debugMode: true // Enable for debugging
         };
         
         this.init();
@@ -91,9 +91,15 @@ class MedicalAssistantIntegration {
     }
     
     findMainImage() {
-        // Try multiple selectors to find the main image
+        // NEW: Focus on before image for medical overlays
+        const beforeImg = document.querySelector('#beforeImage');
+        if (beforeImg && beforeImg.src && beforeImg.offsetWidth > 0) {
+            console.log('🎯 Using beforeImage for medical overlays');
+            return beforeImg;
+        }
+        
+        // Fallback to other selectors
         const selectors = [
-            '#beforeImage',
             '#previewImage', 
             '.result-image',
             'img[id*="before"]',
@@ -104,10 +110,12 @@ class MedicalAssistantIntegration {
         for (const selector of selectors) {
             const img = document.querySelector(selector);
             if (img && img.src && img.offsetWidth > 0) {
+                console.log(`🎯 Using ${selector} for medical overlays`);
                 return img;
             }
         }
         
+        console.warn('⚠️ No suitable image found for medical overlays');
         return null;
     }
     
@@ -182,31 +190,34 @@ class MedicalAssistantIntegration {
     integrateWithNuvaFace() {
         // Hook into existing NuvaFace app if available
         if (window.app) {
-            console.log('🔗 Integrating with existing NuvaFace app');
+            console.log('🔗 Integrating with existing NuvaFace app (non-invasive)');
             
-            // Override area selection to update medical assistant
-            const originalSelectArea = window.app.selectedArea;
-            Object.defineProperty(window.app, 'selectedArea', {
-                get() {
-                    return originalSelectArea;
-                },
-                set(value) {
-                    originalSelectArea = value;
-                    if (window.medicalAssistant) {
-                        window.medicalAssistant.setCurrentArea(value);
-                    }
-                }
-            });
+            // DON'T override selectedArea - let index.html handle integration
+            // Just monitor for changes through the existing property
             
             // Hook into image loading
             this.hookImageLoading();
             
             // Hook into section changes
             this.hookSectionChanges();
+            
+            // Monitor existing selectedArea periodically (fallback)
+            this.monitorAreaSelection();
         }
         
         // Make medical assistant globally available
         window.medicalAssistant = this;
+    }
+    
+    monitorAreaSelection() {
+        // Fallback monitoring in case property enhancement doesn't work
+        setInterval(() => {
+            if (window.app && window.app.selectedArea !== this.currentArea) {
+                const newArea = window.app.selectedArea;
+                console.log(`🔄 Area change detected: ${this.currentArea} → ${newArea}`);
+                this.setCurrentArea(newArea);
+            }
+        }, 1000);
     }
     
     hookImageLoading() {

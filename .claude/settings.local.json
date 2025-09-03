@@ -37,6 +37,12 @@
       "Bash(git reset:*)",
       "Bash(gcloud:*)",
       "Bash(docker:*)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
+      "Read(c:\\Users\\phlpp\\Downloads/**)",
       "Read(c:\\Users\\phlpp\\Downloads/**)"
     ],
     "deny": [],

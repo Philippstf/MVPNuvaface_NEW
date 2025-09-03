@@ -190,44 +190,55 @@
                 <h2>Simulationsergebnis</h2>
             </div>
 
-            <!-- Volume Control -->
-            <div class="volume-control">
-                <label>Volumen</label>
-                <div class="slider-container">
-                    <input type="range" id="volumeSlider" min="0" max="5" step="0.1" value="2">
+            <!-- Compact Volume Control -->
+            <div class="volume-control-compact">
+                <div class="volume-header">
+                    <label>Behandlungsvolumen</label>
                     <span class="volume-value" id="volumeValue">2.0 ml</span>
                 </div>
+                <input type="range" id="volumeSlider" min="0" max="5" step="0.1" value="2" class="volume-slider-compact">
             </div>
 
-            <!-- Before/After View -->
-            <div class="result-container">
-                <div class="before-after-view">
-                    <div class="image-panel before">
-                        <h3>Vorher</h3>
-                        <img id="beforeImage" alt="Vorher">
-                    </div>
-                    
-                    <div class="generate-control">
-                        <button class="generate-btn" id="generateBtn" onclick="app.generateSimulation()">
-                            <div class="btn-content" id="btnContent">
-                                <i class="fas fa-magic"></i>
-                                <span>Generieren</span>
-                            </div>
-                        </button>
-                        
-                        <div class="progress-indicator" id="progressIndicator">
-                            <span id="progressText">KI verarbeitet Ihr Bild</span>
-                            <div class="progress-dots">
-                                <div class="progress-dot"></div>
-                                <div class="progress-dot"></div>
-                                <div class="progress-dot"></div>
-                            </div>
+            <!-- New 2-Column Layout -->
+            <div class="simulation-layout">
+                <!-- Left Column: Before + Medical Analysis -->
+                <div class="column-before">
+                    <div class="image-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-camera"></i> Original</h3>
+                        </div>
+                        <div class="image-container-before">
+                            <img id="beforeImage" alt="Vorher">
+                            <!-- Medical overlays will be added here -->
                         </div>
                     </div>
-                    
-                    <div class="image-panel after">
-                        <h3>Nachher</h3>
-                        <img id="afterImage" alt="Nachher">
+                </div>
+
+                <!-- Right Column: After + Controls -->
+                <div class="column-after">
+                    <div class="image-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-magic"></i> Simulation</h3>
+                            <div class="card-actions">
+                                <button class="generate-btn-prominent" id="generateBtn" onclick="app.generateSimulation()">
+                                    <div class="btn-content" id="btnContent">
+                                        <i class="fas fa-sync-alt"></i>
+                                        <span>Neu Generieren</span>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="image-container-after">
+                            <div class="result-frame" id="resultFrame">
+                                <img id="afterImage" alt="Nachher">
+                                <div class="generation-overlay" id="generationOverlay">
+                                    <div class="progress-indicator" id="progressIndicator">
+                                        <div class="progress-spinner"></div>
+                                        <span id="progressText">KI generiert Simulation...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -287,68 +298,49 @@
     <script src="medical-tooltip-system.js"></script>
     <script src="medical-assistant-integration.js"></script>
     <script>
-        // Override setupEventListeners to handle new area buttons
+        // Medical AI Assistant integration - preserve existing functionality
         document.addEventListener('DOMContentLoaded', () => {
-            // Wait for app to initialize
+            console.log('🏥 Medical AI Assistant DOM ready');
+            
+            // Wait for existing app to initialize first
             setTimeout(() => {
-                // Setup area button listeners
-                document.querySelectorAll('.area-select-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const area = e.currentTarget.dataset.area;
-                        const isCurrentlySelected = e.currentTarget.classList.contains('selected');
-                        
-                        if (isCurrentlySelected) {
-                            // Deselect if clicking on already selected button
-                            e.currentTarget.classList.remove('selected');
+                // Don't override existing event listeners, just enhance them
+                console.log('🔗 Medical AI Assistant integration ready');
+                
+                // Hook into existing app area selection
+                if (window.app) {
+                    // Store original selectedArea setter if it exists
+                    const originalSelectedAreaProperty = Object.getOwnPropertyDescriptor(window.app, 'selectedArea');
+                    
+                    // Enhance the selectedArea property to notify Medical Assistant
+                    let _selectedArea = window.app.selectedArea;
+                    Object.defineProperty(window.app, 'selectedArea', {
+                        get() {
+                            return _selectedArea;
+                        },
+                        set(value) {
+                            _selectedArea = value;
+                            console.log(`🎯 Area selection changed to: ${value}`);
                             
-                            // Clear 3D highlighting
-                            if (window.app && window.app.areaPicker3D) {
-                                console.log(`🗑️ Deselecting area: ${area}`);
-                                window.app.areaPicker3D.clearButtonSelection();
+                            // Notify Medical Assistant
+                            if (window.medicalAssistant) {
+                                window.medicalAssistant.setCurrentArea(value);
                             }
                             
-                            // Disable proceed button
-                            const proceedBtn = document.getElementById('proceedToUpload');
-                            if (proceedBtn) {
-                                proceedBtn.disabled = true;
+                            // Call original setter if it existed
+                            if (originalSelectedAreaProperty && originalSelectedAreaProperty.set) {
+                                originalSelectedAreaProperty.set.call(this, value);
                             }
-                            
-                            // Clear app selection
-                            if (window.app) {
-                                window.app.selectedArea = null;
-                            }
-                            
-                        } else {
-                            // Select new area
-                            // Update visual selection
-                            document.querySelectorAll('.area-select-btn').forEach(b => {
-                                b.classList.remove('selected');
-                            });
-                            e.currentTarget.classList.add('selected');
-                            
-                            // Set selected area in app
-                            if (window.app) {
-                                window.app.selectedArea = area;
-                                
-                                // Enable proceed button
-                                const proceedBtn = document.getElementById('proceedToUpload');
-                                if (proceedBtn) {
-                                    proceedBtn.disabled = false;
-                                }
-                                
-                                // Highlight area on 3D model if picker exists
-                                if (window.app.areaPicker3D) {
-                                    console.log(`🎯 Button selected for area: ${area}`);
-                                    window.app.areaPicker3D.selectAreaFromButton(area);
-                                    window.app.areaPicker3D.highlightAreaFromButton(area);
-                                } else {
-                                    console.warn('❌ areaPicker3D not available');
-                                }
-                            }
-                        }
+                        },
+                        configurable: true,
+                        enumerable: true
                     });
-                });
-            }, 1000);
+                    
+                    console.log('✅ Medical AI Assistant integration hooked into app');
+                } else {
+                    console.warn('⚠️ window.app not available for Medical AI Assistant integration');
+                }
+            }, 2000); // Wait longer for app initialization
         });
     </script>
 </body>
