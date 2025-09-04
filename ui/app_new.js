@@ -33,9 +33,9 @@ class NuvaFaceApp {
     init() {
         this.setupEventListeners();
         this.initializeAnimations();
-        this.initialize3DPicker();
+        // Don't initialize 3D picker immediately - wait for landing section to be visible
         this.checkApiHealth();
-        this.showSection('landingSection');
+        this.showSection('heroSection');
     }
     
     initializeAnimations() {
@@ -57,7 +57,22 @@ class NuvaFaceApp {
     initialize3DPicker() {
         // Initialize 3D area picker when Three.js is available
         if (typeof THREE !== 'undefined' && typeof AreaPicker3D !== 'undefined') {
+            const container = document.getElementById('face3DContainer');
+            if (!container) {
+                console.warn('3D container not found');
+                return;
+            }
+            
+            // Ensure container has proper dimensions
+            if (container.clientWidth === 0 || container.clientHeight === 0) {
+                console.warn('3D container has no dimensions, retrying...');
+                setTimeout(() => this.initialize3DPicker(), 500);
+                return;
+            }
+            
             try {
+                console.log('Initializing 3D picker with container dimensions:', 
+                    container.clientWidth, 'x', container.clientHeight);
                 this.areaPicker3D = new AreaPicker3D('face3DContainer');
                 
                 // Set up callbacks for area interaction
@@ -232,6 +247,14 @@ class NuvaFaceApp {
                             ease: "back.out(1.7)",
                             onComplete: () => {
                                 this.isAnimating = false;
+                                
+                                // Initialize 3D picker when landing section becomes visible
+                                if (sectionId === 'landingSection' && !this.areaPicker3D) {
+                                    setTimeout(() => {
+                                        console.log('Initializing 3D picker on section show');
+                                        this.initialize3DPicker();
+                                    }, 100);
+                                }
                             }
                         }
                     );
@@ -243,7 +266,22 @@ class NuvaFaceApp {
             targetSection.classList.add('active');
             gsap.fromTo(targetSection, 
                 { opacity: 0, y: 30 },
-                { opacity: 1, y: 0, duration: 0.5, onComplete: () => this.isAnimating = false }
+                { 
+                    opacity: 1, 
+                    y: 0, 
+                    duration: 0.5, 
+                    onComplete: () => {
+                        this.isAnimating = false;
+                        
+                        // Initialize 3D picker when landing section becomes visible
+                        if (sectionId === 'landingSection' && !this.areaPicker3D) {
+                            setTimeout(() => {
+                                console.log('Initializing 3D picker on first load');
+                                this.initialize3DPicker();
+                            }, 100);
+                        }
+                    }
+                }
             );
         }
         
@@ -543,19 +581,29 @@ class NuvaFaceApp {
             
             // Wait for image to load before proceeding
             this.currentImage.onload = () => {
-                // ROUTING FIX: Only go to segmentation for lips
-                if (this.selectedArea === 'lips') {
-                    // For lips, go to segmentation first
-                    setTimeout(() => {
-                        this.showSection('segmentSection');
-                        this.showSegmentationPreview();
-                    }, 800);
-                } else {
-                    // For all other areas, go directly to result
+                // Skip upload section and go directly to result when from gallery
+                if (this.fromGallery) {
+                    this.fromGallery = false; // Reset flag
                     setTimeout(() => {
                         this.showSection('resultSection');
                         this.setupResultView();
-                    }, 800);
+                    }, 500);
+                } else {
+                    // Normal flow through upload section
+                    // ROUTING FIX: Only go to segmentation for lips
+                    if (this.selectedArea === 'lips') {
+                        // For lips, go to segmentation first
+                        setTimeout(() => {
+                            this.showSection('segmentSection');
+                            this.showSegmentationPreview();
+                        }, 800);
+                    } else {
+                        // For all other areas, go directly to result
+                        setTimeout(() => {
+                            this.showSection('resultSection');
+                            this.setupResultView();
+                        }, 800);
+                    }
                 }
             };
         };
@@ -1649,6 +1697,440 @@ class NuvaFaceApp {
         }
     }
 
+    // New methods for updated user journey
+    showAreaSelection() {
+        this.showSection('landingSection');
+    }
+    
+    showImageSourceModal() {
+        const modal = document.getElementById('imageSourceModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            gsap.fromTo(modal, 
+                { opacity: 0 }, 
+                { opacity: 1, duration: 0.3 }
+            );
+        }
+    }
+    
+    closeImageSourceModal() {
+        const modal = document.getElementById('imageSourceModal');
+        if (modal) {
+            gsap.to(modal, {
+                opacity: 0,
+                duration: 0.3,
+                onComplete: () => {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    }
+    
+    openGallery() {
+        // Close modal first
+        this.closeImageSourceModal();
+        
+        // Set flag to skip upload section
+        this.fromGallery = true;
+        
+        // Trigger file input
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput) {
+            fileInput.click();
+        }
+    }
+    
+    async openCamera() {
+        // Close modal
+        this.closeImageSourceModal();
+        
+        // Show camera view
+        const cameraView = document.getElementById('cameraView');
+        if (cameraView) {
+            cameraView.style.display = 'block';
+            
+            // Initialize camera and face detection
+            await this.initializeCamera();
+        }
+    }
+    
+    async initializeCamera() {
+        try {
+            // Detect if mobile or desktop
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            // Use portrait aspect ratio (9:16) for both mobile and desktop
+            let constraints = {
+                video: {
+                    width: { ideal: 1080 },
+                    height: { ideal: 1920 },
+                    aspectRatio: { ideal: 9/16 },
+                    facingMode: 'environment' // Rear camera by default
+                }
+            };
+            
+            let stream;
+            try {
+                // Try rear camera first
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                this.currentFacingMode = 'environment';
+            } catch (err) {
+                // Fallback to front camera if rear is not available
+                console.log('Rear camera not available, falling back to front camera');
+                constraints.video.facingMode = 'user';
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                this.currentFacingMode = 'user';
+            }
+            
+            const video = document.getElementById('cameraStream');
+            if (video) {
+                video.srcObject = stream;
+                this.currentStream = stream;
+                
+                // Apply mirroring only for front camera
+                if (this.currentFacingMode === 'user') {
+                    video.style.transform = 'scaleX(-1)';
+                } else {
+                    video.style.transform = 'scaleX(1)';
+                }
+                
+                // Initialize face detection
+                await this.initializeFaceDetection();
+            }
+        } catch (error) {
+            console.error('Camera access error:', error);
+            this.showError('Kamera konnte nicht gestartet werden. Bitte prüfen Sie die Berechtigungen.');
+            this.closeCamera();
+        }
+    }
+    
+    async initializeFaceDetection() {
+        try {
+            console.log('Initializing face detection...');
+            
+            // Load face detection model with error handling
+            const model = faceDetection.SupportedModels.MediaPipeFaceDetector;
+            const detectorConfig = {
+                runtime: 'tfjs',
+                modelType: 'short',
+                maxFaces: 1,
+                refineLandmarks: false
+            };
+            
+            this.faceDetector = await faceDetection.createDetector(model, detectorConfig);
+            console.log('Face detector initialized successfully');
+            
+            // Wait for video to be ready
+            const video = document.getElementById('cameraStream');
+            if (video) {
+                video.addEventListener('loadeddata', () => {
+                    console.log('Video loaded, starting face detection...');
+                    this.detectFaces();
+                });
+                
+                // If video is already loaded, start immediately
+                if (video.readyState >= 2) {
+                    console.log('Video already ready, starting face detection...');
+                    this.detectFaces();
+                }
+            }
+        } catch (error) {
+            console.error('Failed to initialize face detection:', error);
+            // Show error but allow manual capture
+            const captureButton = document.getElementById('captureButton');
+            if (captureButton) {
+                captureButton.disabled = false;
+            }
+        }
+    }
+    
+    async detectFaces() {
+        if (!this.faceDetector || !this.currentStream) {
+            console.log('Detector or stream not ready');
+            return;
+        }
+        
+        const video = document.getElementById('cameraStream');
+        const faceOverlay = document.getElementById('faceOverlay');
+        const faceStatus = document.getElementById('faceStatus');
+        const captureButton = document.getElementById('captureButton');
+        const faceGuide = document.querySelector('.face-guide');
+        
+        if (video && video.readyState >= 2) {
+            try {
+                const faces = await this.faceDetector.estimateFaces(video);
+                console.log(`Detected ${faces.length} face(s)`);
+                
+                if (faces.length > 0) {
+                    const face = faces[0];
+                    // Try different properties for the bounding box
+                    let box = face.box || face.boundingBox || {};
+                    
+                    // MediaPipe sometimes returns the box in a different format
+                    if (!box.width && face.keypoints) {
+                        // Calculate box from keypoints if available
+                        const keypoints = face.keypoints;
+                        let minX = Infinity, maxX = -Infinity;
+                        let minY = Infinity, maxY = -Infinity;
+                        
+                        keypoints.forEach(kp => {
+                            minX = Math.min(minX, kp.x);
+                            maxX = Math.max(maxX, kp.x);
+                            minY = Math.min(minY, kp.y);
+                            maxY = Math.max(maxY, kp.y);
+                        });
+                        
+                        box = {
+                            xMin: minX,
+                            yMin: minY,
+                            width: maxX - minX,
+                            height: maxY - minY
+                        };
+                    }
+                    
+                    // Log detection details
+                    console.log('Face box:', {
+                        x: box.xMin,
+                        y: box.yMin,
+                        width: box.width,
+                        height: box.height
+                    });
+                    
+                    // Get video dimensions
+                    const videoWidth = video.videoWidth;
+                    const videoHeight = video.videoHeight;
+                    
+                    // Calculate face position relative to frame center
+                    const faceCenterX = box.xMin + (box.width / 2);
+                    const faceCenterY = box.yMin + (box.height / 2);
+                    const frameCenterX = videoWidth / 2;
+                    const frameCenterY = videoHeight / 2;
+                    
+                    // Calculate offset from center (in percentage)
+                    const xOffset = Math.abs(faceCenterX - frameCenterX) / videoWidth;
+                    const yOffset = Math.abs(faceCenterY - frameCenterY) / videoHeight;
+                    
+                    // Calculate face size relative to frame
+                    const faceWidthRatio = box.width / videoWidth;
+                    const faceHeightRatio = box.height / videoHeight;
+                    
+                    console.log('Face position:', {
+                        xOffset: (xOffset * 100).toFixed(1) + '%',
+                        yOffset: (yOffset * 100).toFixed(1) + '%',
+                        widthRatio: (faceWidthRatio * 100).toFixed(1) + '%',
+                        heightRatio: (faceHeightRatio * 100).toFixed(1) + '%'
+                    });
+                    
+                    // Check if we have valid box dimensions
+                    const hasValidBox = box.width > 0 && box.height > 0;
+                    
+                    // If we don't have valid box dimensions but detected a face, enable capture anyway
+                    if (!hasValidBox && faces.length > 0) {
+                        console.log('⚠️ Face detected but box invalid, enabling capture anyway');
+                        if (faceGuide) {
+                            faceGuide.classList.add('detected');
+                        }
+                        if (faceStatus) {
+                            faceStatus.innerHTML = '<span class="status-text">Gesicht erkannt - Bereit für Aufnahme</span>';
+                        }
+                        if (captureButton) {
+                            captureButton.disabled = false;
+                        }
+                        // Skip the rest of the detection logic
+                        setTimeout(() => this.detectFaces(), 100);
+                        return;
+                    }
+                    
+                    // More lenient detection criteria
+                    const isCentered = xOffset < 0.25 && yOffset < 0.35; // Allow 25% x-offset, 35% y-offset
+                    const isGoodSize = faceWidthRatio > 0.12 && faceWidthRatio < 0.7; // 12% to 70% of frame width
+                    const isWellPositioned = hasValidBox && isCentered && isGoodSize;
+                    
+                    if (isWellPositioned) {
+                        // Face is well positioned - make overlay green
+                        console.log('✅ Face well positioned!');
+                        if (faceGuide) {
+                            faceGuide.classList.add('detected');
+                        }
+                        if (faceStatus) {
+                            faceStatus.innerHTML = '<span class="status-text">Perfekt! Bereit für Aufnahme</span>';
+                        }
+                        if (captureButton) {
+                            captureButton.disabled = false;
+                        }
+                    } else {
+                        // Face needs adjustment
+                        console.log('⚠️ Face needs adjustment');
+                        if (faceGuide) {
+                            faceGuide.classList.remove('detected');
+                        }
+                        
+                        let message = 'Position anpassen';
+                        if (!isGoodSize) {
+                            if (faceWidthRatio < 0.12) {
+                                message = 'Bitte näher kommen';
+                            } else {
+                                message = 'Bitte weiter weg';
+                            }
+                        } else if (!isCentered) {
+                            message = 'Gesicht zentrieren';
+                        }
+                        
+                        if (faceStatus) {
+                            faceStatus.innerHTML = `<span class="status-text">${message}</span>`;
+                        }
+                        if (captureButton) {
+                            captureButton.disabled = true;
+                        }
+                    }
+                } else {
+                    // No face detected
+                    console.log('❌ No face detected');
+                    if (faceGuide) {
+                        faceGuide.classList.remove('detected');
+                    }
+                    if (faceStatus) {
+                        faceStatus.innerHTML = '<span class="status-text">Kein Gesicht erkannt</span>';
+                    }
+                    if (captureButton) {
+                        captureButton.disabled = true;
+                    }
+                }
+            } catch (error) {
+                console.error('Face detection error:', error);
+                // Enable capture button as fallback
+                if (captureButton) {
+                    captureButton.disabled = false;
+                }
+            }
+        }
+        
+        // Continue detection loop
+        if (this.currentStream) {
+            setTimeout(() => this.detectFaces(), 100); // Run every 100ms instead of every frame
+        }
+    }
+    
+    async switchCamera() {
+        // Stop current stream
+        if (this.currentStream) {
+            this.currentStream.getTracks().forEach(track => track.stop());
+        }
+        
+        // Switch facing mode
+        const newFacingMode = this.currentFacingMode === 'user' ? 'environment' : 'user';
+        
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    width: { ideal: 1080 },
+                    height: { ideal: 1920 },
+                    aspectRatio: { ideal: 9/16 },
+                    facingMode: newFacingMode
+                }
+            });
+            
+            const video = document.getElementById('cameraStream');
+            if (video) {
+                video.srcObject = stream;
+                this.currentStream = stream;
+                this.currentFacingMode = newFacingMode;
+                
+                // Apply mirroring only for front camera
+                if (newFacingMode === 'user') {
+                    video.style.transform = 'scaleX(-1)';
+                } else {
+                    video.style.transform = 'scaleX(1)';
+                }
+            }
+        } catch (error) {
+            console.error('Error switching camera:', error);
+            // Try to restart with current camera
+            this.initializeCamera();
+        }
+    }
+    
+    capturePhoto() {
+        const video = document.getElementById('cameraStream');
+        const canvas = document.getElementById('cameraCanvas');
+        
+        if (video && canvas) {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            // Handle mirroring for front camera captures
+            if (this.currentFacingMode === 'user') {
+                context.save();
+                context.scale(-1, 1);
+                context.drawImage(video, -canvas.width, 0);
+                context.restore();
+            } else {
+                context.drawImage(video, 0, 0);
+            }
+            
+            // Convert to base64
+            const imageData = canvas.toDataURL('image/jpeg', 0.9);
+            this.currentImageBase64 = imageData;
+            
+            // Create image object
+            this.currentImage = new Image();
+            this.currentImage.src = imageData;
+            
+            // Close camera and proceed
+            this.closeCamera();
+            
+            // Skip upload section and go directly to result
+            setTimeout(() => {
+                this.showSection('resultSection');
+                this.setupResultView();
+            }, 500);
+        }
+    }
+    
+    closeCamera() {
+        // Stop camera stream
+        if (this.currentStream) {
+            this.currentStream.getTracks().forEach(track => track.stop());
+            this.currentStream = null;
+        }
+        
+        // Stop face detection
+        this.faceDetector = null;
+        
+        // Hide camera view
+        const cameraView = document.getElementById('cameraView');
+        if (cameraView) {
+            cameraView.style.display = 'none';
+        }
+    }
+    
+    switchCamera() {
+        // Toggle between front and back camera
+        if (this.currentStream) {
+            this.currentStream.getTracks().forEach(track => track.stop());
+        }
+        
+        const currentFacingMode = this.facingMode === 'user' ? 'environment' : 'user';
+        this.facingMode = currentFacingMode;
+        
+        navigator.mediaDevices.getUserMedia({
+            video: {
+                width: { ideal: 1280 },
+                height: { ideal: 720 },
+                facingMode: currentFacingMode
+            }
+        }).then(stream => {
+            const video = document.getElementById('cameraStream');
+            if (video) {
+                video.srcObject = stream;
+                this.currentStream = stream;
+            }
+        }).catch(error => {
+            console.error('Camera switch error:', error);
+        });
+    }
+    
     // Show unified view system after successful generation
     showUnifiedViewSystem() {
         const unifiedViewToggle = document.getElementById('unifiedViewToggle');

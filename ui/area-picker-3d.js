@@ -60,14 +60,210 @@ class AreaPicker3D {
     }
     
     init() {
-        this.setupScene();
-        this.setupCamera();
-        this.setupRenderer();
-        this.setupControls(); // Add OrbitControls
-        this.setupLights();
-        this.setupEventListeners();
-        this.loadModel();
-        this.animate();
+        // Check WebGL support first
+        if (!this.isWebGLAvailable()) {
+            console.warn('WebGL not supported, showing mobile fallback');
+            this.showMobileFallback();
+            return;
+        }
+        
+        try {
+            this.setupScene();
+            this.setupCamera();
+            this.setupRenderer();
+            this.setupControls(); // Add OrbitControls
+            this.setupLights();
+            this.setupEventListeners();
+            this.loadModel();
+            this.animate();
+        } catch (error) {
+            console.error('3D initialization failed:', error);
+            this.showMobileFallback();
+        }
+    }
+    
+    isWebGLAvailable() {
+        try {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            return !!context;
+        } catch (e) {
+            return false;
+        }
+    }
+    
+    showMobileFallback() {
+        // Add fallback classes to layout elements
+        const landingLayout = document.querySelector('.landing-split-layout');
+        const landing3D = document.querySelector('.landing-3d');
+        
+        if (landingLayout) landingLayout.classList.add('fallback-active');
+        if (landing3D) landing3D.classList.add('fallback-active');
+        
+        // Show a simple 2D interface instead of 3D model
+        this.container.innerHTML = `
+            <div class="mobile-3d-fallback">
+                <div class="face-illustration">
+                    <div class="face-icon">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="area-indicators">
+                        <div class="area-dot forehead" data-area="forehead" title="Stirn"></div>
+                        <div class="area-dot cheeks-left" data-area="cheeks" title="Wangen"></div>
+                        <div class="area-dot cheeks-right" data-area="cheeks" title="Wangen"></div>
+                        <div class="area-dot lips" data-area="lips" title="Lippen"></div>
+                        <div class="area-dot chin" data-area="chin" title="Kinn"></div>
+                    </div>
+                </div>
+                <div class="fallback-info">
+                    <p><i class="fas fa-mobile-alt"></i> Mobile Ansicht</p>
+                    <p>Wählen Sie unten den gewünschten Bereich</p>
+                </div>
+            </div>
+        `;
+        
+        // Add mobile fallback styles
+        this.addMobileFallbackStyles();
+        
+        // Set up click handlers for mobile fallback
+        this.setupMobileFallbackHandlers();
+    }
+    
+    addMobileFallbackStyles() {
+        if (document.getElementById('mobile-fallback-styles')) return;
+        
+        const style = document.createElement('style');
+        style.id = 'mobile-fallback-styles';
+        style.textContent = `
+            .mobile-3d-fallback {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                padding: 2rem;
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                border-radius: 1rem;
+            }
+            
+            .face-illustration {
+                position: relative;
+                margin-bottom: 1.5rem;
+            }
+            
+            .face-icon {
+                font-size: 8rem;
+                color: #6c757d;
+                opacity: 0.3;
+            }
+            
+            .area-indicators {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+            }
+            
+            .area-dot {
+                position: absolute;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                border: 2px solid white;
+                cursor: pointer;
+                pointer-events: all;
+                transition: all 0.3s ease;
+                z-index: 10;
+            }
+            
+            .area-dot:hover {
+                transform: scale(1.3);
+                box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5);
+            }
+            
+            .area-dot.forehead {
+                background: #3742fa;
+                top: 15%;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .area-dot.cheeks-left {
+                background: #ffa502;
+                top: 35%;
+                left: 25%;
+                transform: translate(-50%, -50%);
+            }
+            
+            .area-dot.cheeks-right {
+                background: #ffa502;
+                top: 35%;
+                right: 25%;
+                transform: translate(50%, -50%);
+            }
+            
+            .area-dot.lips {
+                background: #ff4757;
+                top: 55%;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .area-dot.chin {
+                background: #5f27cd;
+                top: 75%;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .fallback-info {
+                text-align: center;
+                color: #6c757d;
+            }
+            
+            .fallback-info p {
+                margin: 0.5rem 0;
+                font-size: 0.9rem;
+            }
+            
+            .fallback-info i {
+                color: #667eea;
+                margin-right: 0.5rem;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    setupMobileFallbackHandlers() {
+        // Set up click handlers for area dots
+        this.container.addEventListener('click', (event) => {
+            const areaDot = event.target.closest('.area-dot');
+            if (areaDot) {
+                const area = areaDot.dataset.area;
+                
+                // Remove selection from all dots
+                this.container.querySelectorAll('.area-dot').forEach(dot => {
+                    dot.style.transform = dot.style.transform.replace(/scale\([^)]*\)/, '');
+                    dot.style.boxShadow = '';
+                });
+                
+                // Highlight selected dot
+                areaDot.style.transform += ' scale(1.5)';
+                areaDot.style.boxShadow = '0 0 0 6px rgba(102, 126, 234, 0.3)';
+                
+                // Trigger selection callback
+                if (this.areaSelectCallback) {
+                    this.areaSelectCallback(area);
+                }
+                
+                // Mobile haptic feedback
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+            }
+        });
     }
     
     setupScene() {
@@ -79,11 +275,11 @@ class AreaPicker3D {
         const aspect = this.container.clientWidth / this.container.clientHeight;
         this.camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
         
-        // Mobile-optimized camera position
+        // Mobile-optimized camera position - adjusted for larger model
         if (this.isMobile) {
-            this.camera.position.set(0, 0.3, 2.5); // Closer for mobile
+            this.camera.position.set(0, 0.3, 2.2); // Closer for mobile
         } else {
-            this.camera.position.set(0, 0.5, 3); // Position for desktop
+            this.camera.position.set(0, 0.5, 2.5); // Closer for desktop (was 3)
         }
         this.camera.lookAt(0, 0, 0);
     }
@@ -93,13 +289,31 @@ class AreaPicker3D {
             antialias: true,
             alpha: false 
         });
-        this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+        
+        // Ensure container has dimensions
+        const width = this.container.clientWidth || 400;
+        const height = this.container.clientHeight || 400;
+        
+        console.log('Setting up renderer with dimensions:', width, 'x', height);
+        
+        this.renderer.setSize(width, height);
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.renderer.outputColorSpace = THREE.SRGBColorSpace;
         this.renderer.setClearColor(0xf8f9fa, 1); // Light background
+        
+        // Style the canvas for visibility
+        this.renderer.domElement.style.display = 'block';
+        this.renderer.domElement.style.width = '100%';
+        this.renderer.domElement.style.height = '100%';
+        
         this.container.appendChild(this.renderer.domElement);
+        
+        console.log('Renderer canvas dimensions:', 
+            this.renderer.domElement.clientWidth, 'x', 
+            this.renderer.domElement.clientHeight
+        );
     }
     
     setupControls() {
@@ -309,7 +523,7 @@ class AreaPicker3D {
                 model.scale.setScalar(0.02);
             } else {
                 const maxDim = Math.max(size.x, size.y, size.z);
-                const scale = 2.0 / maxDim;
+                const scale = 2.5 / maxDim;  // Slightly reduced from 2.8 for better fit
                 model.scale.setScalar(scale);
                 
                 // Center the model
@@ -329,6 +543,23 @@ class AreaPicker3D {
             }
             
             console.log('GLB model loaded successfully with scale:', Math.round(model.scale.x * 1000) / 1000);
+            console.log('Model position:', [
+                Math.round(model.position.x * 100) / 100,
+                Math.round(model.position.y * 100) / 100,
+                Math.round(model.position.z * 100) / 100
+            ]);
+            console.log('Camera position:', [
+                Math.round(this.camera.position.x * 100) / 100,
+                Math.round(this.camera.position.y * 100) / 100,
+                Math.round(this.camera.position.z * 100) / 100
+            ]);
+            console.log('Scene children count:', this.scene.children.length);
+            
+            // Hide loading indicator
+            const loadingSpinner = this.container.querySelector('.loading-3d');
+            if (loadingSpinner) {
+                loadingSpinner.style.display = 'none';
+            }
             
         } catch (error) {
             console.error('Error setting up GLB model:', error.message);
@@ -790,7 +1021,10 @@ class AreaPicker3D {
             this.controls.update();
         }
         
-        this.renderer.render(this.scene, this.camera);
+        // Render the scene
+        if (this.renderer && this.scene && this.camera) {
+            this.renderer.render(this.scene, this.camera);
+        }
     }
     
     // Public methods for external integration

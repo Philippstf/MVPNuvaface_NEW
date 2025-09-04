@@ -125,7 +125,7 @@ body {
 
 /* Main Container */
 .main-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 2rem 1rem;
     min-height: calc(100vh - 80px);
@@ -1857,6 +1857,73 @@ body {
         padding: 0.6rem 1.2rem;
         font-size: 0.8rem;
     }
+    
+    /* Result Section Mobile Optimization */
+    #resultSection {
+        padding: 0.5rem;
+    }
+    
+    #resultSection .section-header {
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .volume-control-compact {
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .volume-section {
+        width: 100%;
+    }
+    
+    .generate-btn-prominent {
+        width: 100%;
+        margin-top: 1rem;
+    }
+    
+    .before-after-container {
+        padding: 0.5rem;
+    }
+    
+    .split-view {
+        width: 100%;
+        max-width: none;
+        height: 350px;
+        margin: 0 auto 1rem;
+    }
+    
+    .split-container {
+        height: 350px;
+    }
+    
+    .controls-section {
+        padding: 1rem;
+        border-radius: var(--radius-lg);
+    }
+    
+    .control-group {
+        margin-bottom: 1rem;
+    }
+    
+    .control-label {
+        font-size: 0.9rem;
+    }
+    
+    .volume-display {
+        font-size: 1.1rem;
+    }
+    
+    .new-sim-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 100;
+        padding: 0.8rem 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
 }
 
 /* Smooth Micro-Interactions */
@@ -1964,12 +2031,14 @@ body {
 /* Enhanced Mobile Responsivity */
 @media (max-width: 768px) {
     .main-container {
-        padding: 1rem;
+        padding: 0.5rem;
+        max-width: 100%;
     }
     
     .section {
-        padding: 1.5rem;
-        margin-bottom: 1rem;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        border-radius: var(--radius-md);
     }
     
     .hero-title {
@@ -2072,6 +2141,96 @@ body {
     
     .image-panel img {
         max-width: 200px;
+    }
+    
+    /* Result Section Small Mobile */
+    #resultSection {
+        padding: 0.25rem;
+    }
+    
+    #resultSection h2 {
+        font-size: 1.25rem;
+    }
+    
+    .back-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    .volume-control-compact {
+        padding: 0.5rem;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: var(--radius-md);
+    }
+    
+    .volume-header label {
+        font-size: 0.85rem;
+    }
+    
+    .volume-value {
+        font-size: 1rem;
+    }
+    
+    .volume-slider-compact {
+        height: 6px;
+    }
+    
+    .split-view {
+        height: 280px;
+        border-radius: var(--radius-md);
+    }
+    
+    .split-container {
+        height: 280px;
+    }
+    
+    .split-labels {
+        font-size: 0.75rem;
+        top: 50px;
+    }
+    
+    .split-handle {
+        width: 35px;
+        height: 35px;
+        font-size: 0.875rem;
+    }
+    
+    .controls-section {
+        padding: 0.75rem;
+        margin-top: 1rem;
+    }
+    
+    .control-group h4 {
+        font-size: 0.85rem;
+    }
+    
+    .slider-container {
+        padding: 0.5rem 0;
+    }
+    
+    .volume-display {
+        font-size: 1rem;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .new-sim-button {
+        bottom: 15px;
+        right: 15px;
+        padding: 0.7rem 1.2rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Adjust header on result page */
+    .header-compact {
+        padding: 0.5rem 0;
+    }
+    
+    .header-compact .header-content {
+        padding: 0 1rem;
+    }
+    
+    .header-compact .logo-image {
+        height: 30px;
     }
 }
 
@@ -2189,7 +2348,7 @@ body {
 /* 3D Face Container Large */
 .face-3d-container-large {
     width: 100%;
-    height: 600px;
+    height: 700px;
     position: relative;
     border-radius: 20px;
     background: linear-gradient(145deg, #ffffff, #f5f5f5);
@@ -2220,8 +2379,8 @@ body {
 
 /* 3D Face Container (old, keep for compatibility) */
 .face-3d-container {
-    width: 400px;
-    height: 400px;
+    width: 550px;
+    height: 550px;
     position: relative;
     border-radius: 20px;
     background: linear-gradient(145deg, #f0f4f8, #e2e8f0);
@@ -2329,6 +2488,15 @@ body {
     max-width: 500px;
 }
 
+/* New 2x2 Grid Layout for area buttons matching design */
+.area-buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
 .area-select-btn {
     background: white;
     border: 2px solid var(--border-color);
@@ -2431,7 +2599,7 @@ body {
 @media (max-width: 1024px) {
     .landing-split-layout {
         grid-template-columns: 1fr;
-        gap: 3rem;
+        gap: 2rem;
         text-align: center;
         min-height: 100vh;
         padding: 1rem;
@@ -2444,10 +2612,23 @@ body {
     
     .landing-3d {
         order: 1; /* 3D Modell oben */
+        min-height: 200px; /* Fallback minimum height */
     }
     
+    /* Hide 3D section completely on mobile when fallback is active */
+    .landing-3d.fallback-active {
+        display: none;
+    }
+    
+    /* Adjust layout when 3D is hidden */
+    .landing-split-layout.fallback-active {
+        gap: 1rem;
+        padding-top: 0.5rem;
+    }
+}
+    
     .face-3d-container-large {
-        height: 400px;
+        height: 500px;
         margin-bottom: 1rem;
     }
     
@@ -2515,13 +2696,20 @@ body {
         min-height: 95vh;
     }
     
+    /* Mobile: Keep 2x2 grid but smaller buttons */
+    .area-buttons-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+        max-width: 100%;
+    }
+    
     .face-3d-container {
-        width: 320px;
-        height: 320px;
+        width: 380px;
+        height: 380px;
     }
     
     .face-3d-container-large {
-        height: 350px;
+        height: 450px;
         max-width: 100%;
         margin: 0 auto 1.5rem auto;
     }
@@ -2579,12 +2767,12 @@ body {
 
 @media (max-width: 480px) {
     .face-3d-container {
-        width: 280px;
-        height: 280px;
+        width: 320px;
+        height: 320px;
     }
     
     .face-3d-container-large {
-        height: 300px;
+        height: 400px;
         border-radius: 15px;
     }
     
@@ -2682,7 +2870,7 @@ body {
     }
     
     .face-3d-container-large {
-        height: 320px;
+        height: 420px;
     }
     
     .area-buttons {
