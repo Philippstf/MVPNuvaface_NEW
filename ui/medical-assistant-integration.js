@@ -305,7 +305,9 @@ class MedicalAssistantIntegration {
     }
     
     isMainImage(img) {
+        // PRIORITIZE BEFORE IMAGES for medical analysis
         return img.id === 'beforeImage' || 
+               img.id === 'beforeImageSideBySide' ||
                img.classList.contains('result-image') ||
                img.closest('.image-panel');
     }
@@ -313,7 +315,12 @@ class MedicalAssistantIntegration {
     async handleImageChange(img) {
         console.log('📸 Image change detected:', img.src ? 'loaded' : 'cleared');
         
-        this.currentImage = img.src || null;
+        // ONLY store BEFORE images for medical analysis
+        if (img.id === 'beforeImage' || img.id === 'beforeImageSideBySide') {
+            console.log('✅ Storing BEFORE image for medical analysis');
+            this.currentImage = img.src || null;
+            this.setCurrentImage(this.currentImage);
+        }
         
         // Reinitialize overlay renderer if needed
         if (img.src && (!this.overlayRenderer || this.overlayRenderer.image !== img)) {

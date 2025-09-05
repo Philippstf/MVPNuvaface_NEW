@@ -35,7 +35,70 @@ class NuvaFaceApp {
         this.initializeAnimations();
         // Don't initialize 3D picker immediately - wait for landing section to be visible
         this.checkApiHealth();
-        this.showSection('heroSection');
+        
+        // Check for simulation mode from pitchdeck
+        if (window.location.hash === '#pitchdeck-simulation') {
+            this.enterPitchdeckSimulation();
+        } else if (window.location.hash === '#simulation-mode') {
+            this.enterSimulationMode();
+        } else {
+            this.showSection('heroSection');
+        }
+        
+        // Listen for messages from parent window (pitchdeck)
+        window.addEventListener('message', (e) => {
+            if (e.data.type === 'ENTER_SIMULATION_MODE') {
+                this.enterSimulationMode();
+            }
+        });
+    }
+    
+    enterSimulationMode() {
+        // Direct path to simulation
+        this.showSection('landingSection');
+        // Hide header in simulation mode
+        const header = document.querySelector('.header');
+        if (header) {
+            header.style.display = 'none';
+        }
+        // Add simulation mode class for styling
+        document.body.classList.add('simulation-mode');
+    }
+    
+    enterPitchdeckSimulation() {
+        // Enter pitchdeck simulation mode
+        this.isPitchdeckMode = true;
+        this.showSection('landingSection');
+        
+        // Hide regular header
+        const header = document.querySelector('.header');
+        if (header) {
+            header.style.display = 'none';
+        }
+        
+        // Add pitchdeck mode class
+        document.body.classList.add('pitchdeck-mode');
+        
+        // Add "Back to Presentation" button
+        this.addBackToPresentationButton();
+    }
+    
+    addBackToPresentationButton() {
+        // Check if button already exists
+        if (document.getElementById('backToPresentationBtn')) {
+            return;
+        }
+        
+        // Create floating button
+        const backButton = document.createElement('button');
+        backButton.id = 'backToPresentationBtn';
+        backButton.className = 'back-to-presentation-btn';
+        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Zurück zur Präsentation';
+        backButton.style.display = 'block'; // Ensure it's visible
+        backButton.onclick = () => {
+            window.location.href = 'pitchdeck.html?return=true';
+        };
+        document.body.appendChild(backButton);
     }
     
     initializeAnimations() {
@@ -55,6 +118,12 @@ class NuvaFaceApp {
     }
     
     initialize3DPicker() {
+        // Skip 3D picker initialization in simulation mode
+        if (document.body.classList.contains('simulation-mode')) {
+            console.log('3D picker skipped in simulation mode');
+            return;
+        }
+        
         // Initialize 3D area picker when Three.js is available
         if (typeof THREE !== 'undefined' && typeof AreaPicker3D !== 'undefined') {
             const container = document.getElementById('face3DContainer');
@@ -183,10 +252,16 @@ class NuvaFaceApp {
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
         
-        if (uploadArea && fileInput) {
-            uploadArea.addEventListener('click', () => fileInput.click());
+        if (uploadArea) {
+            uploadArea.addEventListener('click', () => {
+                if (fileInput) fileInput.click();
+            });
             uploadArea.addEventListener('dragover', this.handleDragOver.bind(this));
             uploadArea.addEventListener('drop', this.handleDrop.bind(this));
+        }
+        
+        // Always setup fileInput listener (for gallery selection)
+        if (fileInput) {
             fileInput.addEventListener('change', this.handleFileSelect.bind(this));
         }
 
@@ -910,6 +985,18 @@ class NuvaFaceApp {
                     
                     setTimeout(() => {
                         this.hideEnhancedLoading();
+                        
+                        // Notify parent window if in simulation mode
+                        if (document.body.classList.contains('simulation-mode')) {
+                            window.parent.postMessage({
+                                type: 'SIMULATION_COMPLETE',
+                                area: this.selectedArea,
+                                volume: volume
+                            }, '*');
+                        }
+                        
+                        // If in pitchdeck mode, do NOT auto-return
+                        // User should click the "Zurück zur Präsentation" button manually
                     }, 1500);
                 };
                 
@@ -1744,6 +1831,13 @@ class NuvaFaceApp {
         // Close modal
         this.closeImageSourceModal();
         
+        // Hide back to presentation button temporarily
+        const backBtn = document.getElementById('backToPresentationBtn');
+        if (backBtn) {
+            backBtn.dataset.wasVisible = backBtn.style.display !== 'none' ? 'true' : 'false';
+            backBtn.style.display = 'none';
+        }
+        
         // Show camera view
         const cameraView = document.getElementById('cameraView');
         if (cameraView) {
@@ -2097,6 +2191,13 @@ class NuvaFaceApp {
         
         // Stop face detection
         this.faceDetector = null;
+        
+        // Restore back to presentation button if it was visible
+        const backBtn = document.getElementById('backToPresentationBtn');
+        if (backBtn && backBtn.dataset.wasVisible === 'true') {
+            backBtn.style.display = 'block';
+            delete backBtn.dataset.wasVisible;
+        }
         
         // Hide camera view
         const cameraView = document.getElementById('cameraView');

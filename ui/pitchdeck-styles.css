@@ -1,0 +1,83 @@
+/* Pitchdeck Mode Styles */
+.pitchdeck-mode .main-container {
+    padding-top: 0;
+}
+
+.pitchdeck-mode .header {
+    display: none !important;
+}
+
+/* Back to Presentation Button */
+.back-to-presentation-btn {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    padding: 12px 24px;
+    background: rgba(0, 0, 0, 0.85);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.back-to-presentation-btn:hover {
+    background: rgba(138, 45, 226, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(138, 45, 226, 0.4);
+}
+
+.back-to-presentation-btn i {
+    font-size: 16px;
+}
+
+/* Hide back button in camera view */
+.camera-view ~ .back-to-presentation-btn {
+    display: none !important;
+}
+
+/* Adjust sections in pitchdeck mode - keep same layout as normal mode */
+.pitchdeck-mode .section {
+    min-height: 100vh;
+}
+
+.pitchdeck-mode .hero-section {
+    padding: 60px 40px;
+}
+
+/* Result section adjustments */
+.pitchdeck-mode #resultSection {
+    padding: 40px;
+}
+
+.pitchdeck-mode .section-header {
+    margin-bottom: 30px;
+}
+
+.pitchdeck-mode .back-btn {
+    display: none !important;
+}
+
+/* Animation for button entrance */
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.back-to-presentation-btn {
+    animation: slideInLeft 0.5s ease-out;
+}

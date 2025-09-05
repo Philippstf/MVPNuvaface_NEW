@@ -277,9 +277,9 @@ class AreaPicker3D {
         
         // Mobile-optimized camera position - adjusted for larger model
         if (this.isMobile) {
-            this.camera.position.set(0, 0.3, 2.2); // Closer for mobile
+            this.camera.position.set(0, 0.3, 3.0); // More zoomed out for mobile
         } else {
-            this.camera.position.set(0, 0.5, 2.5); // Closer for desktop (was 3)
+            this.camera.position.set(0, 0.5, 3.5); // More zoomed out for desktop
         }
         this.camera.lookAt(0, 0, 0);
     }

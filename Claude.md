@@ -1,3 +1,170 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+NuvaFace is an aesthetic treatment simulation platform that uses AI-powered image processing for cosmetic procedures. It consists of:
+
+1. **Frontend Web UI** (`ui/`) - Interactive interface for image upload, area selection, and simulation visualization
+2. **FastAPI Backend** (`api/`) - Core simulation engine with face parsing and AI-powered aesthetic modifications  
+3. **Medical Assistant Backend** (`backend/`) - Specialized medical consultation API with risk assessment
+4. **AI Engine** (`engine/`) - Image processing pipeline with segmentation, ControlNet, and diffusion models
+
+The project implements a dual-path approach:
+- **Path A**: Pure diffusion editing (InstructPix2Pix/SD-Inpainting + ControlNet)
+- **Path B**: Hybrid geometry warping + inpainting for enhanced form accuracy
+
+## Development Commands
+
+### Frontend Development
+```bash
+# Serve UI locally (from project root)
+firebase serve --only hosting
+
+# Deploy to Firebase Hosting
+firebase deploy --only hosting
+```
+
+### Backend Development
+
+**Main FastAPI Backend** (`api/`):
+```bash
+# Development server
+uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+
+# Test API endpoint
+curl -X POST http://localhost:8000/simulate/filler \
+  -H "Content-Type: application/json" \
+  -d '{"image":"<base64>","area":"lips","strength":60,"pipeline":"sd_inpaint","seed":123}'
+```
+
+**Medical Assistant Backend** (`backend/`):
+```bash
+# Development server
+cd backend && uvicorn risk_map.app:app --host 0.0.0.0 --port 8080 --reload
+
+# Docker build and run
+cd backend && docker build -t nuvaface-medical .
+docker run -p 8080:8080 nuvaface-medical
+
+# Deploy to Google Cloud Run
+cd backend && gcloud run deploy nuvaface-medical-assistant \
+  --source=. --region=us-central1 --platform=managed \
+  --allow-unauthenticated --memory=4Gi --cpu=2 --port=8080
+```
+
+### Python Environment Setup
+
+**Core Dependencies**:
+```bash
+# Create environment
+conda create -n nuvaface python=3.10 -y && conda activate nuvaface
+
+# Install PyTorch with CUDA support
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+
+# Install AI/ML packages
+pip install diffusers transformers accelerate xformers
+pip install controlnet-aux opencv-python mediapipe
+pip install insightface onnxruntime-gpu
+
+# Install web framework
+pip install fastapi uvicorn[standard] pillow einops
+```
+
+## Architecture Overview
+
+### Key Modules
+
+**FastAPI Backend** (`api/main.py`):
+- `/segment` - Face parsing with BiSeNet (CelebAMask-HQ)
+- `/simulate/filler` - Diffusion-based volume simulation (lips/chin/cheeks)  
+- `/simulate/botox` - Wrinkle reduction simulation (forehead)
+
+**Engine Pipeline** (`engine/`):
+- `parsing.py` - Face segmentation and area masking
+- `controls.py` - Control map generation (Canny/SoftEdge/MiDaS-Depth)
+- `edit_sd.py` - Stable Diffusion inpainting + ControlNet
+- `edit_ip2p.py` - InstructPix2Pix pipeline
+- `qc.py` - Quality control (ArcFace identity preservation, SSIM)
+
+**Medical Assistant** (`backend/risk_map/`):
+- Medical knowledge base integration
+- Risk assessment and safety guidelines
+- Injection point mapping and anatomy references
+
+### Treatment Areas and Parameters
+
+**Supported Areas**:
+- Filler: lips, chin, cheeks (nose excluded from PoC)  
+- Botox: horizontal forehead wrinkles
+
+**Slider Mapping** (0-100):
+- `denoising_strength = 0.15 + 0.005*s` → 0.15-0.65
+- `guidance_scale = 3.5 + 0.04*s` → 3.5-7.5  
+- `controlnet_scale = 0.60 + 0.006*s` → 0.60-1.20
+- `mask_feather = round(3 + s/40)` → 3-5 px
+
+### Data Structure
+
+**Knowledge Base** (`assets/knowledge/`):
+- Treatment-specific injection points and risk zones (YAML)
+- Anatomy references and safety guidelines
+- MD Codes integration for standardized mapping
+
+**Models Directory** (`models/`):
+- Local cache for AI pipelines (SD, ControlNet, BiSeNet)
+- ArcFace models for identity preservation
+- Face parsing models (CelebAMask-HQ compatible)
+
+## Quality Control Standards
+
+**Identity Preservation**:
+- ArcFace cosine similarity threshold ≥ 0.35 (warning if below)
+- Off-mask SSIM ≥ 0.98 (retry with adjusted parameters if below)
+
+**Artifact Detection**:  
+- BRISQUE/NIQE quality assessment in mask regions
+- Parameter clamping for unrealistic results
+
+**Performance Targets**:
+- 2-4 seconds @ 768px on A10/3090 GPUs
+- 28-32 inference steps with fp16 + xformers optimization
+
+## Testing
+
+```bash
+# Run core engine tests
+python -m pytest tests/ -v
+
+# Test segmentation pipeline  
+python debug_segmentation.py
+
+# Demo mode for development
+python demo_mode.py
+```
+
+## Deployment Architecture
+
+**Frontend**: Firebase Hosting (`ui/` directory)
+**API Backend**: Can be deployed standalone or containerized  
+**Medical Backend**: Google Cloud Run with Docker (see `backend/Dockerfile`)
+
+**CI/CD**: GitHub Actions workflow (`.github/workflows/deploy-medical.yml`) for automated Cloud Run deployments
+
+**Security**: 
+- HTTPS/TLS required
+- PII minimization and GDPR compliance
+- Medical data handling with consent workflows
+
+## Development Notes
+
+- Project uses German comments and documentation in the original PoC plan
+- Two-stage pipeline (segmentation→inpainting) follows research literature for wrinkle reduction
+- Path B (geometry warping) extends Path A with Mediapipe FaceMesh + TPS warping
+- Quality gates prevent identity loss and off-target modifications
+
 NuvaFace – PoC-Bauplan (Weg A → Abschluss → Weiterführung Weg B)
 
 Ziel: schnell einsetzbarer Upload→Segmentierung→(InstructPix2Pix / SD-Inpainting) + ControlNet-Prototyp mit Slider-Steuerung. Danach sauberer Abschluss von Weg A und Erweiterung zu Weg B (Geometrie-Warping + Inpainting).

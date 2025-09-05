@@ -1,517 +1,666 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NuvaFace - Ästhetische Behandlungssimulation</title>
-    <link rel="stylesheet" href="styles_new.css?v=20250904">
-    <link rel="stylesheet" href="hero-camera-styles.css?v=20250904">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles_new.css?v=20250904" />
+    <link rel="stylesheet" href="hero-camera-styles.css?v=20250904" />
+    <link rel="stylesheet" href="simulation-styles.css?v=20250904" />
+    <link rel="stylesheet" href="pitchdeck-styles.css?v=20250904" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
     <!-- Modern Animation Libraries -->
-    <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"
+      rel="stylesheet"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js"></script>
-    
+
     <!-- Three.js for 3D Model Support -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Header -->
     <header class="header">
-        <div class="header-content">
-            <div class="logo-section">
-                <a href="#" onclick="app.showSection('heroSection'); return false;" class="logo-link">
-                    <img src="assets/pics/nuvaface_logo.png" alt="NuvaFace Logo" class="logo-image">
-                </a>
-            </div>
-            <div class="header-actions">
-                <button class="demo-btn">Demo Testen</button>
-            </div>
+      <div class="header-content">
+        <div class="logo-section">
+          <a
+            href="#"
+            onclick="app.showSection('heroSection'); return false;"
+            class="logo-link"
+          >
+            <img
+              src="assets/pics/nuvaface_logo.png"
+              alt="NuvaFace Logo"
+              class="logo-image"
+            />
+          </a>
         </div>
+        <div class="header-actions">
+          <a href="pitchdeck.html" class="demo-btn">Zum Pitchdeck</a>
+        </div>
+      </div>
     </header>
 
     <!-- Main Container -->
     <div class="main-container">
-        
-        <!-- New Hero Landing Page -->
-        <section id="heroSection" class="section active">
-            <div class="hero-container">
-                <div class="hero-badge">
-                    <i class="fas fa-flask"></i> Demo-Produkt
+      <!-- New Hero Landing Page -->
+      <section id="heroSection" class="section active">
+        <div class="hero-container">
+          <div class="hero-badge">
+            <i class="fas fa-flask"></i> Demo-Produkt
+          </div>
+          <div class="hero-content">
+            <div class="hero-text">
+              <h1 class="hero-main-title">NuvaFace</h1>
+              <h2 class="hero-subtitle">für Ärzte</h2>
+              <p class="hero-description">
+                Professionelle Lösungen für Ärzte, Kliniken und Praxisgruppen.
+                Steigern Sie Ihren Umsatz und die Patientenzufriedenheit.
+              </p>
+              <div class="hero-stats">
+                <div class="stat-item">
+                  <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                  <div class="stat-text">
+                    <strong>+40% mehr Buchungen</strong>
+                    <span>Durch realistische Simulationen</span>
+                  </div>
                 </div>
-                <div class="hero-content">
-                    <div class="hero-text">
-                        <h1 class="hero-main-title">NuvaFace</h1>
-                        <h2 class="hero-subtitle">für Ärzte</h2>
-                        <p class="hero-description">
-                            Professionelle Lösungen für Ärzte, Kliniken und Praxisgruppen. 
-                            Steigern Sie Ihren Umsatz und die Patientenzufriedenheit.
-                        </p>
-                        <div class="hero-stats">
-                            <div class="stat-item">
-                                <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
-                                <div class="stat-text">
-                                    <strong>+40% mehr Buchungen</strong>
-                                    <span>Durch realistische Simulationen</span>
-                                </div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-icon"><i class="fas fa-clock"></i></div>
-                                <div class="stat-text">
-                                    <strong>50% Zeitersparnis</strong>
-                                    <span>Effizientere Beratungen</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="hero-actions">
-                            <button class="hero-primary-btn" onclick="app.showAreaSelection()">
-                                Demo vereinbaren
-                            </button>
-                            <button class="hero-secondary-btn" onclick="app.showAreaSelection()">
-                                Kostenlos testen
-                            </button>
-                        </div>
-                        <div class="hero-footer">
-                            <div class="trust-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>Partner-Ärzte in ganz Deutschland</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="hero-image">
-                        <div class="image-wrapper">
-                            <img src="https://images.unsplash.com/photo-1559599101-f09722fb4948?w=800&q=80" alt="Ästhetische Behandlung">
-                            <div class="image-badges">
-                                <div class="badge success">
-                                    <i class="fas fa-check"></i> GOÄ-Abrechnungen ab €
-                                </div>
-                                <div class="badge info">
-                                    95% Zufriedenheit
-                                </div>
-                                <div class="badge warning">
-                                    +40% mehr Umsatz
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="stat-item">
+                  <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                  <div class="stat-text">
+                    <strong>50% Zeitersparnis</strong>
+                    <span>Effizientere Beratungen</span>
+                  </div>
                 </div>
-            </div>
-        </section>
-        
-        <!-- Area Selection (formerly Landing Section) -->
-        <section id="landingSection" class="section">
-            <div class="landing-split-layout">
-                <!-- Left Side: Text Content -->
-                <div class="landing-content">
-                    <div class="hero-section">
-                        <h2 class="hero-title">Lassen Sie Ihre Behandlung simulieren</h2>
-                        <p class="hero-subtitle">Visualisieren Sie das Ergebnis ästhetischer Behandlungen mit modernster KI-Technologie</p>
-                        
-                        <div class="treatment-areas">
-                            <h3>Wählen Sie den Behandlungsbereich:</h3>
-                            <div class="area-buttons-grid">
-                                <button class="area-select-btn" data-area="lips">
-                                    <i class="fas fa-kiss-wink-heart"></i> 
-                                    <span class="area-name">Lippen</span>
-                                    <span class="area-subtitle">Filler 0.5-4ml</span>
-                                </button>
-                                <button class="area-select-btn" data-area="cheeks">
-                                    <i class="fas fa-smile"></i> 
-                                    <span class="area-name">Wangen</span>
-                                    <span class="area-subtitle">Filler 1-4ml</span>
-                                </button>
-                                <button class="area-select-btn" data-area="chin">
-                                    <i class="fas fa-user"></i> 
-                                    <span class="area-name">Kinn</span>
-                                    <span class="area-subtitle">Filler 1-4ml</span>
-                                </button>
-                                <button class="area-select-btn" data-area="forehead">
-                                    <i class="fas fa-head-side-virus"></i> 
-                                    <span class="area-name">Stirn</span>
-                                    <span class="area-subtitle">Botox 10-40 Units</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <button class="primary-btn proceed-cta" id="proceedToUpload" disabled onclick="app.showImageSourceModal()">
-                            <i class="fas fa-arrow-right"></i> Weiter zum Bildupload
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Right Side: 3D Model -->
-                <div class="landing-3d">
-                    <div id="face3DContainer" class="face-3d-container-large">
-                        <!-- 3D model will be loaded here -->
-                        <div class="loading-3d">
-                            <div class="loading-spinner"></div>
-                            <p>3D Modell wird geladen...</p>
-                        </div>
-                    </div>
-                    <div class="model-controls">
-                        <p><i class="fas fa-mouse"></i> Klicken & Ziehen zum Drehen</p>
-                        <p><i class="fas fa-search-plus"></i> Scroll zum Zoomen</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-
-        <!-- Lips Segmentation (Simplified) -->
-        <section id="segmentSection" class="section">
-            <div class="section-header">
-                <button class="back-btn" onclick="app.showSection('landingSection')">
-                    <i class="fas fa-arrow-left"></i> Zurück
+              </div>
+              <div class="hero-actions">
+                <button
+                  class="hero-primary-btn"
+                  onclick="app.showAreaSelection()"
+                >
+                  Demo vereinbaren
                 </button>
-                <h2>Erkannte Lippenpartie</h2>
-            </div>
-
-            <div class="segment-preview">
-                <div class="segment-status" id="segmentStatus">
-                    <div class="status-loading" id="statusLoading">
-                        <div class="mini-spinner"></div>
-                        <span>Lippen werden erkannt...</span>
-                    </div>
-                    <div class="status-success" id="statusSuccess" style="display: none;">
-                        <i class="fas fa-check-circle"></i>
-                        <span>Lippenregion erfolgreich erkannt</span>
-                    </div>
-                    <div class="status-warning" id="statusWarning" style="display: none;">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span>Erkennung unvollständig, trotzdem fortfahren</span>
-                    </div>
-                </div>
-                
-                <div class="segment-container">
-                    <canvas id="segmentCanvas"></canvas>
-                    <canvas id="segmentOverlay"></canvas>
-                </div>
-                
-                <div class="segment-info">
-                    <div class="info-card">
-                        <i class="fas fa-info-circle"></i>
-                        <div>
-                            <h4>Automatische Erkennung</h4>
-                            <p>Die markierte Region wird für die Simulation verwendet. Diese Vorschau dient nur zur Überprüfung.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="segment-actions">
-                <button class="primary-btn" id="continueToResult" onclick="app.proceedToResult()" disabled>
-                    <i class="fas fa-arrow-right"></i> Weiter zur Simulation
+                <button
+                  class="hero-secondary-btn"
+                  onclick="app.showAreaSelection()"
+                >
+                  Kostenlos testen
                 </button>
+              </div>
+              <div class="hero-footer">
+                <div class="trust-item">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <span>Partner-Ärzte in ganz Deutschland</span>
+                </div>
+              </div>
             </div>
-        </section>
+            <div class="hero-image">
+              <div class="image-wrapper">
+                <img src="assets/pitchdeck/1.png" alt="NuvaFace Präsentation" />
+                <div class="image-badges">
+                  <div class="badge info">95% Zufriedenheit</div>
+                  <div class="badge warning">+40% mehr Umsatz</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-        <!-- Result Section -->
-        <section id="resultSection" class="section">
-            <div class="section-header">
-                <button class="back-btn" onclick="app.startOver()">
-                    <i class="fas fa-home"></i> Neu starten
-                </button>
-                <h2>Simulationsergebnis</h2>
-            </div>
+      <!-- Area Selection (formerly Landing Section) -->
+      <section id="landingSection" class="section">
+        <div class="landing-split-layout">
+          <!-- Left Side: Text Content -->
+          <div class="landing-content">
+            <div class="hero-section">
+              <h2 class="hero-title">Lassen Sie Ihre Behandlung simulieren</h2>
+              <p class="hero-subtitle">
+                Visualisieren Sie das Ergebnis ästhetischer Behandlungen mit
+                modernster KI-Technologie
+              </p>
 
-            <!-- Compact Volume Control with Generate Button -->
-            <div class="volume-control-compact">
-                <div class="volume-section">
-                    <div class="volume-header">
-                        <label>Behandlungsvolumen</label>
-                        <span class="volume-value" id="volumeValue">2.0 ml</span>
-                    </div>
-                    <input type="range" id="volumeSlider" min="0" max="5" step="0.1" value="2" class="volume-slider-compact">
+              <div class="treatment-areas">
+                <h3>Wählen Sie den Behandlungsbereich:</h3>
+                <div class="area-buttons-grid">
+                  <button class="area-select-btn" data-area="lips">
+                    <i class="fas fa-kiss-wink-heart"></i>
+                    <span class="area-name">Lippen</span>
+                    <span class="area-subtitle">Filler 0.5-4ml</span>
+                  </button>
+                  <button class="area-select-btn" data-area="cheeks">
+                    <i class="fas fa-smile"></i>
+                    <span class="area-name">Wangen</span>
+                    <span class="area-subtitle">Filler 1-4ml</span>
+                  </button>
+                  <button class="area-select-btn" data-area="chin">
+                    <i class="fas fa-user"></i>
+                    <span class="area-name">Kinn</span>
+                    <span class="area-subtitle">Filler 1-4ml</span>
+                  </button>
+                  <button class="area-select-btn" data-area="forehead">
+                    <i class="fas fa-head-side-virus"></i>
+                    <span class="area-name">Stirn</span>
+                    <span class="area-subtitle">Botox 10-40 Units</span>
+                  </button>
                 </div>
-                <div class="generate-section">
-                    <button class="generate-btn-prominent" id="generateBtn" onclick="app.generateSimulation()">
-                        <div class="btn-content" id="btnContent">
-                            <i class="fas fa-sync-alt"></i>
-                            <span>Neu Generieren</span>
-                        </div>
-                    </button>
-                </div>
-            </div>
+              </div>
 
+              <button
+                class="primary-btn proceed-cta"
+                id="proceedToUpload"
+                disabled
+                onclick="app.showImageSourceModal()"
+              >
+                <i class="fas fa-arrow-right"></i> Weiter zum Bildupload
+              </button>
+            </div>
+          </div>
 
-            <!-- Hidden base images for JavaScript processing -->
-            <img id="beforeImage" style="display: none;" alt="Before image for processing">
-            <img id="afterImage" style="display: none;" alt="After image for processing">
-            
-            <!-- Unified View Toggle -->
-            <div class="unified-view-toggle" id="unifiedViewToggle" style="display: none;">
-                <button class="view-btn active" data-view="sidebyside" onclick="app.switchUnifiedView(event)">
-                    <i class="fas fa-columns"></i> Vorher / Nachher
-                </button>
-                <button class="view-btn" data-view="split" onclick="app.switchUnifiedView(event)">
-                    <i class="fas fa-adjust"></i> Split View
-                </button>
+          <!-- Right Side: 3D Model -->
+          <div class="landing-3d">
+            <div id="face3DContainer" class="face-3d-container-large">
+              <!-- 3D model will be loaded here -->
+              <div class="loading-3d">
+                <div class="loading-spinner"></div>
+                <p>3D Modell wird geladen...</p>
+              </div>
             </div>
-            
-            <!-- Unified View Container -->
-            <div class="unified-view-container" id="unifiedViewContainer" style="display: none;">
-                <!-- Side by Side View -->
-                <div class="sidebyside-view" id="sidebysidesView">
-                    <div class="sidebyside-panel">
-                        <h4><i class="fas fa-image"></i> Original</h4>
-                        <img id="beforeImageSideBySide" class="comparison-image" alt="Vorher">
-                    </div>
-                    <div class="sidebyside-panel">
-                        <h4><i class="fas fa-magic"></i> Simulation</h4>
-                        <img id="afterImageSideBySide" class="comparison-image" alt="Nachher">
-                    </div>
-                </div>
-                
-                <!-- Split View -->
-                <div class="split-view" id="splitView" style="display: none;">
-                    <div class="split-labels">
-                        <span class="split-label-before">Vorher</span>
-                        <span class="split-label-after">Nachher</span>
-                    </div>
-                    <div class="split-container">
-                        <div class="split-before"></div>
-                        <div class="split-after"></div>
-                        <div class="split-divider">
-                            <div class="split-handle">
-                                <i class="fas fa-chevron-left"></i>
-                                <i class="fas fa-chevron-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="model-controls">
+              <p><i class="fas fa-mouse"></i> Klicken & Ziehen zum Drehen</p>
+              <p><i class="fas fa-search-plus"></i> Scroll zum Zoomen</p>
             </div>
-            
-            <!-- Generation Placeholder -->  
-            <div class="generation-placeholder" id="generationPlaceholder">
-                <div class="placeholder-content">
-                    <i class="fas fa-magic"></i>
-                    <p>Klicken Sie auf</p>
-                    <button class="generate-cta">Generieren</button>
-                    <p>um Ihre Simulation zu starten</p>
-                </div>
-            </div>
-            
-            <!-- Enhanced Loading Overlay -->
-            <div class="enhanced-loading-overlay" id="enhancedLoadingOverlay" style="display: none;">
-                <div class="loading-content">
-                    <div class="loading-animation">
-                        <div class="loading-circle">
-                            <div class="loading-inner"></div>
-                        </div>
-                        <div class="loading-sparkles">
-                            <div class="sparkle sparkle-1"></div>
-                            <div class="sparkle sparkle-2"></div>
-                            <div class="sparkle sparkle-3"></div>
-                            <div class="sparkle sparkle-4"></div>
-                        </div>
-                    </div>
-                    <div class="loading-text">
-                        <h3 id="loadingTitle">KI generiert Simulation...</h3>
-                        <p id="loadingMessage">Ihr Behandlungsergebnis wird berechnet</p>
-                        <div class="loading-progress">
-                            <div class="progress-bar" id="progressBar"></div>
-                        </div>
-                        <span class="loading-time" id="loadingTime">Geschätzte Dauer: 15-30 Sekunden</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Generation History -->
-            <div class="generations-section" id="generationsSection" style="display: none;">
-                <h3>Letzte Generierungen</h3>
-                <div class="generations-carousel" id="generationsCarousel">
-                    <!-- Thumbnails will be added here dynamically -->
-                </div>
-                <div class="download-section">
-                    <button class="download-btn" id="downloadBtn" onclick="app.downloadResult()" style="display: none;">
-                        <i class="fas fa-download"></i> Ergebnis herunterladen
-                    </button>
-                </div>
-            </div>
-        </section>
+          </div>
+        </div>
+      </section>
 
+      <!-- Lips Segmentation (Simplified) -->
+      <section id="segmentSection" class="section">
+        <div class="section-header">
+          <button class="back-btn" onclick="app.showSection('landingSection')">
+            <i class="fas fa-arrow-left"></i> Zurück
+          </button>
+          <h2>Erkannte Lippenpartie</h2>
+        </div>
+
+        <div class="segment-preview">
+          <div class="segment-status" id="segmentStatus">
+            <div class="status-loading" id="statusLoading">
+              <div class="mini-spinner"></div>
+              <span>Lippen werden erkannt...</span>
+            </div>
+            <div
+              class="status-success"
+              id="statusSuccess"
+              style="display: none"
+            >
+              <i class="fas fa-check-circle"></i>
+              <span>Lippenregion erfolgreich erkannt</span>
+            </div>
+            <div
+              class="status-warning"
+              id="statusWarning"
+              style="display: none"
+            >
+              <i class="fas fa-exclamation-triangle"></i>
+              <span>Erkennung unvollständig, trotzdem fortfahren</span>
+            </div>
+          </div>
+
+          <div class="segment-container">
+            <canvas id="segmentCanvas"></canvas>
+            <canvas id="segmentOverlay"></canvas>
+          </div>
+
+          <div class="segment-info">
+            <div class="info-card">
+              <i class="fas fa-info-circle"></i>
+              <div>
+                <h4>Automatische Erkennung</h4>
+                <p>
+                  Die markierte Region wird für die Simulation verwendet. Diese
+                  Vorschau dient nur zur Überprüfung.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="segment-actions">
+          <button
+            class="primary-btn"
+            id="continueToResult"
+            onclick="app.proceedToResult()"
+            disabled
+          >
+            <i class="fas fa-arrow-right"></i> Weiter zur Simulation
+          </button>
+        </div>
+      </section>
+
+      <!-- Result Section -->
+      <section id="resultSection" class="section">
+        <div class="section-header">
+          <button class="back-btn" onclick="app.startOver()">
+            <i class="fas fa-home"></i> Neu starten
+          </button>
+          <h2>Simulationsergebnis</h2>
+        </div>
+
+        <!-- Compact Volume Control with Generate Button -->
+        <div class="volume-control-compact">
+          <div class="volume-section">
+            <div class="volume-header">
+              <label>Behandlungsvolumen</label>
+              <span class="volume-value" id="volumeValue">2.0 ml</span>
+            </div>
+            <input
+              type="range"
+              id="volumeSlider"
+              min="0"
+              max="5"
+              step="0.1"
+              value="2"
+              class="volume-slider-compact"
+            />
+          </div>
+          <div class="generate-section">
+            <button
+              class="generate-btn-prominent"
+              id="generateBtn"
+              onclick="app.generateSimulation()"
+            >
+              <div class="btn-content" id="btnContent">
+                <i class="fas fa-sync-alt"></i>
+                <span>Neu Generieren</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Hidden base images for JavaScript processing -->
+        <img
+          id="beforeImage"
+          style="display: none"
+          alt="Before image for processing"
+        />
+        <img
+          id="afterImage"
+          style="display: none"
+          alt="After image for processing"
+        />
+
+        <!-- Unified View Toggle -->
+        <div
+          class="unified-view-toggle"
+          id="unifiedViewToggle"
+          style="display: none"
+        >
+          <button
+            class="view-btn active"
+            data-view="sidebyside"
+            onclick="app.switchUnifiedView(event)"
+          >
+            <i class="fas fa-columns"></i> Vorher / Nachher
+          </button>
+          <button
+            class="view-btn"
+            data-view="split"
+            onclick="app.switchUnifiedView(event)"
+          >
+            <i class="fas fa-adjust"></i> Split View
+          </button>
+        </div>
+
+        <!-- Unified View Container -->
+        <div
+          class="unified-view-container"
+          id="unifiedViewContainer"
+          style="display: none"
+        >
+          <!-- Side by Side View -->
+          <div class="sidebyside-view" id="sidebysidesView">
+            <div class="sidebyside-panel">
+              <h4><i class="fas fa-image"></i> Original</h4>
+              <img
+                id="beforeImageSideBySide"
+                class="comparison-image"
+                alt="Vorher"
+              />
+            </div>
+            <div class="sidebyside-panel">
+              <h4><i class="fas fa-magic"></i> Simulation</h4>
+              <img
+                id="afterImageSideBySide"
+                class="comparison-image"
+                alt="Nachher"
+              />
+            </div>
+          </div>
+
+          <!-- Split View -->
+          <div class="split-view" id="splitView" style="display: none">
+            <div class="split-labels">
+              <span class="split-label-before">Vorher</span>
+              <span class="split-label-after">Nachher</span>
+            </div>
+            <div class="split-container">
+              <div class="split-before"></div>
+              <div class="split-after"></div>
+              <div class="split-divider">
+                <div class="split-handle">
+                  <i class="fas fa-chevron-left"></i>
+                  <i class="fas fa-chevron-right"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Generation Placeholder -->
+        <div class="generation-placeholder" id="generationPlaceholder">
+          <div class="placeholder-content">
+            <i class="fas fa-magic"></i>
+            <p>Klicken Sie auf</p>
+            <button class="generate-cta">Generieren</button>
+            <p>um Ihre Simulation zu starten</p>
+          </div>
+        </div>
+
+        <!-- Enhanced Loading Overlay -->
+        <div
+          class="enhanced-loading-overlay"
+          id="enhancedLoadingOverlay"
+          style="display: none"
+        >
+          <div class="loading-content">
+            <div class="loading-animation">
+              <div class="loading-circle">
+                <div class="loading-inner"></div>
+              </div>
+              <div class="loading-sparkles">
+                <div class="sparkle sparkle-1"></div>
+                <div class="sparkle sparkle-2"></div>
+                <div class="sparkle sparkle-3"></div>
+                <div class="sparkle sparkle-4"></div>
+              </div>
+            </div>
+            <div class="loading-text">
+              <h3 id="loadingTitle">KI generiert Simulation...</h3>
+              <p id="loadingMessage">Ihr Behandlungsergebnis wird berechnet</p>
+              <div class="loading-progress">
+                <div class="progress-bar" id="progressBar"></div>
+              </div>
+              <span class="loading-time" id="loadingTime"
+                >Geschätzte Dauer: 15-30 Sekunden</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Generation History -->
+        <div
+          class="generations-section"
+          id="generationsSection"
+          style="display: none"
+        >
+          <h3>Letzte Generierungen</h3>
+          <div class="generations-carousel" id="generationsCarousel">
+            <!-- Thumbnails will be added here dynamically -->
+          </div>
+          <div class="download-section">
+            <button
+              class="download-btn"
+              id="downloadBtn"
+              onclick="app.downloadResult()"
+              style="display: none"
+            >
+              <i class="fas fa-download"></i> Ergebnis herunterladen
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
 
     <!-- Image Source Selection Modal -->
-    <div id="imageSourceModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content image-source-modal">
-            <button class="modal-close" onclick="app.closeImageSourceModal()">
-                <i class="fas fa-times"></i>
-            </button>
-            <h2 class="modal-title">Foto für Simulation wählen</h2>
-            <p class="modal-subtitle">Wählen Sie, wie Sie Ihr Foto bereitstellen möchten</p>
-            
-            <div class="source-options">
-                <button class="source-option" onclick="app.openCamera()">
-                    <div class="option-icon">
-                        <i class="fas fa-camera"></i>
-                    </div>
-                    <div class="option-text">
-                        <h3>Foto aufnehmen</h3>
-                        <p>Nehmen Sie jetzt ein neues Foto auf</p>
-                    </div>
-                </button>
-                
-                <button class="source-option" onclick="app.openGallery()">
-                    <div class="option-icon">
-                        <i class="fas fa-images"></i>
-                    </div>
-                    <div class="option-text">
-                        <h3>Aus Galerie wählen</h3>
-                        <p>Wählen Sie ein vorhandenes Foto</p>
-                    </div>
-                </button>
+    <div id="imageSourceModal" class="modal-overlay" style="display: none">
+      <div class="modal-content image-source-modal">
+        <button class="modal-close" onclick="app.closeImageSourceModal()">
+          <i class="fas fa-times"></i>
+        </button>
+        <h2 class="modal-title">Foto für Simulation wählen</h2>
+        <p class="modal-subtitle">
+          Wählen Sie, wie Sie Ihr Foto bereitstellen möchten
+        </p>
+
+        <div class="source-options">
+          <button class="source-option" onclick="app.openCamera()">
+            <div class="option-icon">
+              <i class="fas fa-camera"></i>
             </div>
+            <div class="option-text">
+              <h3>Foto aufnehmen</h3>
+              <p>Nehmen Sie jetzt ein neues Foto auf</p>
+            </div>
+          </button>
+
+          <button class="source-option" onclick="app.openGallery()">
+            <div class="option-icon">
+              <i class="fas fa-images"></i>
+            </div>
+            <div class="option-text">
+              <h3>Aus Galerie wählen</h3>
+              <p>Wählen Sie ein vorhandenes Foto</p>
+            </div>
+          </button>
         </div>
+      </div>
     </div>
 
     <!-- In-App Camera View -->
-    <div id="cameraView" class="camera-view" style="display: none;">
-        <div class="camera-header">
-            <button class="camera-back" onclick="app.closeCamera()">
-                <i class="fas fa-arrow-left"></i> Zurück
-            </button>
-            <span class="camera-title">Foto aufnehmen</span>
+    <div id="cameraView" class="camera-view" style="display: none">
+      <div class="camera-header">
+        <button class="camera-back" onclick="app.closeCamera()">
+          <i class="fas fa-arrow-left"></i> Zurück
+        </button>
+        <span class="camera-title">Foto aufnehmen</span>
+      </div>
+
+      <div class="camera-container">
+        <video id="cameraStream" autoplay playsinline></video>
+        <canvas id="cameraCanvas" style="display: none"></canvas>
+
+        <!-- Face Detection Overlay -->
+        <div class="face-overlay" id="faceOverlay">
+          <svg class="face-guide" viewBox="0 0 400 500">
+            <!-- Oval face guide -->
+            <ellipse
+              cx="200"
+              cy="250"
+              rx="140"
+              ry="180"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-dasharray="10 5"
+              class="face-outline"
+            />
+
+            <!-- Corner markers -->
+            <path
+              d="M 60 100 L 60 70 L 90 70"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="4"
+              stroke-linecap="round"
+            />
+            <path
+              d="M 340 100 L 340 70 L 310 70"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="4"
+              stroke-linecap="round"
+            />
+            <path
+              d="M 60 400 L 60 430 L 90 430"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="4"
+              stroke-linecap="round"
+            />
+            <path
+              d="M 340 400 L 340 430 L 310 430"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="4"
+              stroke-linecap="round"
+            />
+          </svg>
+          <div class="face-status" id="faceStatus">
+            <span class="status-text">Position your face</span>
+          </div>
         </div>
-        
-        <div class="camera-container">
-            <video id="cameraStream" autoplay playsinline></video>
-            <canvas id="cameraCanvas" style="display: none;"></canvas>
-            
-            <!-- Face Detection Overlay -->
-            <div class="face-overlay" id="faceOverlay">
-                <svg class="face-guide" viewBox="0 0 400 500">
-                    <!-- Oval face guide -->
-                    <ellipse cx="200" cy="250" rx="140" ry="180" 
-                             fill="none" 
-                             stroke="currentColor" 
-                             stroke-width="3"
-                             stroke-dasharray="10 5"
-                             class="face-outline" />
-                    
-                    <!-- Corner markers -->
-                    <path d="M 60 100 L 60 70 L 90 70" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
-                    <path d="M 340 100 L 340 70 L 310 70" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
-                    <path d="M 60 400 L 60 430 L 90 430" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
-                    <path d="M 340 400 L 340 430 L 310 430" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
-                </svg>
-                <div class="face-status" id="faceStatus">
-                    <span class="status-text">Position your face</span>
-                </div>
-            </div>
+      </div>
+
+      <div class="camera-controls">
+        <div class="camera-tips">
+          <p><i class="fas fa-lightbulb"></i> Für beste Resultate:</p>
+          <ul>
+            <li>Gute Beleuchtung</li>
+            <li>Nicht lachen</li>
+            <li>Keine Brille</li>
+          </ul>
         </div>
-        
-        <div class="camera-controls">
-            <div class="camera-tips">
-                <p><i class="fas fa-lightbulb"></i> Für beste Resultate:</p>
-                <ul>
-                    <li>Gute Beleuchtung</li>
-                    <li>Nicht lachen</li>
-                    <li>Keine Brille</li>
-                </ul>
-            </div>
-            <button class="capture-button" id="captureButton" disabled onclick="app.capturePhoto()">
-                <i class="fas fa-camera"></i>
-            </button>
-            <button class="camera-switch" onclick="app.switchCamera()">
-                <i class="fas fa-sync-alt"></i>
-            </button>
-        </div>
+        <button
+          class="capture-button"
+          id="captureButton"
+          disabled
+          onclick="app.capturePhoto()"
+        >
+          <i class="fas fa-camera"></i>
+        </button>
+        <button class="camera-switch" onclick="app.switchCamera()">
+          <i class="fas fa-sync-alt"></i>
+        </button>
+      </div>
     </div>
+
+    <!-- Hidden file input for gallery selection -->
+    <input type="file" id="fileInput" accept="image/*" style="display: none" />
 
     <!-- Face Detection Library -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-detection@latest"></script>
-    
+
     <!-- Scripts -->
     <script src="area-picker-3d.js?t=1725316000"></script>
     <script src="app_new.js?t=1725316000"></script>
-    
+
     <!-- Medical AI Assistant Scripts -->
-    <script src="medical-overlay.js"></script>
+    <script src="medical-overlay-renderer.js"></script>
     <script src="medical-assistant-widget.js"></script>
     <script src="medical-tooltip-system.js"></script>
     <script src="medical-assistant-integration.js"></script>
     <script>
-        // Medical AI Assistant integration - enhanced hook
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('🏥 Medical AI Assistant DOM ready');
-            
-            // Initialize Medical Assistant Integration
-            if (typeof MedicalAssistantIntegration !== 'undefined') {
-                window.medicalAssistantIntegration = new MedicalAssistantIntegration();
-            }
-            
-            // Medical Assistant initialization flag
-            let medicalAssistantInitialized = false;
-            
-            // Monitor for result section activation and force Medical Assistant initialization
-            const observer = new MutationObserver(() => {
-                const resultSection = document.getElementById('resultSection');
-                const unifiedViewToggle = document.getElementById('unifiedViewToggle');
-                
-                if ((resultSection?.classList.contains('active') || 
-                    (unifiedViewToggle?.style.display === 'flex')) && 
-                    !medicalAssistantInitialized) {
-                    
-                    console.log('🏥 Results detected - initializing Medical Assistant (once)');
-                    medicalAssistantInitialized = true;
-                    
-                    // Force Medical Assistant initialization
-                    setTimeout(() => {
-                        if (!window.medicalAssistant && window.MedicalAssistantIntegration) {
-                            console.log('🏥 Creating new Medical Assistant instance');
-                            window.medicalAssistant = new MedicalAssistantIntegration();
-                            
-                            // Show the widget
-                            if (window.medicalAssistant.assistantWidget) {
-                                window.medicalAssistant.assistantWidget.show();
-                                console.log('👁️ Medical Assistant widget made visible');
-                            }
-                        }
-                        
-                        // Update with current app state if available
-                        if (window.app && window.medicalAssistant) {
-                            if (window.app.selectedArea) {
-                                console.log(`🎯 Medical Assistant: Setting area to ${window.app.selectedArea}`);
-                                window.medicalAssistant.setCurrentArea(window.app.selectedArea);
-                            }
-                            if (window.app.currentImageBase64) {
-                                console.log('🖼️ Medical Assistant: Setting current image');
-                                window.medicalAssistant.setCurrentImage(window.app.currentImageBase64);
-                            }
-                        }
-                    }, 500);
-                }
-            });
-            
-            // Start observing
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true,
-                attributes: true,
-                attributeFilter: ['class', 'style']
-            });
-            
-            // Simple integration - monitor selectedArea changes
+      // Medical AI Assistant integration - enhanced hook
+      document.addEventListener("DOMContentLoaded", () => {
+        console.log("🏥 Medical AI Assistant DOM ready");
+
+        // Initialize Medical Assistant Integration
+        if (typeof MedicalAssistantIntegration !== "undefined") {
+          window.medicalAssistantIntegration =
+            new MedicalAssistantIntegration();
+        }
+
+        // Medical Assistant initialization flag
+        let medicalAssistantInitialized = false;
+
+        // Monitor for result section activation and force Medical Assistant initialization
+        const observer = new MutationObserver(() => {
+          const resultSection = document.getElementById("resultSection");
+          const unifiedViewToggle =
+            document.getElementById("unifiedViewToggle");
+
+          if (
+            (resultSection?.classList.contains("active") ||
+              unifiedViewToggle?.style.display === "flex") &&
+            !medicalAssistantInitialized
+          ) {
+            console.log(
+              "🏥 Results detected - initializing Medical Assistant (once)"
+            );
+            medicalAssistantInitialized = true;
+
+            // Force Medical Assistant initialization
             setTimeout(() => {
-                if (window.app) {
-                    let lastArea = null;
-                    setInterval(() => {
-                        if (window.app.selectedArea !== lastArea) {
-                            lastArea = window.app.selectedArea;
-                            console.log(`🎯 Medical Assistant: Area changed to ${lastArea}`);
-                            if (window.medicalAssistant) {
-                                window.medicalAssistant.setCurrentArea(lastArea);
-                            }
-                        }
-                    }, 500);
-                    console.log('✅ Medical AI Assistant integration active');
+              if (
+                !window.medicalAssistant &&
+                window.MedicalAssistantIntegration
+              ) {
+                console.log("🏥 Creating new Medical Assistant instance");
+                window.medicalAssistant = new MedicalAssistantIntegration();
+
+                // Show the widget
+                if (window.medicalAssistant.assistantWidget) {
+                  window.medicalAssistant.assistantWidget.show();
+                  console.log("👁️ Medical Assistant widget made visible");
                 }
-            }, 2000);
+              }
+
+              // Update with current app state if available
+              if (window.app && window.medicalAssistant) {
+                if (window.app.selectedArea) {
+                  console.log(
+                    `🎯 Medical Assistant: Setting area to ${window.app.selectedArea}`
+                  );
+                  window.medicalAssistant.setCurrentArea(
+                    window.app.selectedArea
+                  );
+                }
+                if (window.app.currentImageBase64) {
+                  console.log("🖼️ Medical Assistant: Setting current image");
+                  window.medicalAssistant.setCurrentImage(
+                    window.app.currentImageBase64
+                  );
+                }
+              }
+            }, 500);
+          }
         });
+
+        // Start observing
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ["class", "style"],
+        });
+
+        // Simple integration - monitor selectedArea changes
+        setTimeout(() => {
+          if (window.app) {
+            let lastArea = null;
+            setInterval(() => {
+              if (window.app.selectedArea !== lastArea) {
+                lastArea = window.app.selectedArea;
+                console.log(
+                  `🎯 Medical Assistant: Area changed to ${lastArea}`
+                );
+                if (window.medicalAssistant) {
+                  window.medicalAssistant.setCurrentArea(lastArea);
+                }
+              }
+            }, 500);
+            console.log("✅ Medical AI Assistant integration active");
+          }
+        }, 2000);
+      });
     </script>
-</body>
+  </body>
 </html>

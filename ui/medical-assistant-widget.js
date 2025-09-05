@@ -10,6 +10,7 @@ class MedicalAssistantWidget {
         this.isOpen = false;
         this.currentArea = null;
         this.overlayRenderer = null;
+        this.currentImage = null; // Store the before image
         // Use Cloud Run backend for Medical Assistant
         this.apiEndpoint = 'https://nuvaface-medical-assistant-209086088851.us-central1.run.app/api/risk-map/analyze';
         
@@ -722,12 +723,15 @@ class MedicalAssistantWidget {
     setOverlayRenderer(renderer) {
         this.overlayRenderer = renderer;
         
-        // Set up overlay event handlers
-        if (renderer) {
-            renderer.onElementHover = (element) => this.handleElementHover(element);
-            renderer.onElementClick = (element) => this.handleElementClick(element);
-            renderer.onElementHoverOut = () => this.handleElementHoverOut();
+        // Create new MedicalOverlayRenderer instead
+        if (!this.overlayRenderer && window.MedicalOverlayRenderer) {
+            this.overlayRenderer = new MedicalOverlayRenderer();
         }
+    }
+    
+    setCurrentImage(imageBase64) {
+        this.currentImage = imageBase64;
+        console.log('📷 Medical Assistant: Image updated');
     }
     
     setCurrentArea(area) {
@@ -742,12 +746,27 @@ class MedicalAssistantWidget {
     }
     
     async updateOverlays() {
-        if (!this.overlayRenderer || !this.currentArea) return;
+        // Initialize renderer if needed
+        if (!this.overlayRenderer && window.MedicalOverlayRenderer) {
+            this.overlayRenderer = new MedicalOverlayRenderer();
+            this.overlayRenderer.initialize();
+        }
+        
+        if (!this.overlayRenderer || !this.currentArea) {
+            console.warn('Missing renderer or area');
+            return;
+        }
+        
+        // Update renderer settings
+        this.overlayRenderer.updateSettings({
+            showRiskZones: this.modes.riskZones,
+            showInjectionPoints: this.modes.injectionPoints
+        });
         
         // Check if any modes are active
         const hasActiveModes = this.modes.riskZones || this.modes.injectionPoints;
         if (!hasActiveModes) {
-            await this.overlayRenderer.renderOverlays([], [], this.modes);
+            this.overlayRenderer.clear();
             this.updateLegendVisibility();
             return;
         }
@@ -758,11 +777,8 @@ class MedicalAssistantWidget {
             const analysisData = await this.performAnalysis();
             
             if (analysisData) {
-                await this.overlayRenderer.renderOverlays(
-                    analysisData.risk_zones || [],
-                    analysisData.injection_points || [],
-                    this.modes
-                );
+                // Render overlays on BEFORE image
+                this.overlayRenderer.render(analysisData);
                 
                 this.updateAnalysisDisplay(analysisData);
                 this.setAnalysisStatus('completed');
@@ -782,22 +798,22 @@ class MedicalAssistantWidget {
         console.log('🎯 API endpoint:', this.apiEndpoint);
         console.log('📊 Modes:', this.modes);
         
-        // Get current image from the UI - try multiple sources
+        // IMPORTANT: Only use the BEFORE image for medical analysis
         const imageElement = document.getElementById('beforeImage') || 
-                           document.getElementById('afterImage') ||
-                           document.getElementById('beforeImageSideBySide') ||
-                           document.querySelector('.result-image') ||
-                           document.querySelector('img[src*="data:"]');
+                           document.getElementById('beforeImageSideBySide');
         
-        if (!imageElement || !imageElement.src) {
-            console.error('❌ No image available for analysis');
-            throw new Error('No image available for analysis');
+        // Use stored image if element not found
+        const imageSource = imageElement?.src || this.currentImage;
+        
+        if (!imageSource) {
+            console.error('❌ No before image available for analysis');
+            throw new Error('No before image available for analysis. Medical analysis must use the original image.');
         }
         
-        console.log('✅ Image found, source length:', imageElement.src.length);
+        console.log('✅ Image found, source length:', imageSource.length);
         
         const requestData = {
-            image: imageElement.src,
+            image: imageSource,
             area: this.currentArea,
             modes: this.modes
         };

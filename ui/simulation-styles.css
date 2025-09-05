@@ -1,0 +1,87 @@
+/* Simulation Mode Styles */
+.simulation-mode .main-container {
+    padding-top: 0;
+}
+
+.simulation-mode .header {
+    display: none !important;
+}
+
+.simulation-mode .landing-split-layout {
+    min-height: 100vh;
+    padding-top: 20px;
+}
+
+.simulation-mode .hero-section {
+    padding: 20px;
+}
+
+.simulation-mode .hero-title {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.simulation-mode .hero-subtitle {
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.simulation-mode .treatment-areas h3 {
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.simulation-mode .area-buttons-grid {
+    gap: 10px;
+}
+
+.simulation-mode .area-select-btn {
+    padding: 12px;
+    font-size: 14px;
+}
+
+.simulation-mode .area-name {
+    font-size: 14px;
+}
+
+.simulation-mode .area-subtitle {
+    font-size: 11px;
+}
+
+.simulation-mode .primary-btn {
+    padding: 12px 24px;
+    font-size: 14px;
+}
+
+/* Hide 3D model in simulation mode for better performance in iframe */
+.simulation-mode .landing-3d {
+    display: none;
+}
+
+.simulation-mode .landing-content {
+    max-width: 100%;
+    width: 100%;
+}
+
+/* Adjust result section in simulation mode */
+.simulation-mode #resultSection {
+    padding: 20px;
+}
+
+.simulation-mode .section-header h2 {
+    font-size: 20px;
+}
+
+.simulation-mode .volume-control-compact {
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.simulation-mode .unified-view-container {
+    max-height: 400px;
+}
+
+/* Hide back button in simulation mode */
+.simulation-mode .back-btn {
+    display: none !important;
+}
